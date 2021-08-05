@@ -361,14 +361,15 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
         // --------------------
 
-        Debugger::reportForever("status: %d\n", status);
-
 	status |= WrByte(&(p_dev->platform), 0x000F, 0x40);
 	status |= WrByte(&(p_dev->platform), 0x000A, 0x01);
 	status |= WaitMs(&(p_dev->platform), 100);
 
 	/* Wait for sensor booted (several ms required to get sensor ready ) */
 	status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
+
+        Debugger::reportForever("status: %d\n", status);
+
 	status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x06, 0xff, 1);
 
 	status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
@@ -378,6 +379,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 	/* Enable FW access */
 	status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
 	status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
+
 	status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x21, 0x10, 0x10);
 	status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
