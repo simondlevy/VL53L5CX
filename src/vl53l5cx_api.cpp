@@ -348,8 +348,6 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 	status |= RdByte(&(p_dev->platform), 0x7FFF, &tmp);
 	status |= WrByte(&(p_dev->platform), 0x000C, 0x01);
 
-        Debugger::reportForever("status: %d\n", status);
-
 	status |= WrByte(&(p_dev->platform), 0x0101, 0x00);
 	status |= WrByte(&(p_dev->platform), 0x0102, 0x00);
 	status |= WrByte(&(p_dev->platform), 0x010A, 0x01);
@@ -360,6 +358,10 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 	status |= WrByte(&(p_dev->platform), 0x000C, 0x00);
 	status |= WrByte(&(p_dev->platform), 0x000F, 0x43);
 	status |= WaitMs(&(p_dev->platform), 1);
+
+        // --------------------
+
+        Debugger::reportForever("status: %d\n", status);
 
 	status |= WrByte(&(p_dev->platform), 0x000F, 0x40);
 	status |= WrByte(&(p_dev->platform), 0x000A, 0x01);
