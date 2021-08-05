@@ -26,14 +26,10 @@ static uint8_t _vl53l5cx_poll_for_answer(
 
     do {
 
-        Debugger::printf("attempt to read\n");
-
         status |= RdMulti(&(p_dev->platform), address,
                 p_dev->temp_buffer, size);
 
         status |= WaitMs(&(p_dev->platform), 10);
-
-        Debugger::printf("status: %d  timeout: %d\n", status, timeout);
 
         if(timeout >= (uint8_t)200)    /* 2s timeout */
         {
@@ -50,6 +46,42 @@ static uint8_t _vl53l5cx_poll_for_answer(
         }
 
     } while ((p_dev->temp_buffer[pos] & mask) != expected_value);
+
+    return status;
+}
+
+static uint8_t _vl53l5cx_poll_for_answer_single(
+        VL53L5CX_Configuration    *p_dev,
+        uint8_t write_address,
+        uint16_t read_address,
+        uint8_t mask,
+        uint8_t expected_value)
+{
+    uint8_t status = VL53L5CX_STATUS_OK;
+    uint8_t timeout = 0;
+
+    while (true) {
+
+        status |= WrByte(&(p_dev->platform), 0x7fff, write_address);
+
+        uint8_t value = 0;
+
+        status |= RdByte(&(p_dev->platform), read_address, &value);
+
+        status |= WaitMs(&(p_dev->platform), 10);
+
+        if ((value & mask) == expected_value) {
+            break;
+        }
+
+        if(timeout >= (uint8_t)200) {
+            status = 1; // failed to read after two seconds
+            break;
+        }
+        else {
+            timeout++;
+        }
+    } 
 
     return status;
 }
@@ -373,17 +405,9 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     /* Wait for sensor booted (several ms required to get sensor ready ) */
 
-    while (true) {
-        status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
-        Debugger::printf("write status = %d\n", status);
-        uint8_t value = 0;
-        status = RdByte(&(p_dev->platform), 0x06, &value);
-        Debugger::printf("read status = %d value = %d\n", status, value);
-        delay(100);
-    }
+    status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x00, 0x06, 0xff, 1);
 
-                                                
-    //status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x06, 0xff, 1);
+    Debugger::reportForever("poll status = %d", status);
 
     // ===================================================================
 
