@@ -405,11 +405,10 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     /* Wait for sensor booted (several ms required to get sensor ready ) */
 
-    status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x00, 0x06, 0xff, 1);
+    status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x00, 0x06, 0xff, 0x01);
 
     Debugger::reportForever("poll status = %d", status);
 
-    // ===================================================================
 
     status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
@@ -417,9 +416,12 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     /* Enable FW access */
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
-    status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
+    // status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
 
-    status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x21, 0x10, 0x10);
+    status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x01, 0x21, 0x10, 0x10);
+
+    // ===================================================================
+
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
     /* Enable host access to GO1 */
