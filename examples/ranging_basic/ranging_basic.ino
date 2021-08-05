@@ -24,11 +24,11 @@ void setup(void)
     // Start serial debugging
     Serial.begin(115200);
 
-    delay(2000);
+    delay(1000);
 
     Debugger::printf("starting\n");
 
-    delay(2000);
+    delay(1000);
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
