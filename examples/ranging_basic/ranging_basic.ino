@@ -44,8 +44,6 @@ void setup(void)
         Debugger::reportForever("VL53L5CX not detected at requested address\n");
     }
 
-    Debugger::reportForever("Ready to init ...");
-
     // (Mandatory) Init VL53L5CX sensor
     error = vl53l5cx_init(&Dev);
     if(error) {

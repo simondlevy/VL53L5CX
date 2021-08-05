@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "platform.h"
+#include "Debugger.hpp"
 
 /**
  * @brief Inner function, not available outside this file. This function is used
@@ -330,8 +331,7 @@ uint8_t vl53l5cx_is_alive(
 	return status;
 }
 
-uint8_t vl53l5cx_init(
-		VL53L5CX_Configuration		*p_dev)
+uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 {
 	uint8_t tmp, status = VL53L5CX_STATUS_OK;
 	uint8_t pipe_ctrl[] = {VL53L5CX_NB_TARGET_PER_ZONE, 0x00, 0x01, 0x00};
@@ -347,6 +347,8 @@ uint8_t vl53l5cx_init(
 	status |= WrByte(&(p_dev->platform), 0x000A, 0x03);
 	status |= RdByte(&(p_dev->platform), 0x7FFF, &tmp);
 	status |= WrByte(&(p_dev->platform), 0x000C, 0x01);
+
+        Debugger::reportForever("status: %d\n", status);
 
 	status |= WrByte(&(p_dev->platform), 0x0101, 0x00);
 	status |= WrByte(&(p_dev->platform), 0x0102, 0x00);
@@ -369,6 +371,7 @@ uint8_t vl53l5cx_init(
 
 	status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
 	status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
+
 
 	/* Enable FW access */
 	status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
