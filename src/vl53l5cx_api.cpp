@@ -416,10 +416,6 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x01, 0x21, 0x10, 0x10);
 
-    Debugger::reportForever("new poll status = %d", status);
-
-    // ===================================================================
-
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
     /* Enable host access to GO1 */
@@ -465,8 +461,11 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
 
-    status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
-    status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x21, 0x10, 0x10);
+    status |= _vl53l5cx_poll_for_answer_single(p_dev, 0x01, 0x21, 0x10, 0x10);
+
+    Debugger::reportForever("newest poll status = %d", status);
+
+    // ===================================================================
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0C, 0x01);
