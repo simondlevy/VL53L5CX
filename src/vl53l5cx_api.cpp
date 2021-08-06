@@ -8,11 +8,6 @@
 #include "platform.h"
 #include "Debugger.hpp"
 
-/**
- * @brief Inner function, not available outside this file. This function is used
- * to wait for an answer from VL53L5CX sensor.
- */
-
 static uint8_t _vl53l5cx_poll_for_answer_four(
         VL53L5CX_Configuration    *p_dev,
         uint8_t pos,
@@ -46,7 +41,7 @@ static uint8_t _vl53l5cx_poll_for_answer_four(
     return status;
 }
 
-static uint8_t _vl53l5cx_poll_for_answer_four_one(
+static uint8_t _vl53l5cx_poll_for_answer_one(
         VL53L5CX_Configuration    *p_dev,
         uint8_t write_address,
         uint16_t read_address,
@@ -399,7 +394,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     /* Wait for sensor booted (several ms required to get sensor ready ) */
 
-    status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x00, 0x06, 0xff, 0x01);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0xff, 0x01);
 
     status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
@@ -408,7 +403,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     /* Enable FW access */
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
 
-    status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x01, 0x21, 0x10, 0x10);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x01, 0x21, 0x10, 0x10);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
@@ -455,7 +450,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
 
-    status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x01, 0x21, 0x10, 0x10);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x01, 0x21, 0x10, 0x10);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0C, 0x01);
@@ -470,7 +465,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= WrByte(&(p_dev->platform), 0x0C, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0B, 0x01);
 
-    status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x00, 0x06, 0xff, 0x00);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0xff, 0x00);
 
     Debugger::reportForever("bottom poll status = %d", status);
 
@@ -577,13 +572,13 @@ uint8_t vl53l5cx_set_power_mode(
             case VL53L5CX_POWER_MODE_WAKEUP:
                 status |= WrByte(&(p_dev->platform), 0x7FFF, 0x00);
                 status |= WrByte(&(p_dev->platform), 0x09, 0x04);
-                status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x00, 0x06, 0x01, 0x01);
+                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0x01, 0x01);
                 break;
 
             case VL53L5CX_POWER_MODE_SLEEP:
                 status |= WrByte(&(p_dev->platform), 0x7FFF, 0x00);
                 status |= WrByte(&(p_dev->platform), 0x09, 0x02);
-                status |= _vl53l5cx_poll_for_answer_four_one(p_dev, 0x00, 0x06, 0x01, 0x00);
+                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0x01, 0x00);
                 break;
 
             default:
