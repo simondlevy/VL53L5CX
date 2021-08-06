@@ -12,7 +12,6 @@ static uint8_t _vl53l5cx_poll_for_answer_four(
         VL53L5CX_Configuration    *p_dev,
         uint8_t pos,
         uint16_t address,
-        uint8_t mask,
         uint8_t expected_value)
 {
     uint8_t status = VL53L5CX_STATUS_OK;
@@ -36,7 +35,7 @@ static uint8_t _vl53l5cx_poll_for_answer_four(
             timeout++;
         }
 
-    } while ((p_dev->temp_buffer[pos] & mask) != expected_value);
+    } while ((p_dev->temp_buffer[pos] & 0xff) != expected_value);
 
     return status;
 }
@@ -132,12 +131,11 @@ static uint8_t _vl53l5cx_send_offset_data(
         SwapBuffer(p_dev->temp_buffer, VL53L5CX_OFFSET_BUFFER_SIZE);
     }
 
-    (void)memcpy(p_dev->temp_buffer, &(p_dev->temp_buffer[8]),
-            VL53L5CX_OFFSET_BUFFER_SIZE - (uint16_t)4);
+    (void)memcpy(p_dev->temp_buffer, &(p_dev->temp_buffer[8]), VL53L5CX_OFFSET_BUFFER_SIZE - (uint16_t)4);
     (void)memcpy(&(p_dev->temp_buffer[0x1E0]), footer, 8);
-    status |= WrMulti(&(p_dev->platform), 0x2e18, p_dev->temp_buffer,
-            VL53L5CX_OFFSET_BUFFER_SIZE);
-    status |=_vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+
+    status |= WrMulti(&(p_dev->platform), 0x2e18, p_dev->temp_buffer, VL53L5CX_OFFSET_BUFFER_SIZE);
+    status |=_vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
     return status;
 }
@@ -194,9 +192,8 @@ static uint8_t _vl53l5cx_send_xtalk_data(
                 (uint32_t)4*sizeof(uint8_t));
     }
 
-    status |= WrMulti(&(p_dev->platform), 0x2cf8,
-            p_dev->temp_buffer, VL53L5CX_XTALK_BUFFER_SIZE);
-    status |=_vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+    status |= WrMulti(&(p_dev->platform), 0x2cf8, p_dev->temp_buffer, VL53L5CX_XTALK_BUFFER_SIZE);
+    status |=_vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
     return status;
 }
@@ -476,7 +473,8 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     /* Get offset NVM data and store them into the offset buffer */
     status |= WrMulti(&(p_dev->platform), 0x2fd8,
             (uint8_t*)VL53L5CX_GET_NVM_CMD, sizeof(VL53L5CX_GET_NVM_CMD));
-    status |= _vl53l5cx_poll_for_answer_four(p_dev, 0, VL53L5CX_UI_CMD_STATUS, 0xff, 2);
+    status |= _vl53l5cx_poll_for_answer_four(p_dev, 0, VL53L5CX_UI_CMD_STATUS, 2);
+
     status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
             p_dev->temp_buffer, VL53L5CX_NVM_DATA_SIZE);
     (void)memcpy(p_dev->offset_data, p_dev->temp_buffer,
@@ -489,10 +487,9 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= _vl53l5cx_send_xtalk_data(p_dev, VL53L5CX_RESOLUTION_4X4);
 
     /* Send default configuration to VL53L5CX firmware */
-    status |= WrMulti(&(p_dev->platform), 0x2c34,
-            p_dev->default_configuration,
+    status |= WrMulti(&(p_dev->platform), 0x2c34, p_dev->default_configuration,
             sizeof(VL53L5CX_DEFAULT_CONFIGURATION));
-    status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+    status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
     status |= vl53l5cx_dci_write_data(p_dev, (uint8_t*)&pipe_ctrl,
             VL53L5CX_DCI_PIPE_CONTROL, (uint16_t)sizeof(pipe_ctrl));
@@ -712,7 +709,7 @@ uint8_t vl53l5cx_start_ranging(
     /* Start ranging session */
     status |= WrMulti(&(p_dev->platform), VL53L5CX_UI_CMD_END - 
             (uint16_t)(4 - 1), (uint8_t*)cmd, sizeof(cmd));
-    status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+    status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
     return status;
 }
@@ -1243,7 +1240,7 @@ uint8_t vl53l5cx_dci_read_data(
         /* Request data reading from FW */
         status |= WrMulti(&(p_dev->platform),
                 (VL53L5CX_UI_CMD_END-(uint16_t)11),cmd, sizeof(cmd));
-        status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+        status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
         /* Read new data sent (4 bytes header + data_size + 8 bytes footer) */
         status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
@@ -1305,7 +1302,7 @@ uint8_t vl53l5cx_dci_write_data(
         status |= WrMulti(&(p_dev->platform),address,
                 p_dev->temp_buffer,
                 (uint32_t)((uint32_t)data_size + (uint32_t)12));
-        status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
+        status |= _vl53l5cx_poll_for_answer_four(p_dev, 1, VL53L5CX_UI_CMD_STATUS, 0x03);
 
         SwapBuffer(data, data_size);
     }
