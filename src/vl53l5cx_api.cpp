@@ -8,38 +8,6 @@
 #include "platform.h"
 #include "Debugger.hpp"
 
-static uint8_t _vl53l5cx_poll_for_answer_four(
-        VL53L5CX_Configuration    *p_dev,
-        uint8_t pos,
-        uint16_t address,
-        uint8_t expected_value)
-{
-    uint8_t status = VL53L5CX_STATUS_OK;
-    uint8_t timeout = 0;
-
-    do {
-
-        status |= RdMulti(&(p_dev->platform), address, p_dev->temp_buffer, 4);
-
-        status |= WaitMs(&(p_dev->platform), 10);
-
-        if(timeout >= (uint8_t)200) {  /* 2s timeout */
-            status |= p_dev->temp_buffer[2];
-        } 
-
-        else if (p_dev->temp_buffer[2] >= (uint8_t)0x7f) {
-            status |= VL53L5CX_MCU_ERROR;
-        }
-
-        else {
-            timeout++;
-        }
-
-    } while ((p_dev->temp_buffer[pos] & 0xff) != expected_value);
-
-    return status;
-}
-
 static uint8_t _vl53l5cx_poll_for_answer_one(
         VL53L5CX_Configuration    *p_dev,
         uint8_t write_address,
@@ -64,13 +32,52 @@ static uint8_t _vl53l5cx_poll_for_answer_one(
             break;
         }
 
-        if(timeout >= (uint8_t)200) {
+        else if (timeout >= (uint8_t)200) {
             status = 1; // failed to read after two seconds
             break;
         }
         else {
             timeout++;
         }
+    } 
+
+    return status;
+}
+
+static uint8_t _vl53l5cx_poll_for_answer_four(
+        VL53L5CX_Configuration    *p_dev,
+        uint8_t pos,
+        uint16_t address,
+        uint8_t expected_value)
+{
+    uint8_t status = VL53L5CX_STATUS_OK;
+    uint8_t timeout = 0;
+
+    while (true) {
+
+        status |= RdMulti(&(p_dev->platform), address, p_dev->temp_buffer, 4);
+
+        status |= WaitMs(&(p_dev->platform), 10);
+
+        if ((p_dev->temp_buffer[pos] & 0xff) == expected_value) {
+            break;
+        }  
+        
+        else if (timeout >= (uint8_t)200) {  /* 2s timeout */
+
+            status |= p_dev->temp_buffer[2];
+            break;
+        } 
+
+        else if (p_dev->temp_buffer[2] >= (uint8_t)0x7f) {
+            status |= VL53L5CX_MCU_ERROR;
+            break;
+        }
+
+        else {
+            timeout++;
+        }
+
     } 
 
     return status;
