@@ -480,7 +480,7 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x06, 0xff, 0x00);
 
-    Debugger::reportForever("poll_for_answer_one fourth status = %d", status);
+    Debugger::reportForever("fourth status = %d", status);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
 
