@@ -471,8 +471,6 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0xff, 0x00);
 
-    Debugger::reportForever("bottom poll status = %d", status);
-
     // ===================================================================
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
@@ -480,6 +478,11 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     /* Get offset NVM data and store them into the offset buffer */
     status |= WrMulti(&(p_dev->platform), 0x2fd8,
             (uint8_t*)VL53L5CX_GET_NVM_CMD, sizeof(VL53L5CX_GET_NVM_CMD));
+
+    Debugger::reportForever("WrMulti status = %d", status);
+
+    // ===================================================================
+
     status |= _vl53l5cx_poll_for_answer_four(p_dev, 0, VL53L5CX_UI_CMD_STATUS, 2);
 
     status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,

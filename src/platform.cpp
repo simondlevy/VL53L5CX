@@ -47,7 +47,6 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    /*
     uint8_t DeviceAddress = p_platform->address;
 
     Wire.beginTransmission(DeviceAddress);    // Initialize the Tx buffer
@@ -60,8 +59,6 @@ uint8_t WrMulti(
     }
 
     return Wire.endTransmission() != 0; // Send the Tx buffer
-    */
-    return 0;
 }
 
 uint8_t RdMulti(
