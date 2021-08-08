@@ -41,13 +41,13 @@ void setup(void)
     uint8_t isAlive = 0;
     uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
     if(!isAlive || error) {
-        Debugger::reportForever("VL53L5CX not detected at requested address\n");
+        Debugger::reportForever("VL53L5CX not detected at requested address");
     }
 
     // (Mandatory) Init VL53L5CX sensor
     error = vl53l5cx_init(&Dev);
     if(error) {
-        Debugger::reportForever("VL53L5CX ULD Loading failed\n");
+        Debugger::reportForever("VL53L5CX ULD Loading failed");
     }
 
     Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",

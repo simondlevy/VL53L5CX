@@ -31,10 +31,14 @@ static uint8_t _vl53l5cx_poll_for_answer(
         if(timeout >= (uint8_t)200)	/* 2s timeout */
         {
             status |= p_dev->temp_buffer[2];
+            Debugger::printf("TIMEOUT\n");
+            break;
         }else if((size >= (uint8_t)4) 
                 && (p_dev->temp_buffer[2] >= (uint8_t)0x7f))
         {
             status |= VL53L5CX_MCU_ERROR;
+            Debugger::printf("MCU ERROR\n");
+            break;
         }
         else
         {
@@ -203,13 +207,13 @@ static uint8_t _vl53l5cx_remove_false_target(
     nb_of_zones = p_dev->resolution;
     target_order = p_dev->target_order;
 
-    // printf("nb_of_zones:%d, target_order:%d\n", nb_of_zones, target_order);
+    // Debugger::printf("nb_of_zones:%d, target_order:%d\n", nb_of_zones, target_order);
 
     if (((nb_of_zones != VL53L5CX_RESOLUTION_8X8) && (nb_of_zones != VL53L5CX_RESOLUTION_4X4)) ||
             ((target_order != VL53L5CX_TARGET_ORDER_STRONGEST) && (target_order != VL53L5CX_TARGET_ORDER_CLOSEST)))
         return VL53L5CX_STATUS_ERROR;
 
-    // printf("LTF called\n");
+    // Debugger::printf("LTF called\n");
 
     zone_id=0;
     while (zone_id<nb_of_zones) {
@@ -259,34 +263,34 @@ static uint8_t _vl53l5cx_remove_false_target(
             signal = p_results->signal_per_spad[zone_id*VL53L5CX_NB_TARGET_PER_ZONE + index];
             distance = p_results->distance_mm[zone_id*VL53L5CX_NB_TARGET_PER_ZONE + index];
 
-            // printf("LT_filter : %d,%d  ", distance - distance_first_target, (signal_first_target/(signal+1)));
+            // Debugger::printf("LT_filter : %d,%d  ", distance - distance_first_target, (signal_first_target/(signal+1)));
 
             false_target = 0;
             if (((distance - distance_first_target) <= 107) || (distance - distance_first_target >= 1162)) {
                 if ((signal_first_target/(signal+1)) > (4*(distance - distance_first_target - 80)/100 - 2)) {
-                    // printf(" --> LT_filter case1\n");
+                    // Debugger::printf(" --> LT_filter case1\n");
                     false_target = 1;
                 }
                 else {
-                    // printf(" --> not filtered case1\n");
+                    // Debugger::printf(" --> not filtered case1\n");
                 }
             }
             else if ((distance - distance_first_target) <= 529) {
                 if ((signal_first_target/(signal+1)) > (15*(distance - distance_first_target - 80)/100  - 5)) {
-                    // printf(" --> LT_filter case2\n");
+                    // Debugger::printf(" --> LT_filter case2\n");
                     false_target = 1;
                 }
                 else {
-                    // printf(" --> not filtered case2\n");
+                    // Debugger::printf(" --> not filtered case2\n");
                 }
             }
             else {
                 if (((signal_first_target/(signal+1)) > (80 - (distance - distance_first_target)/30))) {
-                    // printf(" --> LT_filter case3\n");
+                    // Debugger::printf(" --> LT_filter case3\n");
                     false_target = 1;
                 }
                 else {
-                    // printf(" --> not filtered case3\n");
+                    // Debugger::printf(" --> not filtered case3\n");
                 }
             }
 
@@ -366,7 +370,7 @@ uint8_t vl53l5cx_init(
     /* Wait for sensor booted (several ms required to get sensor ready ) */
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
     status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x06, 0xff, 1);
-
+    Debugger::printf("status one: %d\n", status);
     status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
 
@@ -374,6 +378,7 @@ uint8_t vl53l5cx_init(
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
     status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x21, 0x10, 0x10);
+    Debugger::printf("status two: %d\n", status);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
     /* Enable host access to GO1 */
@@ -420,6 +425,7 @@ uint8_t vl53l5cx_init(
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
     status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x21, 0x10, 0x10);
+    Debugger::printf("status three: %d\n", status);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0C, 0x01);
 
@@ -433,7 +439,7 @@ uint8_t vl53l5cx_init(
     status |= WrByte(&(p_dev->platform), 0x0C, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0B, 0x01);
     status |= _vl53l5cx_poll_for_answer(p_dev, 1, 0, 0x06, 0xff, 0x00);
-    Debugger::reportForever("STATUS FOUR: %d", status);
+    Debugger::printf("status four: %d\n", status);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
 
     /* Get offset NVM data and store them into the offset buffer */
@@ -441,6 +447,7 @@ uint8_t vl53l5cx_init(
             (uint8_t*)VL53L5CX_GET_NVM_CMD, sizeof(VL53L5CX_GET_NVM_CMD));
     status |= _vl53l5cx_poll_for_answer(p_dev, 4, 0,
             VL53L5CX_UI_CMD_STATUS, 0xff, 2);
+    Debugger::printf("status five: %d\n", status);
     status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
             p_dev->temp_buffer, VL53L5CX_NVM_DATA_SIZE);
     (void)memcpy(p_dev->offset_data, p_dev->temp_buffer,
@@ -458,7 +465,7 @@ uint8_t vl53l5cx_init(
             sizeof(VL53L5CX_DEFAULT_CONFIGURATION));
     status |= _vl53l5cx_poll_for_answer(p_dev, 4, 1,
             VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
-
+    Debugger::printf("status six: %d\n", status);
     status |= vl53l5cx_dci_write_data(p_dev, (uint8_t*)&pipe_ctrl,
             VL53L5CX_DCI_PIPE_CONTROL, (uint16_t)sizeof(pipe_ctrl));
 #if VL53L5CX_NB_TARGET_PER_ZONE != 1

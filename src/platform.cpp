@@ -41,7 +41,7 @@ uint8_t RdMulti(
     Wire.write(RegisterAddress >> 8); //MSB
     Wire.write(RegisterAddress & 0xFF); //LSB
 
-    uint8_t status = Wire.endTransmission(); 
+    uint8_t status = Wire.endTransmission(false); 
     if (status) { // failed
         return status;
     }
