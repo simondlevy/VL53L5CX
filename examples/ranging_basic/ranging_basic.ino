@@ -26,7 +26,7 @@ void setup(void)
 
     delay(1000);
 
-    Debugger::printf("starting\n");
+    Debugger::printf("starting\n\n");
 
     delay(1000);
 

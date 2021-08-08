@@ -48,7 +48,7 @@ static uint8_t _vl53l5cx_poll_for_answer(
         }
     } while ((p_dev->temp_buffer[pos] & mask) != expected_value);
 
-    Debugger::printf("status %d: x%02X\n", status); // sdl
+    Debugger::printf("status: x%02X\n\n", status); // sdl
 
     return status;
 }
