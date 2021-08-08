@@ -28,6 +28,35 @@ uint8_t RdByte(
     return 1; //Error: Sensor did not respond
 }
 
+uint8_t RdMulti(
+        VL53L5CX_Platform *p_platform,
+        uint16_t RegisterAddress,
+        uint8_t *p_values,
+        uint32_t size)
+{
+    uint8_t DeviceAddress = p_platform->address;
+
+    Wire.beginTransmission(DeviceAddress);  
+
+    Wire.write(RegisterAddress >> 8); //MSB
+    Wire.write(RegisterAddress & 0xFF); //LSB
+
+    uint8_t status = Wire.endTransmission(); 
+    if (status) { // failed
+        return status;
+    }
+    uint32_t i = 0;
+    if (Wire.requestFrom(DeviceAddress, size) != size) {
+        return 1; // failed
+    }
+
+    while (Wire.available()) {
+        p_values[i++] = Wire.read();
+    }
+    
+    return 0;
+}
+
 uint8_t WrByte(
         VL53L5CX_Platform *p_platform,
         uint16_t RegisterAddress,
@@ -55,37 +84,9 @@ uint8_t WrMulti(
     Wire.write(RegisterAddress >> 8); //MSB
     Wire.write(RegisterAddress & 0xFF); //LSB
 
-    for (uint32_t i=0; i<size; ++i) {
-        Wire.write(p_values[i]);
-    }
+    Wire.write(p_values, size);
 
     return Wire.endTransmission() != 0; // Send the Tx buffer
-}
-
-uint8_t RdMulti(
-        VL53L5CX_Platform *p_platform,
-        uint16_t RegisterAddress,
-        uint8_t *p_values,
-        uint32_t size)
-{
-    uint8_t DeviceAddress = p_platform->address;
-
-    Wire.beginTransmission(DeviceAddress);  
-    Wire.write(RegisterAddress);           
-    uint8_t status = Wire.endTransmission(); 
-    if (status) { // failed
-        return status;
-    }
-    uint32_t i = 0;
-    if (Wire.requestFrom(DeviceAddress, size) != size) {
-        return 1; // failed
-    }
-
-    while (Wire.available()) {
-        p_values[i++] = Wire.read();
-    }
-    
-    return 0;
 }
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)
