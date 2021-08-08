@@ -12,7 +12,7 @@
 #include "vl53l5cx_api.h"
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
-//static VL53L5CX_ResultsData Results {};  // Results data from VL53L5CX
+static VL53L5CX_ResultsData Results {};  // Results data from VL53L5CX
 
 static const uint8_t LPN_PIN = 0;
 
@@ -58,7 +58,6 @@ void setup(void)
 
 void loop(void)
 {
-    /*
     Serial.println(millis());
 
     static uint8_t loop_count;
@@ -70,7 +69,7 @@ void loop(void)
         // (GPIO 1) when a new measurement is ready 
 
         uint8_t isReady = 0;
-        uint8_t error = vl53l5cx_check_data_ready(&Dev, &isReady);
+        vl53l5cx_check_data_ready(&Dev, &isReady);
 
         if (isReady) {
             vl53l5cx_get_ranging_data(&Dev, &Results);
@@ -103,5 +102,4 @@ void loop(void)
     else {
         Debugger::printf("End of ULD demo\n");
     }
-    */
 }
