@@ -9,8 +9,7 @@
 #include "Debugger.hpp"
 
 static uint8_t _vl53l5cx_poll_for_answer_one(
-        VL53L5CX_Configuration    *p_dev,
-        uint8_t write_address,
+        VL53L5CX_Configuration * p_dev,
         uint16_t read_address,
         uint8_t mask,
         uint8_t expected_value)
@@ -19,8 +18,6 @@ static uint8_t _vl53l5cx_poll_for_answer_one(
     uint8_t timeout = 0;
 
     while (true) {
-
-        status |= WrByte(&(p_dev->platform), 0x7fff, write_address);
 
         uint8_t value = 0;
 
@@ -55,21 +52,31 @@ static uint8_t _vl53l5cx_poll_for_answer_four(
 
     while (true) {
 
+        Debugger::printf("looping\n");
+
         status |= RdMulti(&(p_dev->platform), address, p_dev->temp_buffer, 4);
+
+        // failed
+        if (status) {
+            Debugger::printf("failed\n");
+            return status;
+        }
 
         status |= WaitMs(&(p_dev->platform), 10);
 
         if ((p_dev->temp_buffer[pos] & 0xff) == expected_value) {
+            Debugger::printf("succeeded\n");
             break;
         }  
         
         else if (timeout >= (uint8_t)200) {  /* 2s timeout */
-
-            status |= p_dev->temp_buffer[2];
+            Debugger::printf("timed out\n");
+            status = 1;
             break;
         } 
 
         else if (p_dev->temp_buffer[2] >= (uint8_t)0x7f) {
+            Debugger::printf("mcu error\n");
             status |= VL53L5CX_MCU_ERROR;
             break;
         }
@@ -397,8 +404,10 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= WaitMs(&(p_dev->platform), 100);
 
     /* Wait for sensor booted (several ms required to get sensor ready ) */
+    status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x06, 0xff, 0x01);
 
-    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0xff, 0x01);
+    status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
     status |= WrByte(&(p_dev->platform), 0x000E, 0x01);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
@@ -406,8 +415,8 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
 
     /* Enable FW access */
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
-
-    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x01, 0x21, 0x10, 0x10);
+    status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x21, 0x10, 0x10);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
 
@@ -453,8 +462,8 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     /* Check if FW correctly downloaded */
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
     status |= WrByte(&(p_dev->platform), 0x03, 0x0D);
-
-    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x01, 0x21, 0x10, 0x10);
+    status |= WrByte(&(p_dev->platform), 0x7fff, 0x01);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x21, 0x10, 0x10);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0C, 0x01);
@@ -469,22 +478,24 @@ uint8_t vl53l5cx_init(VL53L5CX_Configuration *p_dev)
     status |= WrByte(&(p_dev->platform), 0x0C, 0x00);
     status |= WrByte(&(p_dev->platform), 0x0B, 0x01);
 
-    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0xff, 0x00);
+    status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x06, 0xff, 0x00);
 
-    // ===================================================================
+    Debugger::reportForever("poll_for_answer_one fourth status = %d", status);
 
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
+
+    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     /* Get offset NVM data and store them into the offset buffer */
     status |= WrMulti(&(p_dev->platform), 0x2fd8,
             (uint8_t*)VL53L5CX_GET_NVM_CMD, sizeof(VL53L5CX_GET_NVM_CMD));
 
-    Debugger::reportForever("WrMulti status = %d", status);
-
-    // ===================================================================
-
     status |= _vl53l5cx_poll_for_answer_four(p_dev, 0, VL53L5CX_UI_CMD_STATUS, 2);
 
+    Debugger::reportForever("poll_for_answer_four status = %d", status);
+
+    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    
     status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
             p_dev->temp_buffer, VL53L5CX_NVM_DATA_SIZE);
     (void)memcpy(p_dev->offset_data, p_dev->temp_buffer,
@@ -579,13 +590,13 @@ uint8_t vl53l5cx_set_power_mode(
             case VL53L5CX_POWER_MODE_WAKEUP:
                 status |= WrByte(&(p_dev->platform), 0x7FFF, 0x00);
                 status |= WrByte(&(p_dev->platform), 0x09, 0x04);
-                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0x01, 0x01);
+                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x06, 0x01, 0x01);
                 break;
 
             case VL53L5CX_POWER_MODE_SLEEP:
                 status |= WrByte(&(p_dev->platform), 0x7FFF, 0x00);
                 status |= WrByte(&(p_dev->platform), 0x09, 0x02);
-                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x00, 0x06, 0x01, 0x00);
+                status |= _vl53l5cx_poll_for_answer_one(p_dev, 0x06, 0x01, 0x00);
                 break;
 
             default:

@@ -24,6 +24,7 @@ uint8_t RdByte(
         *p_value = Wire.read();
         return 0;
     }
+
     return 1; //Error: Sensor did not respond
 }
 
@@ -67,18 +68,23 @@ uint8_t RdMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    /*
     uint8_t DeviceAddress = p_platform->address;
 
-    Wire.beginTransmission(DeviceAddress);   // Initialize the Tx buffer
-    Wire.write(RegisterAddress);            // Put slave reg address in Tx buffer
-    Wire.endTransmission(false);      // Send Tx buffer; keep connection alive
+    Wire.beginTransmission(DeviceAddress);  
+    Wire.write(RegisterAddress);           
+    uint8_t status = Wire.endTransmission(); 
+    if (status) { // failed
+        return status;
+    }
     uint32_t i = 0;
-    Wire.requestFrom(DeviceAddress, size);  // Read bytes from slave reg address
+    if (Wire.requestFrom(DeviceAddress, size) != size) {
+        return 1; // failed
+    }
+
     while (Wire.available()) {
         p_values[i++] = Wire.read();
     }
-    */
+    
     return 0;
 }
 
