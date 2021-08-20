@@ -151,8 +151,6 @@ void loop(void)
     delay(10);
     digitalWrite(LED_PIN, LOW);
 
-    STM32.sleep();
-
 } // loop
 
 
