@@ -52,8 +52,6 @@ void setup(void)
 
 void loop(void)
 {
-    Serial.println(millis());
-
     static uint8_t loop_count;
 
     if (loop_count < 10) {
@@ -95,5 +93,6 @@ void loop(void)
 
     else {
         Debugger::printf("End of ULD demo\n");
+        delay(500);
     }
 }

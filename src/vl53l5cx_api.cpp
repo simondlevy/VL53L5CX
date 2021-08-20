@@ -23,8 +23,6 @@ static uint8_t _vl53l5cx_poll_for_answer(
     uint8_t status = VL53L5CX_STATUS_OK;
     uint8_t timeout = 0;
 
-    Debugger::printf("attempting to read %d byte(s)\n", size); // sdl
-
     do {
         status |= RdMulti(&(p_dev->platform), address,
                 p_dev->temp_buffer, size);
@@ -33,22 +31,20 @@ static uint8_t _vl53l5cx_poll_for_answer(
         if(timeout >= (uint8_t)200)	/* 2s timeout */
         {
             status |= p_dev->temp_buffer[2];
-            Debugger::printf("TIMEOUT\n"); // sdl
-            break; // sdl
+            Debugger::reportForever("TIMEOUT\n");
+            break; 
         }else if((size >= (uint8_t)4) 
                 && (p_dev->temp_buffer[2] >= (uint8_t)0x7f))
         {
             status |= VL53L5CX_MCU_ERROR;
-            Debugger::printf("MCU ERROR\n"); // sdl
-            break; // sdl
+            Debugger::reportForever("MCU ERROR\n"); 
+            break; 
         }
         else
         {
             timeout++;
         }
     } while ((p_dev->temp_buffer[pos] & mask) != expected_value);
-
-    Debugger::printf("status: x%02X\n\n", status); // sdl
 
     return status;
 }
