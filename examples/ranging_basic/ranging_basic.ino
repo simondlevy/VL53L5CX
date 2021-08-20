@@ -32,7 +32,8 @@ void setup(void)
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
-    Dev.platform.address = 0x52; // 0x29;
+    // Dev.platform.address = 0x52; 
+    Dev.platform.address = 0x29;
 
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(LPN_PIN);

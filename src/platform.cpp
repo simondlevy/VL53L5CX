@@ -27,7 +27,8 @@ uint8_t RdMulti(
     int status = 0;
     //Loop until the port is transmitted correctly
     do {
-        Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F));
+        //Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F));
+        Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
         const uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF };
         Wire.write(buffer, 2);
@@ -50,7 +51,8 @@ uint8_t RdMulti(
         while(i < size)
         {
             byte current_read_size = (size - i > 32 ? 32 : size - i); // If still more than 32 bytes to go, 32, else the remaining number of bytes
-            Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), current_read_size);
+            // Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), current_read_size);
+            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), current_read_size);
             while (Wire.available()) {
                 p_values[i] = Wire.read();
                 i++;
@@ -59,7 +61,8 @@ uint8_t RdMulti(
     }
     else
     {
-        Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), size);
+        // Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), size);
+        Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
         while (Wire.available()) {
             p_values[i] = Wire.read();
             i++;
@@ -86,7 +89,8 @@ uint8_t WrMulti(
 {
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite() function
 
-    Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); 
+    // Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); 
+    Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF }; // Target register address for transfer
     Wire.write(buffer, 2); // Write register address
@@ -96,7 +100,8 @@ uint8_t WrMulti(
         if(Wire.write(p_values[i]) == 0) // If this returns 0, the write was not successful due to buffer being full -> flush buffer and keep going
         {
             Wire.endTransmission(false); // Flush buffer but do not send stop bit so we can keep going
-            Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); // Restart send
+            // Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); // Restart send
+            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); // Restart send
 
             buffer[0] = (RegisterAddress+i) >> 8; // Adjust target register address
             buffer[1] = (RegisterAddress+i) & 0xFF;
