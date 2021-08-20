@@ -14,7 +14,7 @@
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
-static const uint8_t LPN_PIN = 0;
+static const uint8_t LPN_PIN = 3;
 
 void setup(void)
 {
@@ -32,7 +32,7 @@ void setup(void)
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
-    Dev.platform.address = 0x29;
+    Dev.platform.address = 0x52; // 0x29;
 
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(LPN_PIN);
