@@ -15,13 +15,14 @@ static const uint8_t LED_PIN  = 13;
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 3;
 
-static uint32_t integration_time_ms;
-
 static volatile bool VL53L5_intFlag = false;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
+static void VL53L5_intHandler(){
+    VL53L5_intFlag = true;
+}
 
 void setup(void)
 {
@@ -96,6 +97,7 @@ void setup(void)
     }
 
     /* Get current integration time */
+    uint32_t integration_time_ms = 0;
     status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
     if (status) {
         Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
@@ -145,14 +147,12 @@ void loop(void)
         }
     } // end of VL53L5CX interrupt handling
 
-    digitalWrite(LED_PIN, HIGH); delay(10); digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_PIN, HIGH);
+    delay(10);
+    digitalWrite(LED_PIN, LOW);
 
     STM32.sleep();
 
 } // loop
 
-
-void VL53L5_intHandler(){
-    VL53L5_intFlag = true;
-}
 
