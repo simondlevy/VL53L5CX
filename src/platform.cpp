@@ -10,22 +10,10 @@ uint8_t RdByte(
         uint16_t RegisterAddress,
         uint8_t *p_value)
 {
-    uint8_t DeviceAddress = p_platform->address;
 
-    Wire.beginTransmission(DeviceAddress);
-    Wire.write(RegisterAddress >> 8); //MSB
-    Wire.write(RegisterAddress & 0xFF); //LSB
-    if (Wire.endTransmission() != 0) { //Send restart cmd w/o releasing bus
-        return 1; //Sensor did not ACK
-    }
+    uint8_t res = RdMulti(p_platform, RegisterAddress, p_value, 1);
 
-    Wire.requestFrom(DeviceAddress, (uint8_t)1);
-    if (Wire.available()) {
-        *p_value = Wire.read();
-        return 0;
-    }
-
-    return 1; //Error: Sensor did not respond
+    return res;
 }
 
 uint8_t RdMulti(
@@ -34,27 +22,51 @@ uint8_t RdMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    uint8_t DeviceAddress = p_platform->address;
+    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CRead() function
 
-    Wire.beginTransmission(DeviceAddress);  
+    int status = 0;
+    //Loop until the port is transmitted correctly
+    do {
+        Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F));
 
-    Wire.write(RegisterAddress >> 8); //MSB
-    Wire.write(RegisterAddress & 0xFF); //LSB
+        const uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF };
+        Wire.write(buffer, 2);
+        status = Wire.endTransmission(false);
+        //Fix for some STM32 boards
+        //Reinitialize th i2c bus with the default parameters
+#ifdef ARDUINO_ARCH_STM32
+            if (status) {
+            Wire.end();
+            Wire.begin();
+            }
+#endif
+        //End of fix
+    } while (status != 0);
 
-    uint8_t status = Wire.endTransmission(); 
-    if (status) { // failed
-        return status;
+    int i = 0;
+    if(size > 32)
+    {
+        Serial.println("\nLarge read request, size = " + size);
+        while(i < size)
+        {
+            byte current_read_size = (size - i > 32 ? 32 : size - i); // If still more than 32 bytes to go, 32, else the remaining number of bytes
+            Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), current_read_size);
+            while (Wire.available()) {
+                p_values[i] = Wire.read();
+                i++;
+            }
+        }
     }
-    uint32_t i = 0;
-    if (Wire.requestFrom(DeviceAddress, size) != size) {
-        return 1; // failed
-    }
-
-    while (Wire.available()) {
-        p_values[i++] = Wire.read();
+    else
+    {
+        Wire.requestFrom(((uint8_t)(((p_platform->address) >> 1) & 0x7F)), size);
+        while (Wire.available()) {
+            p_values[i] = Wire.read();
+            i++;
+        }
     }
     
-    return 0;
+    return i!=size;
 }
 
 uint8_t WrByte(
@@ -62,13 +74,8 @@ uint8_t WrByte(
         uint16_t RegisterAddress,
         uint8_t value)
 {
-    uint8_t DeviceAddress = p_platform->address;
-
-    Wire.beginTransmission(DeviceAddress);
-    Wire.write(RegisterAddress >> 8); //MSB
-    Wire.write(RegisterAddress & 0xFF); //LSB
-    Wire.write(value);
-    return (Wire.endTransmission() != 0);
+    uint8_t res = WrMulti(p_platform, RegisterAddress, &value, 1); // Just use WrMulti but 1 byte
+    return res;
 }
 
 uint8_t WrMulti(
@@ -77,16 +84,33 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    uint8_t DeviceAddress = p_platform->address;
+    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite() function
 
-    Wire.beginTransmission(DeviceAddress);    // Initialize the Tx buffer
+    Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); 
 
-    Wire.write(RegisterAddress >> 8); //MSB
-    Wire.write(RegisterAddress & 0xFF); //LSB
+    uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF }; // Target register address for transfer
+    Wire.write(buffer, 2); // Write register address
 
-    Wire.write(p_values, size);
+    for (int i = 0 ; i < size ; i++) 
+    {
+        if(Wire.write(p_values[i]) == 0) // If this returns 0, the write was not successful due to buffer being full -> flush buffer and keep going
+        {
+            Wire.endTransmission(false); // Flush buffer but do not send stop bit so we can keep going
+            Wire.beginTransmission((uint8_t)(((p_platform->address) >> 1) & 0x7F)); // Restart send
 
-    return Wire.endTransmission() != 0; // Send the Tx buffer
+            buffer[0] = (RegisterAddress+i) >> 8; // Adjust target register address
+            buffer[1] = (RegisterAddress+i) & 0xFF;
+            Wire.write(buffer, 2); // Send new register address to keep going from
+            if(Wire.write(p_values[i]) == 0)
+            {
+                // Error handling, resend failed!
+            }
+        }
+    }
+
+    uint8_t res = Wire.endTransmission(true);
+
+    return res;
 }
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)
