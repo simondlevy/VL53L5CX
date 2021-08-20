@@ -11,10 +11,10 @@
 #include "Debugger.hpp"
 #include "vl53l5cx_api.h"
 
+static const uint8_t LPN_PIN = 3;
+
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
-
-static const uint8_t LPN_PIN = 3;
 
 void setup(void)
 {
@@ -31,14 +31,14 @@ void setup(void)
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(LPN_PIN);
 
-    // (Optional) Check if there is a VL53L5CX sensor connected
+    // Make sure there is a VL53L5CX sensor connected
     uint8_t isAlive = 0;
     uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
     if(!isAlive || error) {
         Debugger::reportForever("VL53L5CX not detected at requested address");
     }
 
-    // (Mandatory) Init VL53L5CX sensor
+    // Init VL53L5CX sensor
     error = vl53l5cx_init(&Dev);
     if(error) {
         Debugger::reportForever("VL53L5CX ULD Loading failed");
@@ -48,7 +48,11 @@ void setup(void)
             VL53L5CX_API_REVISION);
 
     error = vl53l5cx_start_ranging(&Dev);
-}
+    if(error !=0) {
+        Debugger::printf("start error = 0x%02X", error);
+    }
+
+} // setup
 
 void loop(void)
 {
