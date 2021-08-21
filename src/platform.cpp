@@ -1,3 +1,11 @@
+/*
+*  VL53L5CX ULD basic example    
+*
+*  Copyright (c) 2021 Seth Bonn, Simon D. Levy
+*
+*  MIT License
+*/
+
 #include "platform.h"
 
 #include <Arduino.h>
@@ -25,6 +33,7 @@ uint8_t RdMulti(
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CRead() function
 
     int status = 0;
+
     //Loop until the port is transmitted correctly
     do {
         Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
@@ -32,12 +41,13 @@ uint8_t RdMulti(
         const uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF };
         Wire.write(buffer, 2);
         status = Wire.endTransmission(false);
+
         //Fix for some STM32 boards
         //Reinitialize th i2c bus with the default parameters
 #ifdef ARDUINO_ARCH_STM32
             if (status) {
-            Wire.end();
-            Wire.begin();
+                Wire.end();
+                Wire.begin();
             }
 #endif
         //End of fix
@@ -49,7 +59,8 @@ uint8_t RdMulti(
         Serial.println("\nLarge read request, size = " + size);
         while(i < size)
         {
-            byte current_read_size = (size - i > 32 ? 32 : size - i); // If still more than 32 bytes to go, 32, else the remaining number of bytes
+            // If still more than 32 bytes to go, 32, else the remaining number of bytes
+            byte current_read_size = (size - i > 32 ? 32 : size - i); 
             Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), current_read_size);
             while (Wire.available()) {
                 p_values[i] = Wire.read();
@@ -88,22 +99,27 @@ uint8_t WrMulti(
 
     Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
-    uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF }; // Target register address for transfer
+    // Target register address for transfer
+    uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF }; 
     Wire.write(buffer, 2); // Write register address
 
     for (int i = 0 ; i < size ; i++) 
     {
-        if(Wire.write(p_values[i]) == 0) // If this returns 0, the write was not successful due to buffer being full -> flush buffer and keep going
-        {
-            Wire.endTransmission(false); // Flush buffer but do not send stop bit so we can keep going
-            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); // Restart send
+        // If this returns 0, the write was not successful due to buffer being
+        // full -> flush buffer and keep going
+        if (Wire.write(p_values[i]) == 0) {
+
+            // Flush buffer but do not send stop bit so we can keep going
+            Wire.endTransmission(false); 
+
+            // Restart send
+            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
             buffer[0] = (RegisterAddress+i) >> 8; // Adjust target register address
             buffer[1] = (RegisterAddress+i) & 0xFF;
             Wire.write(buffer, 2); // Send new register address to keep going from
-            if(Wire.write(p_values[i]) == 0)
-            {
-                // Error handling, resend failed!
+            if(Wire.write(p_values[i]) == 0) {
+                // XXX Error handling, resend failed!
             }
         }
     }
@@ -115,10 +131,6 @@ uint8_t WrMulti(
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)
 {
-    uint8_t status = 0;
-
-    /* (Optional) XXX This function returns 0 if OK */
-
     /* Set pin LPN to LOW */
     /* Set pin AVDD to LOW */
     /* Set pin VDDIO  to LOW */
@@ -132,16 +144,15 @@ uint8_t Reset_Sensor(uint8_t lpn_pin)
     digitalWrite(lpn_pin, HIGH);
     delay(100);
 
-    return status;
+    return 0;
 }
 
 void SwapBuffer( uint8_t   *buffer, uint16_t     size) {
-    uint32_t i, tmp;
 
-    /* Example of possible implementation using <string.h> */
-    for(i = 0; i < size; i = i + 4) 
-    {
-        tmp = (
+    // Example of possible implementation using <string.h>
+    for(uint32_t i = 0; i < size; i = i + 4) {
+
+        uint32_t tmp = (
                 buffer[i]<<24)
             |(buffer[i+1]<<16)
             |(buffer[i+2]<<8)
@@ -155,8 +166,6 @@ uint8_t WaitMs(
         VL53L5CX_Platform *p_platform,
         uint32_t TimeMs)
 {
-    /* XXX This function returns 0 if OK */
-
     delay(TimeMs);
 
     return 0;
