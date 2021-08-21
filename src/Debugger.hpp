@@ -1,10 +1,6 @@
 /*
    Cross-platform serial debugging support
 
-   Provides printf() and related static methods for formatted printing of
-   debug messages.  Your Board implementation should provide and outbuf(char
-   method that displays the message in an appropriate way.
-
    Copyright (c) 2021 Simon D. Levy
 
    MIT License
