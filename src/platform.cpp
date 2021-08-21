@@ -11,6 +11,15 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+
+// Helper
+static void start_transfer(uint16_t register_address)
+{
+    uint8_t buffer[2] {(uint8_t)(register_address >> 8),
+                       (uint8_t)(register_address & 0xFF) }; 
+    Wire.write(buffer, 2);
+}
+
 // All these functions return 0 on success, nonzero on error
 
 uint8_t RdByte(
@@ -30,7 +39,7 @@ uint8_t RdMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CRead() function
+    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CRead()
 
     int status = 0;
 
@@ -38,8 +47,8 @@ uint8_t RdMulti(
     do {
         Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
-        const uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF };
-        Wire.write(buffer, 2);
+        start_transfer(RegisterAddress);
+
         status = Wire.endTransmission(false);
 
         // Fix for some STM32 boards
@@ -54,15 +63,17 @@ uint8_t RdMulti(
 
     } while (status != 0);
 
-    int i = 0;
+    uint32_t i = 0;
     if(size > 32)
     {
         Serial.println("\nLarge read request, size = " + size);
         while(i < size)
         {
-            // If still more than 32 bytes to go, 32, else the remaining number of bytes
+            // If still more than 32 bytes to go, 32, else the remaining number
+            // of bytes
             byte current_read_size = (size - i > 32 ? 32 : size - i); 
-            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), current_read_size);
+            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
+                    current_read_size);
             while (Wire.available()) {
                 p_values[i] = Wire.read();
                 i++;
@@ -78,7 +89,7 @@ uint8_t RdMulti(
         }
     }
     
-    return i!=size;
+    return i != size;
 }
 
 uint8_t WrByte(
@@ -86,7 +97,8 @@ uint8_t WrByte(
         uint16_t RegisterAddress,
         uint8_t value)
 {
-    uint8_t res = WrMulti(p_platform, RegisterAddress, &value, 1); // Just use WrMulti but 1 byte
+    // Just use WrMulti but 1 byte
+    uint8_t res = WrMulti(p_platform, RegisterAddress, &value, 1); 
     return res;
 }
 
@@ -96,15 +108,13 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite() function
-
+    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
     Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     // Target register address for transfer
-    uint8_t buffer[2] {RegisterAddress >> 8, RegisterAddress & 0xFF }; 
-    Wire.write(buffer, 2); // Write register address
+    start_transfer(RegisterAddress);
 
-    for (int i = 0 ; i < size ; i++) 
+    for (uint32_t i = 0 ; i < size ; i++) 
     {
         // If this returns 0, the write was not successful due to buffer being
         // full -> flush buffer and keep going
@@ -116,9 +126,8 @@ uint8_t WrMulti(
             // Restart send
             Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
-            buffer[0] = (RegisterAddress+i) >> 8; // Adjust target register address
-            buffer[1] = (RegisterAddress+i) & 0xFF;
-            Wire.write(buffer, 2); // Send new register address to keep going from
+            start_transfer(RegisterAddress+i);
+
             if(Wire.write(p_values[i]) == 0) {
                 // XXX Error handling, resend failed!
             }
@@ -132,16 +141,16 @@ uint8_t WrMulti(
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)
 {
-    /* Set pin LPN to LOW */
-    /* Set pin AVDD to LOW */
-    /* Set pin VDDIO  to LOW */
+    // Set pin LPN to LOW
+    // (Set pin AVDD to LOW)
+    // (Set pin VDDIO  to LOW)
     pinMode(lpn_pin, OUTPUT);
     digitalWrite(lpn_pin, LOW);
     delay(100);
 
-    /* Set pin LPN of to HIGH */
-    /* Set pin AVDD of to HIGH */
-    /* Set pin VDDIO of  to HIGH */
+    // Set pin LPN of to HIGH
+    // (Set pin AVDD of to HIGH)
+    // (Set pin VDDIO of  to HIGH)
     digitalWrite(lpn_pin, HIGH);
     delay(100);
 
