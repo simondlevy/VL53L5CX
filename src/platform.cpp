@@ -34,7 +34,7 @@ uint8_t RdMulti(
 
     int status = 0;
 
-    //Loop until the port is transmitted correctly
+    // Loop until the port is transmitted correctly
     do {
         Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
@@ -42,15 +42,16 @@ uint8_t RdMulti(
         Wire.write(buffer, 2);
         status = Wire.endTransmission(false);
 
-        //Fix for some STM32 boards
-        //Reinitialize th i2c bus with the default parameters
+        // Fix for some STM32 boards
+        // Reinitialize the i2c bus with the default parameters
 #ifdef ARDUINO_ARCH_STM32
             if (status) {
                 Wire.end();
                 Wire.begin();
             }
 #endif
-        //End of fix
+        // End of fix
+
     } while (status != 0);
 
     int i = 0;
