@@ -59,7 +59,7 @@ int example3(void)
     status = vl53l5cx_is_alive(&Dev, &isAlive);
     if(!isAlive || status)
     {
-        printf("VL53L5CX not detected at requested address\n");
+        Debug::printf("VL53L5CX not detected at requested address\n");
         return status;
     }
 
@@ -67,11 +67,11 @@ int example3(void)
     status = vl53l5cx_init(&Dev);
     if(status)
     {
-        printf("VL53L5CX ULD Loading failed\n");
+        Debug::printf("VL53L5CX ULD Loading failed\n");
         return status;
     }
 
-    printf("VL53L5CX ULD ready ! (Version : %s)\n",
+    Debug::printf("VL53L5CX ULD ready ! (Version : %s)\n",
             VL53L5CX_API_REVISION);
 
 
@@ -82,7 +82,7 @@ int example3(void)
     status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
     if(status)
     {
-        printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+        Debug::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         return status;
     }
 
@@ -92,7 +92,7 @@ int example3(void)
 
     // Start a ranging session 
     status = vl53l5cx_start_ranging(&Dev);
-    printf("Start ranging autonomous\n");
+    Debug::printf("Start ranging autonomous\n");
 
     loop = 0;
     while(loop < 10)
@@ -105,15 +105,15 @@ int example3(void)
             // As the sensor is set in 4x4 mode by default, we have a total
             // of 16 zones to print. For this example, only the data of first zone are
             // printed
-            printf("Print data no : %3u\n", Dev.streamcount);
+            Debug::printf("Print data no : %3u\n", Dev.streamcount);
             for(i = 0; i < 16; i++)
             {
-                printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
+                Debug::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
                         i,
                         Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
                         Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
-            printf("\n");
+            Debug::printf("\n");
             loop++;
         }
 
@@ -123,7 +123,7 @@ int example3(void)
     }
 
     status = vl53l5cx_stop_ranging(&Dev);
-    printf("Stop ranging autonomous\n");
+    Debug::printf("Stop ranging autonomous\n");
 
 
     // ******************************
@@ -136,7 +136,7 @@ int example3(void)
     status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
     if(status)
     {
-        printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+        Debug::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         return status;
     }
 
@@ -145,7 +145,7 @@ int example3(void)
 
     // Start a ranging session 
     status = vl53l5cx_start_ranging(&Dev);
-    printf("Start ranging continuous\n");
+    Debug::printf("Start ranging continuous\n");
 
     loop = 0;
     while(loop < 10)
@@ -157,15 +157,15 @@ int example3(void)
 
             // As the sensor is set in 4x4 mode by default, we have a total
             // of 16 zones to print 
-            printf("Print data no : %3u\n", Dev.streamcount);
+            Debug::printf("Print data no : %3u\n", Dev.streamcount);
             for(i = 0; i < 16; i++)
             {
-                printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
+                Debug::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
                         i,
                         Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
                         Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
-            printf("\n");
+            Debug::printf("\n");
             loop++;
         }
 
@@ -175,9 +175,9 @@ int example3(void)
     }
 
     status = vl53l5cx_stop_ranging(&Dev);
-    printf("Stop ranging continuous\n");
+    Debug::printf("Stop ranging continuous\n");
 
-    printf("End of ULD demo\n");
+    Debug::printf("End of ULD demo\n");
     return status;
 }
 */
