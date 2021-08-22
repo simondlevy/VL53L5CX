@@ -106,6 +106,38 @@ static uint8_t testAutonomousMode(uint8_t loop_count)
     return loop_count;
 }
 
+static uint8_t testContinuousMode(uint8_t loop_count)
+{
+    uint8_t isReady = 0;
+    vl53l5cx_check_data_ready(&Dev, &isReady);
+
+    if (isReady) {
+
+        VL53L5CX_ResultsData Results = {};
+
+        vl53l5cx_get_ranging_data(&Dev, &Results);
+
+        // As the sensor is set in 4x4 mode by default, we have a total
+        // of 16 zones to print 
+        Debugger::printf("Print data no : %3u\n", Dev.streamcount);
+        for (uint8_t i = 0; i < 16; i++) {
+
+            Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
+                    i,
+                    Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
+                    Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
+        }
+        Debugger::printf("\n");
+        loop_count++;
+    }
+
+    // Wait a few ms to avoid too high polling (function in platform
+    // file, not in API)
+    WaitMs(&(Dev.platform), 5);
+
+    return loop_count;
+}
+
 void loop(void)
 {
     static uint8_t loop_count;
@@ -140,43 +172,19 @@ void loop(void)
         loop_count++;
     }
 
-    /*
-    if (loop_count >= 10 && loop_count < 20) {
-
-        status = vl53l5cx_check_data_ready(&Dev, &isReady);
-
-        if (isReady) {
-
-            vl53l5cx_get_ranging_data(&Dev, &Results);
-
-            // As the sensor is set in 4x4 mode by default, we have a total
-            // of 16 zones to print 
-            Debugger::printf("Print data no : %3u\n", Dev.streamcount);
-            for (uint8_t i = 0; i < 16; i++) {
-
-                Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
-                        i,
-                        Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
-            }
-            Debugger::printf("\n");
-            loop_count++;
-        }
-
-        // Wait a few ms to avoid too high polling (function in platform
-        // file, not in API)
-        WaitMs(&(Dev.platform), 5);
+    if (loop_count > 11 && loop_count <= 20) {
+        loop_count = testContinuousMode(loop_count);
     }
 
-    if (loop_count == 20) {
+    if (loop_count == 21) {
         vl53l5cx_stop_ranging(&Dev);
         Debugger::printf("Stop ranging continuous\n");
         loop_count++;
     }
 
-    if (loop_count > 20) {
+    if (loop_count > 21) {
         Debugger::printf("End of ULD demo\n");
+        delay(500);
     }
-    */
 
 } // loop
