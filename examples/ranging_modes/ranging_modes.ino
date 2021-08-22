@@ -120,18 +120,23 @@ void loop(void)
         loop_count++;
     }
 
-    /*
-    // Set ranging mode continuous   
-    // In continuous mode, the integration time cannot be programmed
-    // (automatically set to maximum value)
-    status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
-    if(status) {
-        Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+    if (loop_count == 11) {
+
+        // Set ranging mode continuous   
+        // In continuous mode, the integration time cannot be programmed
+        // (automatically set to maximum value)
+        uint8_t error = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+        if (error) {
+            Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n", error);
+        }
+
+        // Trying to update value below will have no impact on integration time 
+        //status = vl53l5cx_set_integration_time_ms(&Dev, 20);
+
+        loop_count++;
     }
 
-    // Trying to update value below will have no impact on integration time 
-    //status = vl53l5cx_set_integration_time_ms(&Dev, 20);
-
+    /*
     // Start a ranging session 
     status = vl53l5cx_start_ranging(&Dev);
     Debugger::printf("Start ranging continuous\n");
