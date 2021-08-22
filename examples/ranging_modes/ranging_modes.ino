@@ -19,80 +19,62 @@
 #include "Debugger.hpp"
 #include "vl53l5cx_api.h"
 
+static const uint8_t LPN_PIN = 3;
+
+static VL53L5CX_Configuration Dev = {};  // Sensor configuration
+
 void setup(void)
 {
-}
+    // Start I^2C
+    Wire.begin();
 
-void loop(void)
-{
-}
-
-/*
-int example3(void)
-{
-    uint8_t 				status, loop, isAlive, isReady, i;
-    VL53L5CX_Configuration 	Dev;			// Sensor configuration 
-    VL53L5CX_ResultsData 	Results;		// Results data from VL53L5CX 
-
-
-    // ******************************
-    //      Customer platform        
-    // ******************************
+    // Start serial debugging
+    Serial.begin(115200);
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
-    Dev.platform.address = VL53L5CX_DEFAULT_I2C_ADDRESS;
+    Dev.platform.address = 0x29;
 
-    // (Optional) Reset sensor toggling PINs (see platform, not in API) 
-    //Reset_Sensor(&(Dev.platform));
+    // Reset the sensor by toggling the LPN pin
+    Reset_Sensor(LPN_PIN);
 
-    // (Optional) Set a new I2C address if the wanted address is different
-    // from the default one (filled with 0x20 for this example).
-    //status = vl53l5cx_set_i2c_address(&Dev, 0x20);
-
-
-    // ******************************
-    //   Power on sensor and init    
-    // ******************************
-
-    // (Optional) Check if there is a VL53L5CX sensor connected 
-    status = vl53l5cx_is_alive(&Dev, &isAlive);
-    if(!isAlive || status)
-    {
-        Debug::printf("VL53L5CX not detected at requested address\n");
-        return status;
+    // Make sure there is a VL53L5CX sensor connected
+    uint8_t isAlive = 0;
+    uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
+    if(!isAlive || error) {
+        Debugger::reportForever("VL53L5CX not detected at requested address");
     }
 
-    // (Mandatory) Init VL53L5CX sensor 
-    status = vl53l5cx_init(&Dev);
-    if(status)
-    {
-        Debug::printf("VL53L5CX ULD Loading failed\n");
-        return status;
+    // Init VL53L5CX sensor
+    error = vl53l5cx_init(&Dev);
+    if(error) {
+        Debugger::reportForever("VL53L5CX ULD Loading failed");
     }
 
-    Debug::printf("VL53L5CX ULD ready ! (Version : %s)\n",
+    Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
             VL53L5CX_API_REVISION);
 
-
-    // ******************************
-    //  Set ranging mode autonomous  
-    // ******************************
-
-    status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-    if(status)
-    {
-        Debug::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
-        return status;
+    // Set ranging mode autonomous  
+    uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+    if(status) {
+        Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n", status);
     }
 
     // Using autonomous mode, the integration time can be updated (not possible
     // using continuous)
-    status = vl53l5cx_set_integration_time_ms(&Dev, 20);
+    vl53l5cx_set_integration_time_ms(&Dev, 20);
 
     // Start a ranging session 
-    status = vl53l5cx_start_ranging(&Dev);
-    Debug::printf("Start ranging autonomous\n");
+    vl53l5cx_start_ranging(&Dev);
+    Debugger::printf("Start ranging autonomous\n");
+}
+
+void loop(void)
+{
+    VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
+}
+
+/*
 
     loop = 0;
     while(loop < 10)
