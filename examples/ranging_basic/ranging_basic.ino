@@ -68,6 +68,7 @@ void loop(void)
         vl53l5cx_check_data_ready(&Dev, &isReady);
 
         if (isReady) {
+
             vl53l5cx_get_ranging_data(&Dev, &Results);
 
             // As the sensor is set in 4x4 mode by default, we have a total of
