@@ -54,6 +54,7 @@ void setup(void)
     Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
             VL53L5CX_API_REVISION);
 
+    /*
     // Set ranging mode autonomous  
     uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
     if(status) {
@@ -63,52 +64,59 @@ void setup(void)
     // Using autonomous mode, the integration time can be updated (not possible
     // using continuous)
     vl53l5cx_set_integration_time_ms(&Dev, 20);
+*/
 
-    // Start a ranging session 
-    vl53l5cx_start_ranging(&Dev);
-    Debugger::printf("Start ranging autonomous\n");
+    error = vl53l5cx_start_ranging(&Dev);
+    if(error !=0) {
+        Debugger::printf("start error = 0x%02X", error);
+    }
+
+} // setup
+
+static uint8_t doTest1(uint8_t loop_count) 
+{
+    uint8_t isReady = 0;
+    vl53l5cx_check_data_ready(&Dev, &isReady);
+
+    if (isReady) {
+
+        VL53L5CX_ResultsData Results = {};
+
+        vl53l5cx_get_ranging_data(&Dev, &Results);
+
+        // As the sensor is set in 4x4 mode by default, we have a total
+        // of 16 zones to print. For this example, only the data of first zone are
+        // printed
+        Debugger::printf("Print data no : %3u\n", Dev.streamcount);
+
+        for (uint8_t i = 0; i < 16; i++) {
+
+            Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
+                    i,
+                    Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
+                    Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
+        }
+
+        Debugger::printf("\n");
+        loop_count++;
+    }
+
+    // Wait a few ms to avoid too high polling (function in platform
+    // file, not in API)
+    WaitMs(&(Dev.platform), 5);
+
+    return loop_count;
 }
 
 void loop(void)
 {
-    uint8_t status = 0;
-    uint8_t isReady = 0;
-    VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
+    static uint8_t loop_count;
 
-    static uint8_t loopCounter;
-
-    if (loopCounter < 10) {
-
-        status = vl53l5cx_check_data_ready(&Dev, &isReady);
-
-        if (isReady) {
-
-            vl53l5cx_get_ranging_data(&Dev, &Results);
-
-            // As the sensor is set in 4x4 mode by default, we have a total
-            // of 16 zones to print. For this example, only the data of first zone are
-            // printed
-            Debugger::printf("Print data no : %3u\n", Dev.streamcount);
-
-            for (uint8_t i = 0; i < 16; i++) {
-
-                VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
-
-                Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
-                        i,
-                        Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
-            }
-
-            Debugger::printf("\n");
-            loopCounter++;
-        }
-
-        // Wait a few ms to avoid too high polling (function in platform
-        // file, not in API)
-        WaitMs(&(Dev.platform), 5);
+    if (loop_count < 10) {
+        loop_count = doTest1(loop_count);
     }
 
+    /*
     status = vl53l5cx_stop_ranging(&Dev);
     Debugger::printf("Stop ranging autonomous\n");
 
@@ -127,7 +135,7 @@ void loop(void)
     status = vl53l5cx_start_ranging(&Dev);
     Debugger::printf("Start ranging continuous\n");
 
-    if (loopCounter >= 10 && loopCounter < 20) {
+    if (loop_count >= 10 && loop_count < 20) {
 
         status = vl53l5cx_check_data_ready(&Dev, &isReady);
 
@@ -146,7 +154,7 @@ void loop(void)
                         Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
             Debugger::printf("\n");
-            loopCounter++;
+            loop_count++;
         }
 
         // Wait a few ms to avoid too high polling (function in platform
@@ -154,7 +162,15 @@ void loop(void)
         WaitMs(&(Dev.platform), 5);
     }
 
-    vl53l5cx_stop_ranging(&Dev);
-    Debugger::printf("Stop ranging continuous\n");
-    Debugger::printf("End of ULD demo\n");
-}
+    if (loop_count == 20) {
+        vl53l5cx_stop_ranging(&Dev);
+        Debugger::printf("Stop ranging continuous\n");
+        loop_count++;
+    }
+
+    if (loop_count > 20) {
+        Debugger::printf("End of ULD demo\n");
+    }
+    */
+
+} // loop
