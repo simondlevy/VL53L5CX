@@ -54,7 +54,6 @@ void setup(void)
     Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
             VL53L5CX_API_REVISION);
 
-    /*
     // Set ranging mode autonomous  
     uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
     if(status) {
@@ -64,7 +63,6 @@ void setup(void)
     // Using autonomous mode, the integration time can be updated (not possible
     // using continuous)
     vl53l5cx_set_integration_time_ms(&Dev, 20);
-*/
 
     error = vl53l5cx_start_ranging(&Dev);
     if(error !=0) {
