@@ -133,14 +133,14 @@ void loop(void)
         // Trying to update value below will have no impact on integration time 
         //status = vl53l5cx_set_integration_time_ms(&Dev, 20);
 
+        // Start a ranging session 
+        vl53l5cx_start_ranging(&Dev);
+        Debugger::printf("Start ranging continuous\n");
+
         loop_count++;
     }
 
     /*
-    // Start a ranging session 
-    status = vl53l5cx_start_ranging(&Dev);
-    Debugger::printf("Start ranging continuous\n");
-
     if (loop_count >= 10 && loop_count < 20) {
 
         status = vl53l5cx_check_data_ready(&Dev, &isReady);
