@@ -4,6 +4,7 @@
 
 # VL53L5
 Arduino library for ST Microelectronics VL53L5 multizone Time-of-Flight ranging sensor
+(get it [here](https://www.tindie.com/products/onehorse/vl53l5cx-ranging-camera/)!)
 
 ## Quickstart
 
