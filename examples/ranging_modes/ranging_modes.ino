@@ -114,10 +114,13 @@ void loop(void)
         loop_count = testAutonomousMode(loop_count);
     }
 
-    /*
-    status = vl53l5cx_stop_ranging(&Dev);
-    Debugger::printf("Stop ranging autonomous\n");
+    if (loop_count == 10) {
+        vl53l5cx_stop_ranging(&Dev);
+        Debugger::printf("Stop ranging autonomous\n");
+        loop_count++;
+    }
 
+    /*
     // Set ranging mode continuous   
     // In continuous mode, the integration time cannot be programmed
     // (automatically set to maximum value)
