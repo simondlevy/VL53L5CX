@@ -71,7 +71,7 @@ void setup(void)
 
 } // setup
 
-static uint8_t doTest1(uint8_t loop_count) 
+static uint8_t testAutonomousMode(uint8_t loop_count) 
 {
     uint8_t isReady = 0;
     vl53l5cx_check_data_ready(&Dev, &isReady);
@@ -111,7 +111,7 @@ void loop(void)
     static uint8_t loop_count;
 
     if (loop_count < 10) {
-        loop_count = doTest1(loop_count);
+        loop_count = testAutonomousMode(loop_count);
     }
 
     /*
