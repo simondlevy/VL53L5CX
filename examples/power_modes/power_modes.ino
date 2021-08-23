@@ -51,6 +51,27 @@ void setup(void)
     Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
             VL53L5CX_API_REVISION);
 
+    //  For the example, we don't want to use the sensor during 10 seconds. In order to reduce
+    // the power consumption, the sensor is set to low power mode.
+    error = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
+    if(error) {
+        Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", error);
+    }
+
+    Debugger::printf("VL53L5CX is now sleeping\n");
+
+    //  We wait 5 seconds, only for the example
+    Debugger::printf("Waiting 5 seconds for the example...\n");
+    WaitMs(&(Dev.platform), 5000);
+
+    //  After 5 seconds, the sensor needs to be restarted
+    error = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
+    if(error) {
+        Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", error);
+    }
+    Debugger::printf("VL53L5CX is now waking up\n");
+
+    vl53l5cx_start_ranging(&Dev);
 }
 
 void loop(void)
@@ -60,36 +81,6 @@ void loop(void)
 /*
 int example4(void)
 {
-    Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
-            VL53L5CX_API_REVISION);
-
-    //  For the example, we don't want to use the sensor during 10 seconds. In order to reduce
-    // the power consumption, the sensor is set to low power mode.
-    status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-        return status;
-    }
-    Debugger::printf("VL53L5CX is now sleeping\n");
-
-    //  We wait 5 seconds, only for the example
-    Debugger::printf("Waiting 5 seconds for the example...\n");
-    WaitMs(&(Dev.platform), 5000);
-
-    //  After 5 seconds, the sensor needs to be restarted
-    status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-        return status;
-    }
-    Debugger::printf("VL53L5CX is now waking up\n");
-
-    //          Ranging loop          
-
-    status = vl53l5cx_start_ranging(&Dev);
-
     loop = 0;
     while(loop < 10)
     {
