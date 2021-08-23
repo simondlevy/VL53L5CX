@@ -76,37 +76,34 @@ void setup(void)
 
 void loop(void)
 {
-}
+    static uint8_t loop_counter;
 
-/*
-int example4(void)
-{
-    loop = 0;
-    while(loop < 10)
-    {
+    if (loop_counter < 10) {
+
         //  Use polling function to know when a new measurement is ready.
         //  Another way can be to wait for HW interrupt raised on PIN A3
         // (GPIO 1) when a new measurement is ready
 
-        status = vl53l5cx_check_data_ready(&Dev, &isReady);
+        uint8_t isReady = 0;
+        vl53l5cx_check_data_ready(&Dev, &isReady);
 
-        if(isReady)
-        {
+        if (isReady) {
+
+            VL53L5CX_ResultsData Results = {};
             vl53l5cx_get_ranging_data(&Dev, &Results);
 
-            //  As the sensor is set in 4x4 mode by default, we have a total 
-            // of 16 zones to print. For this example, only the data of first zone are 
-            // print
+            //  As the sensor is set in 4x4 mode by default, we have a total of
+            //  16 zones to print. For this example, only the data of first
+            //  zone are printed
             Debugger::printf("Print data no : %3u\n", Dev.streamcount);
-            for(i = 0; i < 16; i++)
-            {
+            for(uint8_t i = 0; i < 16; i++) {
                 Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm\n",
                         i,
                         Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
                         Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
             Debugger::printf("\n");
-            loop++;
+            loop_counter++;
         }
 
         //  Wait a few ms to avoid too high polling (function in platform
@@ -114,8 +111,12 @@ int example4(void)
         WaitMs(&(Dev.platform), 5);
     }
 
-    status = vl53l5cx_stop_ranging(&Dev);
+    else if (loop_counter == 10) {
+        vl53l5cx_stop_ranging(&Dev);
+        loop_counter++;
+    }
+
+    else { 
 	printf("End of ULD demo\n");
-	return status;
+    }
 }
-*/
