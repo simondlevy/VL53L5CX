@@ -7,6 +7,7 @@
 */
 
 #include "platform.h"
+#include "Debugger.hpp"
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -128,15 +129,14 @@ uint8_t WrMulti(
 
             start_transfer(RegisterAddress+i);
 
-            if(Wire.write(p_values[i]) == 0) {
+            if (Wire.write(p_values[i]) == 0) {
+
                 // XXX Error handling, resend failed!
             }
         }
     }
 
-    uint8_t res = Wire.endTransmission(true);
-
-    return res;
+    return Wire.endTransmission(true);
 }
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)

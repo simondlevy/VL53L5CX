@@ -113,7 +113,8 @@ static uint8_t _vl53l5cx_send_offset_data(
             VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
 
     return status;
-}
+
+} // _vl53l5cx_send_offset_data(
 
 /**
  * @brief Inner function, not available outside this file. This function is used
@@ -173,7 +174,8 @@ static uint8_t _vl53l5cx_send_xtalk_data(
             VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
 
     return status;
-}
+
+} // _vl53l5cx_send_xtalk_data(
 
 #ifdef VL53L5CX_LTF_FILTER
 
@@ -322,12 +324,11 @@ uint8_t vl53l5cx_is_alive(
     status |= RdByte(&(p_dev->platform), 1, &revision_id);
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
 
-    if((device_id == (uint8_t)0xF0) && (revision_id == (uint8_t)0x02))
-    {
+
+    if ((device_id == (uint8_t)0xF0) && (revision_id == (uint8_t)0x02)) {
         *p_is_alive = 1;
     }
-    else
-    {
+    else {
         *p_is_alive = 0;
     }
 
@@ -479,7 +480,9 @@ uint8_t vl53l5cx_init(
 #endif
 
     return status;
-}
+
+} // vl53l5cx_init
+
 
 uint8_t vl53l5cx_set_i2c_address(
         VL53L5CX_Configuration		*p_dev,
@@ -684,7 +687,8 @@ uint8_t vl53l5cx_start_ranging(
             VL53L5CX_UI_CMD_STATUS, 0xff, 0x03);
 
     return status;
-}
+
+} // vl53l5cx_set_power_mode
 
 uint8_t vl53l5cx_stop_ranging(
         VL53L5CX_Configuration		*p_dev)
@@ -726,7 +730,7 @@ uint8_t vl53l5cx_stop_ranging(
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x02);
 
     return status;
-}
+} //  vl53l5cx_stop_ranging
 
 uint8_t vl53l5cx_check_data_ready(
         VL53L5CX_Configuration		*p_dev,
@@ -752,7 +756,8 @@ uint8_t vl53l5cx_check_data_ready(
     }
 
     return status;
-}
+
+} // vl53l5cx_check_data_ready
 
 uint8_t vl53l5cx_get_ranging_data(
         VL53L5CX_Configuration		*p_dev,
@@ -898,7 +903,8 @@ uint8_t vl53l5cx_get_ranging_data(
 #endif
 
     return status;
-}
+
+} // vl53l5cx_get_ranging_data
 
 uint8_t vl53l5cx_get_resolution(
         VL53L5CX_Configuration		*p_dev,
@@ -911,7 +917,8 @@ uint8_t vl53l5cx_get_resolution(
     *p_resolution = p_dev->temp_buffer[0x00]*p_dev->temp_buffer[0x01];
 
     return status;
-}
+
+} // vl53l5cx_get_resolution
 
 
 
@@ -983,7 +990,8 @@ uint8_t vl53l5cx_set_resolution(
 #endif
 
     return status;
-}
+
+} // vl53l5cx_set_resolution
 
 uint8_t vl53l5cx_get_ranging_frequency_hz(
         VL53L5CX_Configuration		*p_dev,
@@ -996,7 +1004,8 @@ uint8_t vl53l5cx_get_ranging_frequency_hz(
     *p_frequency_hz = p_dev->temp_buffer[0x01];
 
     return status;
-}
+
+} // vl53l5cx_get_ranging_frequency_hz
 
 uint8_t vl53l5cx_set_ranging_frequency_hz(
 		VL53L5CX_Configuration		*p_dev,
@@ -1009,7 +1018,8 @@ uint8_t vl53l5cx_set_ranging_frequency_hz(
 					(uint8_t*)&frequency_hz, 1, 0x01);
 
 	return status;
-}
+
+} // vl53l5cx_set_ranging_frequency_hz
 
 uint8_t vl53l5cx_get_integration_time_ms(
 		VL53L5CX_Configuration		*p_dev,
@@ -1024,7 +1034,8 @@ uint8_t vl53l5cx_get_integration_time_ms(
 	*p_time_ms /= (uint32_t)1000;
 
 	return status;
-}
+
+} // vl53l5cx_get_integration_time_ms
 
 uint8_t vl53l5cx_set_integration_time_ms(
 		VL53L5CX_Configuration		*p_dev,
@@ -1048,7 +1059,8 @@ uint8_t vl53l5cx_set_integration_time_ms(
 	}
 
 	return status;
-}
+
+} //vl53l5cx_set_integration_time_ms
 
 uint8_t vl53l5cx_get_sharpener_percent(
 		VL53L5CX_Configuration		*p_dev,
@@ -1063,7 +1075,8 @@ uint8_t vl53l5cx_get_sharpener_percent(
                                 *(uint8_t)100)/(uint8_t)255;
 
 	return status;
-}
+
+} // vl53l5cx_get_sharpener_percent
 
 uint8_t vl53l5cx_set_sharpener_percent(
 		VL53L5CX_Configuration		*p_dev,
@@ -1085,7 +1098,8 @@ uint8_t vl53l5cx_set_sharpener_percent(
 	}
 
 	return status;
-}
+
+} // vl53l5cx_set_sharpener_percent
 
 uint8_t vl53l5cx_get_target_order(
 		VL53L5CX_Configuration		*p_dev,
@@ -1098,7 +1112,8 @@ uint8_t vl53l5cx_get_target_order(
 	*p_target_order = (uint8_t)p_dev->temp_buffer[0x0];
 
 	return status;
-}
+
+} // vl53l5cx_get_target_order
 
 uint8_t vl53l5cx_set_target_order(
 		VL53L5CX_Configuration		*p_dev,
@@ -1122,7 +1137,8 @@ uint8_t vl53l5cx_set_target_order(
 	}
 
 	return status;
-}
+
+} // vl53l5cx_set_target_order
 
 uint8_t vl53l5cx_get_ranging_mode(
 		VL53L5CX_Configuration		*p_dev,
@@ -1143,7 +1159,8 @@ uint8_t vl53l5cx_get_ranging_mode(
 	}
 
 	return status;
-}
+
+} // vl53l5cx_get_ranging_mode
 
 uint8_t vl53l5cx_set_ranging_mode(
 		VL53L5CX_Configuration		*p_dev,
@@ -1182,7 +1199,8 @@ uint8_t vl53l5cx_set_ranging_mode(
                         (uint16_t)sizeof(single_range));
 
 	return status;
-}
+
+} // vl53l5cx_set_ranging_mode
 
 uint8_t vl53l5cx_dci_read_data(
 		VL53L5CX_Configuration		*p_dev,
@@ -1228,7 +1246,8 @@ uint8_t vl53l5cx_dci_read_data(
 	}
 
 	return status;
-}
+
+} // vl53l5cx_dci_read_data
 
 uint8_t vl53l5cx_dci_write_data(
 		VL53L5CX_Configuration		*p_dev,
@@ -1283,7 +1302,8 @@ uint8_t vl53l5cx_dci_write_data(
 	}
 
 	return status;
-}
+
+} // vl53l5cx_dci_write_data
 
 uint8_t vl53l5cx_dci_replace_data(
 		VL53L5CX_Configuration		*p_dev,
@@ -1301,4 +1321,5 @@ uint8_t vl53l5cx_dci_replace_data(
 	status |= vl53l5cx_dci_write_data(p_dev, data, index, data_size);
 
 	return status;
-}
+
+} // vl53l5cx_dci_replace_data
