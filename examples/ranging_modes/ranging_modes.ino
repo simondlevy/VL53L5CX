@@ -19,7 +19,7 @@
 #include "Debugger.hpp"
 #include "vl53l5cx_api.h"
 
-static const uint8_t LPN_PIN = 3;
+static const uint8_t LPN_PIN = 5;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 

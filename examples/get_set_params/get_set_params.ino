@@ -13,7 +13,7 @@
 
 static const uint8_t LED_PIN  = 13;
 static const uint8_t INT_PIN = 8;
-static const uint8_t LPN_PIN = 3;
+static const uint8_t LPN_PIN = 5;
 
 static volatile bool VL53L5_intFlag = false;
 
