@@ -131,7 +131,9 @@ uint8_t WrMulti(
 
             if (Wire.write(p_values[i]) == 0) {
 
-                // XXX Error handling, resend failed!
+                Debugger::reportForever(
+                        "WrMulti failed to send %d bytes to regsiter 0x%02X",
+                        size, RegisterAddress);
             }
         }
     }
