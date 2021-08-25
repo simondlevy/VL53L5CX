@@ -766,9 +766,12 @@ uint8_t vl53l5cx_get_ranging_data(
     uint8_t status = VL53L5CX_STATUS_OK;
     union Block_header *bh_ptr;
     uint32_t i, j, msize;
+
     status |= RdMulti(&(p_dev->platform), 0x0,
             p_dev->temp_buffer, p_dev->data_read_size);
+
     SwapBuffer(p_dev->temp_buffer, (uint16_t)p_dev->data_read_size);
+
 
     /* Start conversion at position 16 to avoid headers */
     for (i = (uint32_t)16; i 

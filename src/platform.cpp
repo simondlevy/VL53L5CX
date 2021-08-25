@@ -67,7 +67,6 @@ uint8_t RdMulti(
     uint32_t i = 0;
     if(size > 32)
     {
-        Serial.println("\nLarge read request, size = " + size);
         while(i < size)
         {
             // If still more than 32 bytes to go, 32, else the remaining number
