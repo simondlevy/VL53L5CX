@@ -15,11 +15,10 @@ static const uint8_t LED_PIN  = 13;
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
-static volatile bool VL53L5_intFlag;
-
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
+static volatile bool VL53L5_intFlag;
 static void VL53L5_intHandler(void)
 {
     VL53L5_intFlag = true;

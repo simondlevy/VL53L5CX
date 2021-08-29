@@ -39,11 +39,11 @@ static const uint8_t LPN_PIN = 5;
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
+static volatile bool VL53L5_intFlag;
 static void VL53L5_intHandler(void)
 {
     VL53L5_intFlag = true;
 }
-
 
 void setup (void)
 {
@@ -127,17 +127,20 @@ void setup (void)
     // Enable detection thresholds
     vl53l5cx_set_detection_thresholds_enable(&Dev, 1);
 
-    status = vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
+    vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
 
-    IntCount = 0;
+    // Set up interrupt
+    pinMode(INT_PIN, INPUT); 
+    attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
+
     vl53l5cx_start_ranging(&Dev);
     Debugger::printf("Put an object between 200mm and 400mm to catch an interrupt\n");
 
 } // setup
 
 void loop(void)
-
-    loop_counter = 0;
+{
+    static uint32_t loop_counter;
 
     if (loop_counter < 100) {
 
@@ -146,9 +149,9 @@ void loop(void)
         // pin A3 (INT), when the checkers detect the programmed
         // conditions.
 
-        isReady = WaitForL5Interrupt(&Dev);
+        if (VL53L5_intFlag) {
 
-        if (isReady) {
+            VL53L5_intFlag = false;
 
             vl53l5cx_get_ranging_data(&Dev, &Results);
 
@@ -156,7 +159,7 @@ void loop(void)
             // of 16 zones to print. For this example, only the data of
             // first zone are print
             Debugger::printf("Print data no : %3u\n", Dev.streamcount);
-            for(i = 0; i < 16; i++)
+            for (uint8_t i = 0; i < 16; i++)
             {
                 Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm, Signal : %5lu kcps/SPADs\n",
                         i,
