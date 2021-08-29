@@ -1,5 +1,5 @@
 /*
- *  VL53L5CX ULD basic example    
+ *  VL53L5CX ULD example with parameter-setting and interrupts
  *
  *  Copyright (c) 2021 Kris Winer, Simon D. Levy
  *
@@ -15,12 +15,13 @@ static const uint8_t LED_PIN  = 13;
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
-static volatile bool VL53L5_intFlag = false;
+static volatile bool VL53L5_intFlag;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
-static void VL53L5_intHandler(){
+static void VL53L5_intHandler(void)
+{
     VL53L5_intFlag = true;
 }
 
