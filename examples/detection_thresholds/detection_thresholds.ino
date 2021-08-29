@@ -39,10 +39,10 @@ static const uint8_t LPN_PIN = 5;
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
 
-static void VL53L5_intHandler(){
+static void VL53L5_intHandler(void)
+{
     VL53L5_intFlag = true;
 }
-
 
 
 void setup (void)

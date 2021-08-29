@@ -34,8 +34,6 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
 
-    pinMode(INT_PIN, INPUT); // VL53L5CX interrupt pin
-
     // Start I^2C
     Wire.begin();
     Wire.setClock(400000); // I2C frequency at 400 kHz  
@@ -74,30 +72,28 @@ void setup(void)
     /*        Set some params        */
     /*********************************/
 
-    /* Set resolution in 8x8. WARNING : As others settings depend to this
-     * one, it must be the first to use.
-     */
+    // Set resolution in 8x8. WARNING : As others settings depend to this
+    // one, it must be the first to use.
     uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
     if (status) {
         Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
     }
 
-    /* Set ranging frequency to 1Hz.
-     * Using 4x4, min frequency is 1Hz and max is 60Hz
-     * Using 8x8, min frequency is 1Hz and max is 15Hz
-     */
+    // Set ranging frequency to 1Hz.
+    // Using 4x4, min frequency is 1Hz and max is 60Hz
+    // Using 8x8, min frequency is 1Hz and max is 15Hz
     status = vl53l5cx_set_ranging_frequency_hz(&Dev, 1);
     if (status) {
         Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
     }
 
-    /* Set target order to closest */
+    // Set target order to closest
     status = vl53l5cx_set_target_order(&Dev, VL53L5CX_TARGET_ORDER_CLOSEST);
     if (status) {
         Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
     }
 
-    /* Get current integration time */
+    // Get current integration time
     uint32_t integration_time_ms = 0;
     status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
     if (status) {
@@ -105,6 +101,8 @@ void setup(void)
     }
     Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
 
+    // Set up interrupt
+    pinMode(INT_PIN, INPUT); 
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
     error = vl53l5cx_start_ranging(&Dev);
