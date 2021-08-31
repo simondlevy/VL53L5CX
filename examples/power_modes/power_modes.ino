@@ -76,9 +76,9 @@ void setup(void)
 
 void loop(void)
 {
-    static uint8_t loop_counter;
+    static uint8_t loop_count;
 
-    if (loop_counter < 10) {
+    if (loop_count < 10) {
 
         //  Use polling function to know when a new measurement is ready.
         //  Another way can be to wait for HW interrupt raised on PIN A3
@@ -103,7 +103,7 @@ void loop(void)
                         Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
             Debugger::printf("\n");
-            loop_counter++;
+            loop_count++;
         }
 
         //  Wait a few ms to avoid too high polling (function in platform
@@ -111,9 +111,9 @@ void loop(void)
         WaitMs(&(Dev.platform), 5);
     }
 
-    else if (loop_counter == 10) {
+    else if (loop_count == 10) {
         vl53l5cx_stop_ranging(&Dev);
-        loop_counter++;
+        loop_count++;
     }
 
     else { 

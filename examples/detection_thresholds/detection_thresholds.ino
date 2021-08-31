@@ -17,22 +17,6 @@
 #include "vl53l5cx_api.h"
 #include "vl53l5cx_plugin_detection_thresholds.h"
 
-/* This function needs to be filled by the customer. It allows knowing when 
- * the VL53L5CX interrupt is raised on GPIO1. This is the only way to use detection thresholds.
- */
-/*
-   int WaitForL5Interrupt(VL53L5CX_Configuration * pDev) {
-
-//Add your implementation here ...
-UNUSED(pDev);
-
-return 0;
-}
- */
-
-int WaitForL5Interrupt(VL53L5CX_Configuration * pDev);
-int IntCount;
-
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
@@ -140,14 +124,9 @@ void setup (void)
 
 void loop(void)
 {
-    static uint32_t loop_counter;
+    static uint32_t loop_count;
 
-    if (loop_counter < 100) {
-
-        // Function WaitForL5Interrupt() does not exists, and must be
-        // implemented by user. It allows catching the interrupt raised on
-        // pin A3 (INT), when the checkers detect the programmed
-        // conditions.
+    if (loop_count < 100) {
 
         if (VL53L5_intFlag) {
 
@@ -168,16 +147,16 @@ void loop(void)
                         Results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
             Debugger::printf("\n");
-            loop_counter++;
+            loop_count++;
         }
 
         // Wait a few ms to avoid too high polling (function in platform file, not in API) 
         delay(5);
     }
 
-    else if (loop_counter == 100) {
+    else if (loop_count == 100) {
         vl53l5cx_stop_ranging(&Dev);
-        loop_counter++;
+        loop_count++;
     }
 
     else {
