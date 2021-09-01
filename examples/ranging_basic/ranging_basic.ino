@@ -11,6 +11,8 @@
 #include "Debugger.hpp"
 #include "vl53l5cx_api.h"
 
+#include "VL53L5cx.h"
+
 static const uint8_t LPN_PIN = 5;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
@@ -51,7 +53,7 @@ void setup(void)
 
     error = vl53l5cx_start_ranging(&Dev);
     if(error !=0) {
-        Debugger::loopForever("start error = 0x%02X", error);
+        Debugger::reportForever("start error = 0x%02X", error);
     }
 
 } // setup
