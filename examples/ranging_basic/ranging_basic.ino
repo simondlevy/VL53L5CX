@@ -7,10 +7,7 @@
 */
 
 #include <Wire.h>
-
 #include "Debugger.hpp"
-#include "vl53l5cx_api.h"
-
 #include "VL53L5cx.h"
 
 static VL53L5cx sensor = VL53L5cx(5); // LPN pin
