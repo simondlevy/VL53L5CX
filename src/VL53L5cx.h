@@ -13,17 +13,27 @@
 
 class VL53L5cx {
 
-    private:
-
-        uint8_t _lpn_pin = 0;
-
-        VL53L5CX_Configuration _dev = {};
-
-        VL53L5CX_ResultsData _results = {};
-
     public:
 
-        VL53L5cx(uint8_t lpnPin, uint8_t deviceAddress=0x29);
+        typedef enum {
+
+            RESOLUTION_4X4,
+            RESOLUTION_8X8 
+
+        } resolution_t;
+
+        typedef enum {
+
+            TARGET_ORDER_CLOSEST,
+            TARGET_ORDER_STRONGEST
+
+        } target_order_t;
+
+        VL53L5cx(
+                uint8_t lpnPin,
+                uint8_t deviceAddress=0x29,
+                resolution_t resolution=RESOLUTION_8X8,
+                target_order_t targetOrder=TARGET_ORDER_CLOSEST);
 
         void begin(void);
 
@@ -36,5 +46,17 @@ class VL53L5cx {
         uint8_t getDistance(uint8_t zone);
 
         void stop(void);
+
+    private:
+
+        uint8_t _lpn_pin = 0;
+
+        VL53L5CX_Configuration _dev = {};
+
+        VL53L5CX_ResultsData _results = {};
+
+        resolution_t _resolution = RESOLUTION_8X8;
+
+        target_order_t _target_order = TARGET_ORDER_CLOSEST;
 
 }; // class VL53L5cx 

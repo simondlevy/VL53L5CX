@@ -9,11 +9,18 @@
 #include "VL53L5cx.h"
 #include "Debugger.hpp"
 
-VL53L5cx::VL53L5cx(uint8_t lpnPin, uint8_t deviceAddress)
+VL53L5cx::VL53L5cx(
+        uint8_t lpnPin,
+        uint8_t deviceAddress,
+        resolution_t resolution,
+        target_order_t targetOrder)
 {
     _lpn_pin = lpnPin;
 
     _dev.platform.address = deviceAddress;
+
+    _resolution = resolution;
+    _target_order = targetOrder;
 }
         
 void VL53L5cx::begin(void)
@@ -33,6 +40,12 @@ void VL53L5cx::begin(void)
     if(error) {
         Debugger::reportForever("VL53L5CX ULD Loading failed");
     }
+
+    // Set resolution
+    vl53l5cx_set_resolution(&_dev,
+            _resolution == RESOLUTION_4X4 ?
+            VL53L5CX_RESOLUTION_4X4 :
+            VL53L5CX_RESOLUTION_8X8);
 
     error = vl53l5cx_start_ranging(&_dev);
     if(error !=0) {
