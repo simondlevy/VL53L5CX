@@ -47,6 +47,13 @@ void VL53L5cx::begin(void)
             VL53L5CX_RESOLUTION_4X4 :
             VL53L5CX_RESOLUTION_8X8);
 
+    // Set target order
+    vl53l5cx_set_target_order(&_dev,
+            _target_order == TARGET_ORDER_STRONGEST ?
+            VL53L5CX_TARGET_ORDER_STRONGEST :
+            VL53L5CX_TARGET_ORDER_CLOSEST);
+
+    // Start ranging
     error = vl53l5cx_start_ranging(&_dev);
     if(error !=0) {
         Debugger::reportForever("start error = 0x%02X", error);
