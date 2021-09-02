@@ -47,11 +47,17 @@ class VL53L5cx {
 
         void stop(void);
 
+    protected:
+
+        VL53L5CX_Configuration _dev = {};
+
+        void init(void);
+
+        void start_ranging(void);
+
     private:
 
         uint8_t _lpn_pin = 0;
-
-        VL53L5CX_Configuration _dev = {};
 
         VL53L5CX_ResultsData _results = {};
 
@@ -60,3 +66,23 @@ class VL53L5cx {
         target_order_t _target_order = TARGET_ORDER_CLOSEST;
 
 }; // class VL53L5cx 
+
+
+class VL53L5cxAutonomous : public VL53L5cx {
+
+    private:
+
+        uint32_t _integration_time_msec = 0;
+
+    public:
+
+      VL53L5cxAutonomous(
+                uint8_t lpnPin,
+                uint32_t integrationTimeMsec=20,
+                uint8_t deviceAddress=0x29,
+                resolution_t resolution=RESOLUTION_8X8,
+                target_order_t targetOrder=TARGET_ORDER_CLOSEST);
+
+      void begin(void);
+
+}; // VL53L5cxAutonomous

@@ -25,6 +25,12 @@ VL53L5cx::VL53L5cx(
         
 void VL53L5cx::begin(void)
 {
+    init();
+    start_ranging();
+}
+
+void VL53L5cx::init(void)
+{
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(_lpn_pin);
 
@@ -53,13 +59,16 @@ void VL53L5cx::begin(void)
             VL53L5CX_TARGET_ORDER_STRONGEST :
             VL53L5CX_TARGET_ORDER_CLOSEST);
 
-    // Start ranging
-    error = vl53l5cx_start_ranging(&_dev);
+} // init
+
+
+void VL53L5cx::start_ranging(void)
+{
+    uint8_t error = vl53l5cx_start_ranging(&_dev);
     if(error !=0) {
         Debugger::reportForever("start error = 0x%02X", error);
     }
-
-} // begin
+}
 
 bool VL53L5cx::isReady(void)
 {
@@ -93,4 +102,36 @@ uint8_t VL53L5cx::getDistance(uint8_t zone)
 void VL53L5cx::stop(void)
 {
     vl53l5cx_stop_ranging(&_dev);
+}
+      
+VL53L5cxAutonomous::VL53L5cxAutonomous(
+                uint8_t lpnPin,
+                uint32_t integrationTimeMsec,
+                uint8_t deviceAddress,
+                resolution_t resolution,
+                target_order_t targetOrder)
+    : VL53L5cxAutonomous::VL53L5cx(
+                lpnPin,
+                deviceAddress,
+                resolution,
+                targetOrder)
+{
+    _integration_time_msec = integrationTimeMsec;
+}
+
+void VL53L5cxAutonomous::begin(void)
+{
+    init();
+
+    // Set ranging mode autonomous  
+    uint8_t error = vl53l5cx_set_ranging_mode(&_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+    if (error) {
+        Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n", error);
+    }
+
+    // Using autonomous mode, the integration time can be updated (not possible
+    // using continuous)
+    vl53l5cx_set_integration_time_ms(&_dev, _integration_time_msec);
+
+    start_ranging();
 }
