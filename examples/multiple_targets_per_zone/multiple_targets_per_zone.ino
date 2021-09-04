@@ -53,14 +53,13 @@ void loop(void)
 
                 for (uint8_t j = 0; j < VL53L5cx::NB_TARGET_PER_ZONE; j++)
                 {
-                    // Print per target results. These results depends of the target nb
-                    uint16_t idx = VL53L5cx::NB_TARGET_PER_ZONE * i + j;
+                    // Print per target results. These results depend on the target nb
                     Debugger::printf("Target[%1u] : %2u, %4d, %6lu, %3u, ",
                             j,
-                            sensor.getTargetStatus(idx),
-                            sensor.getDistance(idx),
-                            0, //sensor.getSignalPerSpad(idx),
-                            0 /*sensor.getRangeSigma(idx)*/);
+                            sensor.getTargetStatus(i, j),
+                            sensor.getDistance(i, j),
+                            0, //sensor.getSignalPerSpad(i, j),
+                            0 /*sensor.getRangeSigma(i, j)*/);
                 }
                 Debugger::printf("\n");
             }

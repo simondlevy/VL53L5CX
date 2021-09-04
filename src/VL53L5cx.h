@@ -44,11 +44,13 @@ class VL53L5cx {
 
         uint8_t getStreamCount(void);
 
-        uint8_t getTargetStatus(uint8_t zone);
+        uint8_t getTargetStatus(uint8_t zone, uint8_t target=0);
 
-        uint8_t getDistance(uint8_t zone);
+        uint8_t getDistance(uint8_t zone, uint8_t target=0);
 
         uint32_t getIntegrationTimeMsec(void);
+
+        uint8_t getNbTargetDetected(void);
 
         void stop(void);
 
