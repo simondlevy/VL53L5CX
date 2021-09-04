@@ -116,11 +116,30 @@ uint8_t VL53L5cx::getDistance(uint8_t zone, uint8_t target)
     return _results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-uint8_t VL53L5cx::getNbTargetDetected(void)
+uint8_t VL53L5cx::getSignalPerSpad(uint8_t zone, uint8_t target)
 {
-    return 0;
+    return _results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
+uint8_t VL53L5cx::getRangeSigma(uint8_t zone, uint8_t target)
+{
+    return _results.range_sigma_mm[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
+}
+
+uint8_t VL53L5cx::getNbTargetDetected(uint8_t zone)
+{
+    return _results.nb_target_detected[zone];
+}
+
+uint8_t VL53L5cx::getAmbientPerSpad(uint8_t zone)
+{
+    return _results.ambient_per_spad[zone];
+}
+
+uint8_t VL53L5cx::getNbSpadsEnabled(uint8_t zone)
+{
+    return _results.nb_spads_enabled[zone];
+}
 
 void VL53L5cx::stop(void)
 {

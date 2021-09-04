@@ -48,9 +48,17 @@ class VL53L5cx {
 
         uint8_t getDistance(uint8_t zone, uint8_t target=0);
 
+        uint8_t getSignalPerSpad(uint8_t zone, uint8_t target=0);
+
+        uint8_t getRangeSigma(uint8_t zone, uint8_t target=0);
+
         uint32_t getIntegrationTimeMsec(void);
 
-        uint8_t getNbTargetDetected(void);
+        uint8_t getNbTargetDetected(uint8_t zone);
+
+        uint8_t getAmbientPerSpad(uint8_t zone);
+
+        uint8_t getNbSpadsEnabled(uint8_t zone);
 
         void stop(void);
 

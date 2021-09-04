@@ -47,9 +47,9 @@ void loop(void)
                 // Print per zone results. These results are the same for all targets 
                 Debugger::printf("Zone %3u : %2u, %6lu, %6lu, ",
                         i,
-                        0, //sensor.getNbTargetDetected(i),
-                        0, //sensor.getAmbientPerSpad(i),
-                        0 /*sensor.getNbSpadsEnabled(i)*/);
+                        sensor.getNbTargetDetected(i),
+                        sensor.getAmbientPerSpad(i),
+                        sensor.getNbSpadsEnabled(i));
 
                 for (uint8_t j = 0; j < VL53L5cx::NB_TARGET_PER_ZONE; j++)
                 {
@@ -58,8 +58,8 @@ void loop(void)
                             j,
                             sensor.getTargetStatus(i, j),
                             sensor.getDistance(i, j),
-                            0, //sensor.getSignalPerSpad(i, j),
-                            0 /*sensor.getRangeSigma(i, j)*/);
+                            sensor.getSignalPerSpad(i, j),
+                            sensor.getRangeSigma(i, j));
                 }
                 Debugger::printf("\n");
             }
@@ -79,6 +79,7 @@ void loop(void)
     }
     else {
         Debugger::printf("End of ULD demo\n");
+        delay(500);
     }
 
 } // loop
