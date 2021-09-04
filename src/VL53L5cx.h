@@ -33,7 +33,8 @@ class VL53L5cx {
                 uint8_t lpnPin,
                 uint8_t deviceAddress=0x29,
                 resolution_t resolution=RESOLUTION_8X8,
-                target_order_t targetOrder=TARGET_ORDER_CLOSEST);
+                target_order_t targetOrder=TARGET_ORDER_CLOSEST,
+                uint8_t rangingFrequency=10);
 
         void begin(void);
 
@@ -44,6 +45,8 @@ class VL53L5cx {
         uint8_t getTargetStatus(uint8_t zone);
 
         uint8_t getDistance(uint8_t zone);
+
+        uint32_t getIntegrationTimeMsec(void);
 
         void stop(void);
 
@@ -64,6 +67,12 @@ class VL53L5cx {
         resolution_t _resolution = RESOLUTION_8X8;
 
         target_order_t _target_order = TARGET_ORDER_CLOSEST;
+
+        uint8_t _ranging_frequency = 10;
+
+        void check_ranging_frequency(resolution_t resolution,
+                                     uint8_t maxval,
+                                     const char *label);
 
 }; // class VL53L5cx 
 

@@ -13,7 +13,8 @@ VL53L5cx::VL53L5cx(
         uint8_t lpnPin,
         uint8_t deviceAddress,
         resolution_t resolution,
-        target_order_t targetOrder)
+        target_order_t targetOrder,
+        uint8_t rangingFrequency)
 {
     _lpn_pin = lpnPin;
 
@@ -21,6 +22,8 @@ VL53L5cx::VL53L5cx(
 
     _resolution = resolution;
     _target_order = targetOrder;
+
+    _ranging_frequency = rangingFrequency;
 }
         
 void VL53L5cx::begin(void)
@@ -31,6 +34,10 @@ void VL53L5cx::begin(void)
 
 void VL53L5cx::init(void)
 {
+    // Bozo filter for ranging frequency
+    check_ranging_frequency(RESOLUTION_4X4, 60, "4X4");
+    check_ranging_frequency(RESOLUTION_8X8, 15, "8X8");
+
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(_lpn_pin);
 
@@ -60,6 +67,16 @@ void VL53L5cx::init(void)
             VL53L5CX_TARGET_ORDER_CLOSEST);
 
 } // init
+
+void VL53L5cx::check_ranging_frequency(resolution_t resolution,
+                                       uint8_t maxval,
+                                       const char *label)
+{
+    if (_ranging_frequency < 1 || _ranging_frequency > maxval) {
+        Debugger::reportForever("Ranging frequency for %s resolution " 
+                "must be at least 1 and no more than %d", maxval);
+    }
+}
 
 
 void VL53L5cx::start_ranging(void)
@@ -103,18 +120,32 @@ void VL53L5cx::stop(void)
 {
     vl53l5cx_stop_ranging(&_dev);
 }
-      
+
+uint32_t VL53L5cx::getIntegrationTimeMsec(void)
+{
+    uint32_t integration_time_ms = 0;
+    uint8_t error = vl53l5cx_get_integration_time_ms(&_dev,
+            &integration_time_ms);
+    if (error) {
+        Debugger::reportForever("vl53l5cx_get_integration_time_ms failed, status %u\n",
+                error);
+
+    }
+
+    return integration_time_ms;
+}
+
 VL53L5cxAutonomous::VL53L5cxAutonomous(
-                uint8_t lpnPin,
-                uint32_t integrationTimeMsec,
-                uint8_t deviceAddress,
-                resolution_t resolution,
-                target_order_t targetOrder)
+        uint8_t lpnPin,
+        uint32_t integrationTimeMsec,
+        uint8_t deviceAddress,
+        resolution_t resolution,
+        target_order_t targetOrder)
     : VL53L5cxAutonomous::VL53L5cx(
-                lpnPin,
-                deviceAddress,
-                resolution,
-                targetOrder)
+            lpnPin,
+            deviceAddress,
+            resolution,
+            targetOrder)
 {
     _integration_time_msec = integrationTimeMsec;
 }
@@ -135,3 +166,4 @@ void VL53L5cxAutonomous::begin(void)
 
     start_ranging();
 }
+
