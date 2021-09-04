@@ -13,9 +13,9 @@
 
 #include "Debugger.hpp"
 
-#include "vl53l5cx_api.h"
-#include "vl53l5cx_plugin_motion_indicator.h"
-#include "vl53l5cx_plugin_detection_thresholds.h"
+#include "st/vl53l5cx_api.h"
+#include "st/vl53l5cx_plugin_motion_indicator.h"
+#include "st/vl53l5cx_plugin_detection_thresholds.h"
 
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;

@@ -14,7 +14,7 @@
 #include "Wire.h"
 
 #include "Debugger.hpp"
-#include "vl53l5cx_api.h"
+#include "st/vl53l5cx_api.h"
 
 static const uint8_t LPN_PIN = 5;
 

@@ -11,8 +11,8 @@
 #include <Wire.h>
 
 #include "Debugger.hpp"
-#include "vl53l5cx_api.h"
-#include "vl53l5cx_plugin_motion_indicator.h"
+#include "st/vl53l5cx_api.h"
+#include "st/vl53l5cx_plugin_motion_indicator.h"
 
 static const uint8_t LPN_PIN = 5;
 
