@@ -15,6 +15,8 @@ class VL53L5cx {
 
     public:
 
+        static const uint8_t NB_TARGET_PER_ZONE = VL53L5CX_NB_TARGET_PER_ZONE;
+
         typedef enum {
 
             RESOLUTION_4X4,
