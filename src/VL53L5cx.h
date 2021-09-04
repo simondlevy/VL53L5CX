@@ -32,7 +32,7 @@ class VL53L5cx {
         VL53L5cx(
                 uint8_t lpnPin,
                 uint8_t deviceAddress=0x29,
-                resolution_t resolution=RESOLUTION_8X8,
+                resolution_t resolution=RESOLUTION_4X4,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=10);
 
