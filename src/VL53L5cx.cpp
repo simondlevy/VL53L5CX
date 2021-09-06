@@ -7,6 +7,7 @@
  */
 
 #include "VL53L5cx.h"
+#include "st/vl53l5cx_plugin_motion_indicator.h"
 #include "Debugger.hpp"
 
 VL53L5cx::VL53L5cx(
@@ -158,6 +159,40 @@ uint32_t VL53L5cx::getIntegrationTimeMsec(void)
     }
 
     return integration_time_ms;
+}
+
+void VL53L5cx::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
+{
+    // Create motion indicator
+    VL53L5CX_Motion_Configuration motion_config = {};
+    uint8_t error = vl53l5cx_motion_indicator_init(&_dev, &motion_config, 
+            _resolution == RESOLUTION_4X4 ?
+            VL53L5CX_RESOLUTION_4X4 :
+            VL53L5CX_RESOLUTION_8X8);
+
+    if (error) {
+        Debugger::reportForever("Motion indicator init failed with status : %u\n", error);
+    }
+
+    if (distanceMin > 0 && distanceMax > 0) {
+
+        if (distanceMin < 400) {
+            Debugger::reportForever("Motion indicator minimum distance must be at least 400mm");
+        }
+
+        if (distanceMax < distanceMin) {
+            Debugger::reportForever("Motion indicator maximum distance must be greater than minimum");
+        }
+
+        if (distanceMax-distanceMin > 1500) {
+            Debugger::reportForever("Motion indicator maximum distance can be no greater than 1500mm above minimum distance");
+        }
+
+        error = vl53l5cx_motion_indicator_set_distance_motion(&_dev, &motion_config, distanceMin, distanceMax);
+        if (error) {
+            Debugger::reportForever("Motion indicator set distance failed with status : %u\n", error);
+        }
+    }
 }
 
 VL53L5cxAutonomous::VL53L5cxAutonomous(

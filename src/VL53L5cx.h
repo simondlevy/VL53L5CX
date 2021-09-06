@@ -60,6 +60,10 @@ class VL53L5cx {
 
         uint8_t getNbSpadsEnabled(uint8_t zone);
 
+        // Difference between min and max must never be >1500mm, and minimum never
+        // be <400mm
+        void addMotionIndicator(uint16_t distanceMin=0, uint16_t distanceMax=0);
+
         void stop(void);
 
     protected:

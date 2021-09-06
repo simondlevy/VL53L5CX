@@ -14,7 +14,13 @@
 
 static const uint8_t LPN_PIN = 5;
 
-static VL53L5cx sensor = VL53L5cx(5); // LPN pin
+static VL53L5cx sensor =
+  VL53L5cx(5, // LPN pin
+           0x29, // device address
+           VL53L5cx::RESOLUTION_4X4,
+           VL53L5cx::TARGET_ORDER_CLOSEST,
+           2); // ranging frequency
+
 
 void setup(void)
 {
@@ -26,34 +32,10 @@ void setup(void)
     // Start serial debugging
     Serial.begin(115200);
 
+    // Add a motion indicator with min and max distances
+    sensor.addMotionIndicator(1000, 2000);
+
     sensor.begin();
-
-    /*
-
-    // Create motion indicator with resolution 4x4
-    error = vl53l5cx_motion_indicator_init(&Dev, &motion_config, VL53L5CX_RESOLUTION_4X4);
-    if (error)
-    {
-        Debugger::reportForever("Motion indicator init failed with status : %u\n", error);
-    }
-
-    // (Optional) Change the min and max distance used to detect motions. The
-    // difference between min and max must never be >1500mm, and minimum never
-    // be <400mm, otherwise the function below returns error 127
-    error = vl53l5cx_motion_indicator_set_distance_motion(&Dev, &motion_config, 1000, 2000);
-    if (error) {
-        Debugger::reportForever("Motion indicator set distance motion failed with status : %u\n", error);
-    }
-
-    // If you want to change the resolution, you also need to update the motion indicator resolution
-    //status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
-    //status = vl53l5cx_motion_indicator_set_resolution(&Dev, &motion_config, VL53L5CX_RESOLUTION_4X4);
-
-    // Increase ranging frequency for the example
-    vl53l5cx_set_ranging_frequency_hz(&Dev, 2);
-
-    vl53l5cx_start_ranging(&Dev);
-    */
 
 } // setup
 
