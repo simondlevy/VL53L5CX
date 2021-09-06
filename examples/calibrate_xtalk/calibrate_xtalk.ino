@@ -1,7 +1,7 @@
 /*
- * This example shows the possibility of VL53L5CX to calibrate Xtalk. It
+ * This example shows the possibility using VL53L5CX to calibrate Xtalk. It
  * initializes the VL53L5CX ULD, perform a Xtalk calibration, and starts
- * a ranging to capture 10 frames.
+ * ranging to capture 10 frames.
 
  * In this example, we also suppose that the number of target per zone is
  * set to 1 , and all output are enabled (see file platform.h).

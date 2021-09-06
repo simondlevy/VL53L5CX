@@ -36,7 +36,7 @@ class VL53L5cx {
                 uint8_t deviceAddress=0x29,
                 resolution_t resolution=RESOLUTION_4X4,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
-                uint8_t rangingFrequency=10);
+                uint8_t rangingFrequency=1);
 
         void begin(void);
 
