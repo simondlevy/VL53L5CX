@@ -7,8 +7,10 @@
  */
 
 #include "VL53L5cx.h"
-#include "st/vl53l5cx_plugin_motion_indicator.h"
 #include "Debugger.hpp"
+
+#include "st/vl53l5cx_plugin_motion_indicator.h"
+#include "st/vl53l5cx_plugin_xtalk.h"
 
 VL53L5cx::VL53L5cx(
         uint8_t lpnPin,
@@ -82,10 +84,7 @@ void VL53L5cx::check_ranging_frequency(resolution_t resolution,
 
 void VL53L5cx::start_ranging(void)
 {
-    uint8_t error = vl53l5cx_start_ranging(&_dev);
-    if(error !=0) {
-        Debugger::reportForever("start error = 0x%02X", error);
-    }
+    checkStatus(vl53l5cx_start_ranging(&_dev), "start error = 0x%02X");
 }
 
 bool VL53L5cx::isReady(void)
@@ -150,14 +149,9 @@ void VL53L5cx::stop(void)
 uint32_t VL53L5cx::getIntegrationTimeMsec(void)
 {
     uint32_t integration_time_ms = 0;
-    uint8_t error = vl53l5cx_get_integration_time_ms(&_dev,
-            &integration_time_ms);
-    if (error) {
-        Debugger::reportForever("vl53l5cx_get_integration_time_ms failed, status %u\n",
-                error);
-
-    }
-
+    checkStatus(
+            vl53l5cx_get_integration_time_ms(&_dev, &integration_time_ms),
+            "vl53l5cx_get_integration_time_ms failed, status %u\n");
     return integration_time_ms;
 }
 
@@ -165,34 +159,36 @@ void VL53L5cx::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
 {
     // Create motion indicator
     VL53L5CX_Motion_Configuration motion_config = {};
-    uint8_t error = vl53l5cx_motion_indicator_init(&_dev, &motion_config, 
-            _resolution == RESOLUTION_4X4 ?
-            VL53L5CX_RESOLUTION_4X4 :
-            VL53L5CX_RESOLUTION_8X8);
-
-    if (error) {
-        Debugger::reportForever("Motion indicator init failed with status : %u\n", error);
-    }
+    checkStatus(vl53l5cx_motion_indicator_init(&_dev, &motion_config, 
+                _resolution == RESOLUTION_4X4 ?
+                VL53L5CX_RESOLUTION_4X4 :
+                VL53L5CX_RESOLUTION_8X8),
+            "Motion indicator init failed with status : %u");
 
     if (distanceMin > 0 && distanceMax > 0) {
 
-        if (distanceMin < 400) {
-            Debugger::reportForever("Motion indicator minimum distance must be at least 400mm");
-        }
+        bozoFilter(distanceMin < 400,
+                "Motion indicator minimum distance must be at least 400mm");
 
-        if (distanceMax < distanceMin) {
-            Debugger::reportForever("Motion indicator maximum distance must be greater than minimum");
-        }
+        bozoFilter(distanceMax < distanceMin,
+                "Motion indicator maximum distance must be greater than minimum");
 
-        if (distanceMax-distanceMin > 1500) {
-            Debugger::reportForever("Motion indicator maximum distance can be no greater than 1500mm above minimum distance");
-        }
+        bozoFilter(distanceMax-distanceMin > 1500,
+                "Motion indicator maximum distance can be no greater than 1500mm above minimum distance");
 
-        error = vl53l5cx_motion_indicator_set_distance_motion(&_dev, &motion_config, distanceMin, distanceMax);
-        if (error) {
-            Debugger::reportForever("Motion indicator set distance failed with status : %u\n", error);
-        }
+        checkStatus(vl53l5cx_motion_indicator_set_distance_motion( &_dev, &motion_config, distanceMin, distanceMax),
+                   "Motion indicator set distance failed with status : %u\n");
     }
+}
+
+void VL53L5cx::calibrateXtalk(uint8_t reflectancePercent, uint8_t samples, uint16_t distance)
+{
+    rangeFilter(reflectancePercent, 1, 99,  "Reflectance perecent");
+    rangeFilter(samples, 1, 16, "Number of samples");
+    rangeFilter(distance, 600, 3000, "Distance");
+
+    checkStatus(vl53l5cx_calibrate_xtalk(&_dev, reflectancePercent, samples, distance),
+            "vl53l5cx_calibrate_xtalk failed, status %u");
 }
 
 VL53L5cxAutonomous::VL53L5cxAutonomous(
@@ -215,10 +211,8 @@ void VL53L5cxAutonomous::begin(void)
     init();
 
     // Set ranging mode autonomous  
-    uint8_t error = vl53l5cx_set_ranging_mode(&_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-    if (error) {
-        Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n", error);
-    }
+    checkStatus(vl53l5cx_set_ranging_mode(&_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS),
+            "vl53l5cx_set_ranging_mode failed, status %u\n");
 
     // Using autonomous mode, the integration time can be updated (not possible
     // using continuous)
@@ -227,3 +221,23 @@ void VL53L5cxAutonomous::begin(void)
     start_ranging();
 }
 
+void VL53L5cx::bozoFilter(bool cond, const char * msg)
+{
+    if (cond) {
+        Debugger::reportForever(msg);
+    }
+}
+
+void VL53L5cx::checkStatus(uint8_t error, const char * fmt)
+{
+    if (error) {
+        Debugger::reportForever(fmt, error);
+    }
+}
+
+void VL53L5cx::rangeFilter(uint16_t val, uint16_t minval, uint16_t maxval, const char * valname)
+{
+    if (val < minval || val > maxval) {
+        Debugger::reportForever("%s must be between %d and %d", valname, minval, maxval);
+    }
+}

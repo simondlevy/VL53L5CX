@@ -21,18 +21,21 @@
 
 
 /**
- * @brief This function starts the VL53L5CX sensor in order to calibrate Xtalk.
+ * This function starts the VL53L5CX sensor in order to calibrate Xtalk.
  * This calibration is recommended is user wants to use a coverglass.
  * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
  * @param (uint16_t) reflectance_percent : Target reflectance in percent. This
  * value is include between 1 and 99%. For a better efficiency, ST recommends a
  * 3% target reflectance.
+ *
  * @param (uint8_t) nb_samples : Nb of samples used for calibration. A higher
  * number of samples means a higher accuracy, but it increases the calibration
  * time. Minimum is 1 and maximum is 16.
+ *
  * @param (uint16_t) distance_mm : Target distance in mm. The minimum allowed
  * distance is 600mm, and maximum is 3000mm. The target must stay in Full FOV,
  * so short distance are easier for calibration.
+ *
  * @return (uint8_t) status : 0 if calibration OK, 127 if an argument has an
  * incorrect value, or 255 is something failed.
  */
