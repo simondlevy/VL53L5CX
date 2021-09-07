@@ -31,20 +31,16 @@ void setup(void)
     // Start Xtalk calibration with a 3% reflective target at 600mm for the
     // sensor, using 4 samples.
     Debugger::printf("Running Xtalk calibration...\n");
-
     sensor.calibrateXtalk(3, 4, 600);
+    Debugger::printf("Xtalk calibration done\n");
 
-    /*
-       uint8_t xtalkData[VL53L5cx::XTALK_BUFFER_SIZE] = {};
-
-       Debugger::printf("Xtalk calibration done\n");
 
     // Get Xtalk calibration data, in order to use them later
-    vl53l5cx_get_caldata_xtalk(&Dev, xtalk_data);
+    VL53L5cx::XtalkCalibrationData xtalk_data;
+    sensor.getXtalkCalibrationData(xtalk_data);
 
     // Set Xtalk calibration data
-    vl53l5cx_set_caldata_xtalk(&Dev, xtalk_data);
-     */
+    sensor.setXtalkCalibrationData(xtalk_data);
 
     sensor.begin();
 }

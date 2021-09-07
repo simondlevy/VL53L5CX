@@ -18,8 +18,6 @@ class VL53L5cx {
 
         static const uint8_t NB_TARGET_PER_ZONE = VL53L5CX_NB_TARGET_PER_ZONE;
 
-        static const uint16_t XTALK_BUFFER_SIZE = VL53L5CX_XTALK_BUFFER_SIZE;
-
         typedef enum {
 
             RESOLUTION_4X4,
@@ -33,6 +31,15 @@ class VL53L5cx {
             TARGET_ORDER_STRONGEST
 
         } target_order_t;
+
+        class XtalkCalibrationData {
+
+            friend class VL53L5cx;
+
+            protected:
+
+                uint8_t data[VL53L5CX_XTALK_BUFFER_SIZE];
+        };
 
         VL53L5cx(
                 uint8_t lpnPin,
@@ -88,6 +95,10 @@ class VL53L5cx {
          */
         void calibrateXtalk(uint8_t reflectancePercent, uint8_t samples, uint16_t distance);
 
+        void getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
+
+        void setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
+
         void stop(void);
 
     protected:
@@ -140,4 +151,6 @@ class VL53L5cxAutonomous : public VL53L5cx {
 
         void begin(void);
 
-}; // VL53L5cxAutonomous
+}; // class VL53L5cxAutonomous
+
+

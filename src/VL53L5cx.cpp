@@ -191,6 +191,15 @@ void VL53L5cx::calibrateXtalk(uint8_t reflectancePercent, uint8_t samples, uint1
             "vl53l5cx_calibrate_xtalk failed, status %u");
 }
 
+void VL53L5cx::getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
+{
+    vl53l5cx_get_caldata_xtalk(&_dev, data.data);
+}
+
+void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
+{
+}
+
 VL53L5cxAutonomous::VL53L5cxAutonomous(
         uint8_t lpnPin,
         uint32_t integrationTimeMsec,
