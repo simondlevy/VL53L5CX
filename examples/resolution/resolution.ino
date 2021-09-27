@@ -1,5 +1,5 @@
 /*
-*  VL53L5CX ULD basic example with 8x8 resolution
+*  VL53L5CX resolution test
 *
 *  Copyright (c) 2021 Simon D. Levy
 *
@@ -7,7 +7,6 @@
 */
 
 #include <Wire.h>
-#include "Debugger.hpp"
 #include "VL53L5cx.h"
 
 // Choices are RESOLUTION_4X4 and RESOLUTION_8x8
