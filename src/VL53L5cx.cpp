@@ -168,20 +168,24 @@ void VL53L5cx::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
     if (distanceMin > 0 && distanceMax > 0) {
 
         bozoFilter(distanceMin < 400,
-                "Motion indicator minimum distance must be at least 400mm");
+                "Motion indicator min distance must be at least 400mm");
 
         bozoFilter(distanceMax < distanceMin,
-                "Motion indicator maximum distance must be greater than minimum");
+                "Motion indicator max distance must be greater than min");
 
         bozoFilter(distanceMax-distanceMin > 1500,
-                "Motion indicator maximum distance can be no greater than 1500mm above minimum distance");
+                "Motion indicator max distance can be no more than 1500mm above min");
 
-        checkStatus(vl53l5cx_motion_indicator_set_distance_motion( &_dev, &motion_config, distanceMin, distanceMax),
-                   "Motion indicator set distance failed with status : %u\n");
+        checkStatus(vl53l5cx_motion_indicator_set_distance_motion(
+                        &_dev, &motion_config, distanceMin, distanceMax),
+                "Motion indicator set distance failed with status : %u\n");
     }
 }
 
-void VL53L5cx::calibrateXtalk(uint8_t reflectancePercent, uint8_t samples, uint16_t distance)
+void VL53L5cx::calibrateXtalk(
+        uint8_t reflectancePercent,
+        uint8_t samples,
+        uint16_t distance)
 {
     rangeFilter(reflectancePercent, 1, 99,  "Reflectance perecent");
     rangeFilter(samples, 1, 16, "Number of samples");
@@ -244,7 +248,11 @@ void VL53L5cx::checkStatus(uint8_t error, const char * fmt)
     }
 }
 
-void VL53L5cx::rangeFilter(uint16_t val, uint16_t minval, uint16_t maxval, const char * valname)
+void VL53L5cx::rangeFilter(
+        uint16_t val,
+        uint16_t minval,
+        uint16_t maxval,
+        const char * valname)
 {
     if (val < minval || val > maxval) {
         Debugger::reportForever("%s must be between %d and %d", valname, minval, maxval);

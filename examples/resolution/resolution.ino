@@ -10,7 +10,7 @@
 #include "VL53L5cx.h"
 
 // Choices are RESOLUTION_4X4 and RESOLUTION_8x8
-static VL53L5cx::resolution_t RESOLUTION = VL53L5cx::RESOLUTION_4X4;
+static VL53L5cx::resolution_t RESOLUTION = VL53L5cx::RESOLUTION_8X8;
 
 static VL53L5cx sensor = VL53L5cx(5, // LPN pin
                                   0x29, // I^2C address
