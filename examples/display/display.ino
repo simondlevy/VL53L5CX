@@ -32,13 +32,11 @@ void loop(void)
     // Use polling function to know when a new measurement is ready.
     if (sensor.isReady()) {
 
-        uint8_t buf[64] = {};
-
         for (uint8_t i=0; i<64; i++) {
 
-            buf[i] = sensor.getDistance(i);
+            Serial.write(sensor.getDistance(i));
         }
 
-        Serial.write(buf, 64);
+        Serial.write(0xFF); // sentinel byte
     }
 }

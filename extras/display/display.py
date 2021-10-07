@@ -13,6 +13,10 @@ import cv2
 import numpy as np
 from sys import stdout
 
+def debug(s):
+    print(s)
+    stdout.flush()
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument(dest='port', help='COM port')
@@ -21,17 +25,29 @@ args = parser.parse_args()
 
 port = serial.Serial(args.port, 115200)
 
+count = 0
+
+image = np.zeros((8,8), dtype='uint8')
+count = 0
+
 while True:
 
-    buf = port.read(64)
+    b = ord(port.read(1))
 
-    image = np.reshape(np.frombuffer(buf, np.uint8), (8,8))
+    if b == 0xFF:
 
-    # image = cv2.resize(image, (400,400), interpolation= cv2.INTER_LINEAR)
-    image = cv2.resize(image, (400,400), interpolation= cv2.INTER_NEAREST)
+        image = cv2.resize(image, (400,400), interpolation= cv2.INTER_NEAREST)
 
-    cv2.imshow('VL53L5', image)
+        cv2.imshow('VL53L5', image)
 
-    if cv2.waitKey(1) == 27:
-        break
+        if cv2.waitKey(1) == 27:
+            break
+
+        image = np.zeros((8,8), dtype='uint8')
+        count = 0
+
+    else:
+
+        image[count//8, count%8] = b
+        count += 1
 
