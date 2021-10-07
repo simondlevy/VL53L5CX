@@ -53,7 +53,7 @@ while True:
                             (j*SCALEUP+SCALEUP//4,k*SCALEUP+SCALEUP//2),
                             FONT, FONT_SIZE, FONT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
 
-        cv2.imshow('VL53L5 [ESC to quit]', resized)
+        cv2.imshow(      'VL53L5 [ESC to quit]', resized)
 
         if cv2.waitKey(1) == 27:
             break
@@ -62,6 +62,6 @@ while True:
 
     else:
 
-        image[count//8, count%8] = b
+        image[8-(count//8)-1, 8-(count%8)-1] = b
         count += 1
 
