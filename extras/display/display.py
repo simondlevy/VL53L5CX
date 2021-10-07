@@ -9,7 +9,8 @@ MIT License
 
 import argparse
 import serial
-from sys import stdout
+import cv2
+import numpy as np
 
 parser = argparse.ArgumentParser()
 
@@ -23,5 +24,9 @@ while True:
 
     buf = port.read(64)
 
-    print(len(buf))
-    stdout.flush()
+    image = np.zeros((400,400))
+
+    cv2.imshow('VL53L5', image)
+
+    if cv2.waitKey(1) == 27:
+        break
