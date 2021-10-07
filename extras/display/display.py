@@ -27,7 +27,8 @@ while True:
 
     image = np.reshape(np.frombuffer(buf, np.uint8), (8,8))
 
-    image = cv2.resize(image, (400,400), interpolation= cv2.INTER_LINEAR)
+    # image = cv2.resize(image, (400,400), interpolation= cv2.INTER_LINEAR)
+    image = cv2.resize(image, (400,400), interpolation= cv2.INTER_NEAREST)
 
     cv2.imshow('VL53L5', image)
 
