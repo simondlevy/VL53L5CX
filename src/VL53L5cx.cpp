@@ -90,7 +90,6 @@ void VL53L5cx::start_ranging(void)
 bool VL53L5cx::isReady(void)
 {
     uint8_t is_ready = false;
-
     vl53l5cx_check_data_ready(&_dev, &is_ready);
 
     if (is_ready) {
