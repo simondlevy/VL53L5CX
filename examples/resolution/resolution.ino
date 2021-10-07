@@ -41,11 +41,11 @@ void loop(void)
     if (sensor.isReady()) {
 
 
-        for (uint8_t i=0; i<SIZE; i++) {
+        for (uint8_t i=SIZE; i>0; i--) {
 
-            for (uint8_t j=0; j<SIZE; j++) {
+            for (uint8_t j=SIZE; j>0; j--) {
 
-                uint8_t d = sensor.getDistance(i*SIZE+j);
+                uint8_t d = sensor.getDistance((i-1)*SIZE+j-1);
                 Serial.print(d < 10 ? "  " : d < 100 ? " " : ""); // right-justify
                 Serial.print(d);
                 Serial.print(" ");
