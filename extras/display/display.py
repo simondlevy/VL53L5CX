@@ -11,6 +11,7 @@ import argparse
 import serial
 import cv2
 import numpy as np
+from sys import stdout
 
 parser = argparse.ArgumentParser()
 
@@ -24,9 +25,12 @@ while True:
 
     buf = port.read(64)
 
-    image = np.zeros((400,400))
+    image = np.reshape(np.frombuffer(buf, np.uint8), (8,8))
+
+    image = cv2.resize(image, (400,400), interpolation= cv2.INTER_LINEAR)
 
     cv2.imshow('VL53L5', image)
 
     if cv2.waitKey(1) == 27:
         break
+
