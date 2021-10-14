@@ -69,13 +69,10 @@ void setup (void)
 
     // In this example, we want 2 thresholds per zone for a 4x4 resolution 
     // Create array of thresholds (size cannot be changed) 
-    VL53L5CX_DetectionThresholds thresholds[VL53L5CX_NB_THRESHOLDS];
-
-    // Set all values to 0 
-    memset(&thresholds, 0, sizeof(thresholds));
+    VL53L5CX_DetectionThresholds thresholds[VL53L5CX_NB_THRESHOLDS] = {};
 
     // Add thresholds for all zones (16 zones in resolution 4x4, or 64 in 8x8)
-    for(uint8_t i = 0; i < 16; i++) {
+    for (uint8_t i = 0; i < 16; i++) {
         // The first wanted thresholds is GREATER_THAN mode. Please note that the
         // first one must always be set with a mathematic_operation
         // VL53L5CX_OPERATION_NONE.
