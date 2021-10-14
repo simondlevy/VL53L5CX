@@ -42,9 +42,6 @@ void setup (void)
     // Start serial debugging
     Serial.begin(115200);
 
-    Serial.println("Initializing the sensor ...");
-    sensor.init();
-
     /*********************************/
     /*  Program detection thresholds */
     /*********************************/
@@ -85,14 +82,14 @@ void setup (void)
     // checkers (16 zones x 2), the last one is the 31
     thresholds[31].zone_num = VL53L5CX_LAST_THRESHOLD | thresholds[31].zone_num;
 
-    sensor.setDetectionThresholds(thresholds);
-
-    vl53l5cx_set_ranging_frequency_hz(&sensor._dev, 10);
-
     // Set up interrupt
     pinMode(INT_PIN, INPUT); 
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
+    Serial.println("Initializing the sensor ...");
+    sensor.init();
+    sensor.setDetectionThresholds(thresholds);
+    vl53l5cx_set_ranging_frequency_hz(&sensor._dev, 10);
     vl53l5cx_start_ranging(&sensor._dev);
 
     Serial.println("Put an object between 200mm and 400mm to catch an interrupt\n");

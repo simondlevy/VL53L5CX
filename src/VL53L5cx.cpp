@@ -232,6 +232,8 @@ void VL53L5cxAutonomous::begin(void)
     checkStatus(vl53l5cx_set_ranging_mode(&_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS),
             "vl53l5cx_set_ranging_mode failed, status %u\n");
 
+    vl53l5cx_set_ranging_frequency_hz(&_dev, _ranging_frequency);
+
     // Using autonomous mode, the integration time can be updated (not possible
     // using continuous)
     vl53l5cx_set_integration_time_ms(&_dev, _integration_time_msec);
