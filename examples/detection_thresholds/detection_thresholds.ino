@@ -19,11 +19,20 @@
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
-static VL53L5cx sensor = VL53L5cx(LPN_PIN, 
-                                  0x29,  // device address
-                                  VL53L5cx::RESOLUTION_4X4, 
-                                  VL53L5cx::TARGET_ORDER_CLOSEST,
-                                  1);    // ranging frequency 
+static VL53L5cx::detection_thresholds_t tmp =
+{
+        150,  // min kcps/spads
+        150,  // max kcps/spads
+        200,  // min distance mm
+        400   // max distance mm
+};
+
+static VL53L5cx sensor = VL53L5cx(
+        LPN_PIN, 
+        0x29,  // device address
+        VL53L5cx::RESOLUTION_4X4, 
+        VL53L5cx::TARGET_ORDER_CLOSEST,
+        1);    // ranging frequency 
 
 
 static volatile bool VL53L5_intFlag;
@@ -52,12 +61,12 @@ void setup (void)
 
     // Add thresholds for all zones (16 zones in resolution 4x4, or 64 in 8x8)
     for (uint8_t i = 0; i < 16; i++) {
-        // The first wanted thresholds is GREATER_THAN mode. Please note that the
-        // first one must always be set with a mathematic_operation
-        // VL53L5CX_OPERATION_NONE.
-        // For this example, the signal thresholds is set to 150 kcps/spads
-        // (the format is automatically updated inside driver)
-        //
+
+        // The first wanted thresholds is GREATER_THAN mode. Please note that
+        // the first one must always be set with a mathematic_operation
+        // VL53L5CX_OPERATION_NONE.  For this example, the signal thresholds is
+        // set to 150 kcps/spads (the format is automatically updated inside
+        // driver).
         thresholds[2*i].zone_num = i;
         thresholds[2*i].measurement = VL53L5CX_SIGNAL_PER_SPAD_KCPS;
         thresholds[2*i].type = VL53L5CX_GREATER_THAN_MAX_CHECKER;
@@ -67,9 +76,9 @@ void setup (void)
 
         // The second wanted checker is IN_WINDOW mode. We will set a
         // mathematical thresholds VL53L5CX_OPERATION_OR, to add the previous
-        // checker to this one.
-        // For this example, distance thresholds are set between 200mm and
-        // 400mm (the format is automatically updated inside driver).
+        // checker to this one.  For this example, distance thresholds are set
+        // between 200mm and 400mm (the format is automatically updated inside
+        // driver).
         thresholds[2*i+1].zone_num = i;
         thresholds[2*i+1].measurement = VL53L5CX_DISTANCE_MM;
         thresholds[2*i+1].type = VL53L5CX_IN_WINDOW;

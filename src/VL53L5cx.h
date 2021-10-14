@@ -42,6 +42,13 @@ class VL53L5cx {
                 uint8_t data[VL53L5CX_XTALK_BUFFER_SIZE];
         };
 
+        typedef struct {
+            uint16_t kpcs_spads_min;
+            uint16_t kpcs_spads_max;
+            uint16_t distance_min;
+            uint16_t distance_max;
+        } detection_thresholds_t;
+
         VL53L5cx(
                 uint8_t lpnPin,
                 uint8_t deviceAddress=0x29,
@@ -135,7 +142,6 @@ class VL53L5cx {
         static void rangeFilter(uint16_t val, uint16_t minval, uint16_t maxval, const char * valname);
 
 }; // class VL53L5cx 
-
 
 class VL53L5cxAutonomous : public VL53L5cx {
 
