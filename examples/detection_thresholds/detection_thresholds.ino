@@ -85,11 +85,7 @@ void setup (void)
     // checkers (16 zones x 2), the last one is the 31
     thresholds[31].zone_num = VL53L5CX_LAST_THRESHOLD | thresholds[31].zone_num;
 
-    // Send array of thresholds to the sensor 
-    vl53l5cx_set_detection_thresholds(&sensor._dev, thresholds);
-
-    // Enable detection thresholds
-    vl53l5cx_set_detection_thresholds_enable(&sensor._dev, 1);
+    sensor.setDetectionThresholds(thresholds);
 
     vl53l5cx_set_ranging_frequency_hz(&sensor._dev, 10);
 

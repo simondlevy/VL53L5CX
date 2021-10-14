@@ -100,6 +100,8 @@ class VL53L5cx {
 
         void setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
 
+        void setDetectionThresholds(VL53L5CX_DetectionThresholds * thresholds);
+
         void stop(void);
 
     // protected:

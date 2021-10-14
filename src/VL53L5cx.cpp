@@ -203,6 +203,12 @@ void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 {
 }
 
+void VL53L5cx::setDetectionThresholds(VL53L5CX_DetectionThresholds * thresholds)
+{
+    vl53l5cx_set_detection_thresholds(&_dev, thresholds);
+    vl53l5cx_set_detection_thresholds_enable(&_dev, 1);
+}
+
 VL53L5cxAutonomous::VL53L5cxAutonomous(
         uint8_t lpnPin,
         uint32_t integrationTimeMsec,
