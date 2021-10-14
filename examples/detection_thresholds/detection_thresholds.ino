@@ -15,14 +15,16 @@
 
 #include "Debugger.hpp"
 #include "VL53L5cx.h"
-#include "st/vl53l5cx_api.h"
-#include "st/vl53l5cx_plugin_detection_thresholds.h"
 
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
-static VL53L5CX_Configuration Dev = {};  // Sensor configuration
-static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
+static VL53L5cx sensor = VL53L5cx(LPN_PIN, 
+                                  0x29,  // device address
+                                  VL53L5cx::RESOLUTION_8X8, 
+                                  VL53L5cx::TARGET_ORDER_CLOSEST,
+                                  1);    // ranging frequency 
+
 
 static volatile bool VL53L5_intFlag;
 static void VL53L5_intHandler(void)
@@ -44,17 +46,17 @@ void setup (void)
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
-    Dev.platform.address = 0x29;
+    sensor._dev.platform.address = 0x29;
 
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(LPN_PIN);
 
     // Make sure there is a VL53L5CX sensor connected
     uint8_t isAlive = 0;
-    vl53l5cx_is_alive(&Dev, &isAlive);
+    vl53l5cx_is_alive(&sensor._dev, &isAlive);
 
     // Init VL53L5CX sensor
-    vl53l5cx_init(&Dev);
+    vl53l5cx_init(&sensor._dev);
 
     /*********************************/
     /*  Program detection thresholds */
@@ -97,18 +99,18 @@ void setup (void)
     thresholds[31].zone_num = VL53L5CX_LAST_THRESHOLD | thresholds[31].zone_num;
 
     // Send array of thresholds to the sensor 
-    vl53l5cx_set_detection_thresholds(&Dev, thresholds);
+    vl53l5cx_set_detection_thresholds(&sensor._dev, thresholds);
 
     // Enable detection thresholds
-    vl53l5cx_set_detection_thresholds_enable(&Dev, 1);
+    vl53l5cx_set_detection_thresholds_enable(&sensor._dev, 1);
 
-    vl53l5cx_set_ranging_frequency_hz(&Dev, 10);
+    vl53l5cx_set_ranging_frequency_hz(&sensor._dev, 10);
 
     // Set up interrupt
     pinMode(INT_PIN, INPUT); 
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
-    vl53l5cx_start_ranging(&Dev);
+    vl53l5cx_start_ranging(&sensor._dev);
 
     Serial.println("Put an object between 200mm and 400mm to catch an interrupt\n");
     delay(2000);
@@ -125,19 +127,19 @@ void loop(void)
 
             VL53L5_intFlag = false;
 
-            vl53l5cx_get_ranging_data(&Dev, &Results);
+            vl53l5cx_get_ranging_data(&sensor._dev, &sensor._results);
 
             // As the sensor is set in 4x4 mode by default, we have a total
             // of 16 zones to print. For this example, only the data of
             // first zone are print
-            Debugger::printf("Print data no : %3u\n", Dev.streamcount);
+            Debugger::printf("Print data no : %3u\n", sensor._dev.streamcount);
             for (uint8_t i = 0; i < 16; i++)
             {
                 Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm, Signal : %5lu kcps/SPADs\n",
                         i,
-                        Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE*i]);
+                        sensor._results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
+                        sensor._results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i],
+                        sensor._results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE*i]);
             }
             Debugger::printf("\n");
             loop_count++;
@@ -148,7 +150,7 @@ void loop(void)
     }
 
     else if (loop_count == 100) {
-        vl53l5cx_stop_ranging(&Dev);
+        vl53l5cx_stop_ranging(&sensor._dev);
         loop_count++;
     }
 

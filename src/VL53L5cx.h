@@ -9,6 +9,7 @@
 #pragma once
 
 #include "st/vl53l5cx_api.h"
+#include "st/vl53l5cx_plugin_detection_thresholds.h"
 
 #include <stdint.h>
 
@@ -101,7 +102,8 @@ class VL53L5cx {
 
         void stop(void);
 
-    protected:
+    // protected:
+    public:
 
         VL53L5CX_Configuration _dev = {};
 
@@ -111,7 +113,8 @@ class VL53L5cx {
 
         static void checkStatus(uint8_t error, const char * fmt);
 
-    private:
+    // private:
+    public:
 
         uint8_t _lpn_pin = 0;
 

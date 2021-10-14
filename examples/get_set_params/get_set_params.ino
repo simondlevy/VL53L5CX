@@ -14,7 +14,7 @@ static const uint8_t LED_PIN = 13;
 static const uint8_t INT_PIN = 8;
 static const uint8_t LPN_PIN = 5;
 
-static VL53L5cx sensor = VL53L5cx(5,     // LPN pin
+static VL53L5cx sensor = VL53L5cx(LPN_PIN, 
                                   0x29,  // device address
                                   VL53L5cx::RESOLUTION_8X8, 
                                   VL53L5cx::TARGET_ORDER_CLOSEST,
