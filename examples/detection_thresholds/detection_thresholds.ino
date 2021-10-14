@@ -27,13 +27,7 @@ static VL53L5cx::detection_thresholds_t thresholds =
         400   // max distance mm
 };
 
-static VL53L5cx sensor = VL53L5cx(
-        LPN_PIN, 
-        0x29,  // device address
-        VL53L5cx::RESOLUTION_4X4, 
-        VL53L5cx::TARGET_ORDER_CLOSEST,
-        1);    // ranging frequency 
-
+static VL53L5cx sensor = VL53L5cx(LPN_PIN);
 
 static volatile bool VL53L5_intFlag;
 static void VL53L5_intHandler(void)
