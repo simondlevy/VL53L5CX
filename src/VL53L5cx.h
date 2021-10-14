@@ -145,7 +145,8 @@ class VL53L5cx {
 
         static void make_detection_thresholds_array(
                 detection_thresholds_t & values, 
-                VL53L5CX_DetectionThresholds * array);
+                VL53L5CX_DetectionThresholds * array,
+                resolution_t resolution);
 
 }; // class VL53L5cx 
 

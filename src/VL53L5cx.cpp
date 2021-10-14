@@ -41,7 +41,7 @@ void VL53L5cx::begin(detection_thresholds_t & values)
     init();
 
     VL53L5CX_DetectionThresholds array[VL53L5CX_NB_THRESHOLDS] = {};
-    make_detection_thresholds_array(values, array);
+    make_detection_thresholds_array(values, array, _resolution);
     vl53l5cx_set_detection_thresholds(&_dev, array);
     vl53l5cx_set_ranging_frequency_hz(&_dev, 10);
     vl53l5cx_start_ranging(&_dev);
@@ -51,10 +51,13 @@ void VL53L5cx::begin(detection_thresholds_t & values)
 
 void VL53L5cx::make_detection_thresholds_array(
         detection_thresholds_t & values, 
-        VL53L5CX_DetectionThresholds * array)
+        VL53L5CX_DetectionThresholds * array,
+        resolution_t resolution)
 {
+    uint8_t size = resolution == RESOLUTION_8X8 ? 64 : 16;
+
     // Add thresholds for all zones (16 zones in resolution 4x4, or 64 in 8x8)
-    for (uint8_t i = 0; i < 16; i++) {
+    for (uint8_t i = 0; i < size; i++) {
 
         // The first wanted thresholds is GREATER_THAN mode. Please note that
         // the first one must always be set with a mathematic_operation
@@ -83,7 +86,8 @@ void VL53L5cx::make_detection_thresholds_array(
 
     // The last thresholds must be clearly indicated. As we have 32
     // checkers (16 zones x 2), the last one is the 31
-    array[31].zone_num = VL53L5CX_LAST_THRESHOLD | array[31].zone_num;
+    uint8_t last = 2 * size - 1;
+    array[last].zone_num = VL53L5CX_LAST_THRESHOLD | array[last].zone_num;
 }
 
 void VL53L5cx::init(void)
