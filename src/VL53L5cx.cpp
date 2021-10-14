@@ -29,9 +29,15 @@ VL53L5cx::VL53L5cx(
     _ranging_frequency = rangingFrequency;
 }
         
-void VL53L5cx::begin(void)
+void VL53L5cx::begin(VL53L5CX_DetectionThresholds * thresholds)
 {
     init();
+
+    if (thresholds) {
+        vl53l5cx_set_ranging_frequency_hz(&_dev, 10);
+        vl53l5cx_start_ranging(&_dev);
+    }
+
     start_ranging();
 }
 
@@ -201,12 +207,6 @@ void VL53L5cx::getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 
 void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 {
-}
-
-void VL53L5cx::setDetectionThresholds(VL53L5CX_DetectionThresholds * thresholds)
-{
-    vl53l5cx_set_detection_thresholds(&_dev, thresholds);
-    vl53l5cx_set_detection_thresholds_enable(&_dev, 1);
 }
 
 VL53L5cxAutonomous::VL53L5cxAutonomous(

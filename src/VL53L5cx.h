@@ -49,7 +49,7 @@ class VL53L5cx {
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=1);
 
-        void begin(void);
+        void begin(VL53L5CX_DetectionThresholds * thresholds);
 
         bool isReady(void);
 
@@ -99,8 +99,6 @@ class VL53L5cx {
         void getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
 
         void setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
-
-        void setDetectionThresholds(VL53L5CX_DetectionThresholds * thresholds);
 
         void stop(void);
 
