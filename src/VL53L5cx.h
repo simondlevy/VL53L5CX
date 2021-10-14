@@ -104,8 +104,7 @@ class VL53L5cx {
 
         void stop(void);
 
-    // protected:
-    public:
+    protected:
 
         VL53L5CX_Configuration _dev = {};
 
@@ -115,8 +114,9 @@ class VL53L5cx {
 
         static void checkStatus(uint8_t error, const char * fmt);
 
-    // private:
-    public:
+        uint8_t _ranging_frequency = 10;
+
+    private:
 
         uint8_t _lpn_pin = 0;
 
@@ -125,8 +125,6 @@ class VL53L5cx {
         resolution_t _resolution = RESOLUTION_8X8;
 
         target_order_t _target_order = TARGET_ORDER_CLOSEST;
-
-        uint8_t _ranging_frequency = 10;
 
         void check_ranging_frequency(resolution_t resolution,
                 uint8_t maxval,

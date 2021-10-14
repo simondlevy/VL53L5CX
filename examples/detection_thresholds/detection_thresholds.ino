@@ -108,14 +108,14 @@ void loop(void)
             // As the sensor is set in 4x4 mode by default, we have a total
             // of 16 zones to print. For this example, only the data of
             // first zone are print
-            Debugger::printf("Print data no : %3u\n", sensor._dev.streamcount);
+            Debugger::printf("Print data no : %3u\n", sensor.getStreamCount());
             for (uint8_t i = 0; i < 16; i++)
             {
                 Debugger::printf("Zone : %3d, Status : %3u, Distance : %4d mm, Signal : %5lu kcps/SPADs\n",
                         i,
-                        sensor._results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        sensor._results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        sensor._results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE*i]);
+                        sensor.getTargetStatus(i),
+                        sensor.getDistance(i),
+                        sensor.getSignalPerSpad(i));
             }
             Debugger::printf("\n");
             loop_count++;
@@ -126,7 +126,7 @@ void loop(void)
     }
 
     else if (loop_count == 100) {
-        vl53l5cx_stop_ranging(&sensor._dev);
+        sensor.stop(); 
         loop_count++;
     }
 
