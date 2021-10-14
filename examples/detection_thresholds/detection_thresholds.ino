@@ -40,6 +40,8 @@ void setup (void)
     // Start serial debugging
     Serial.begin(115200);
 
+    Serial.println("Initializing the sensor ...");
+
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
     Dev.platform.address = 0x29;
@@ -49,19 +51,10 @@ void setup (void)
 
     // Make sure there is a VL53L5CX sensor connected
     uint8_t isAlive = 0;
-    uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
-    if (!isAlive || error) {
-        Debugger::reportForever("VL53L5CX not detected at requested address");
-    }
+    vl53l5cx_is_alive(&Dev, &isAlive);
 
     // Init VL53L5CX sensor
-    error = vl53l5cx_init(&Dev);
-    if (error) {
-        Debugger::reportForever("VL53L5CX ULD Loading failed");
-    }
-
-    Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
-            VL53L5CX_API_REVISION);
+    vl53l5cx_init(&Dev);
 
     /*********************************/
     /*  Program detection thresholds */
@@ -116,7 +109,9 @@ void setup (void)
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
     vl53l5cx_start_ranging(&Dev);
-    Debugger::printf("Put an object between 200mm and 400mm to catch an interrupt\n");
+
+    Serial.println("Put an object between 200mm and 400mm to catch an interrupt\n");
+    delay(2000);
 
 } // setup
 
