@@ -43,20 +43,7 @@ void setup (void)
     Serial.begin(115200);
 
     Serial.println("Initializing the sensor ...");
-
-    // Fill the platform structure with customer's implementation. For this
-    // example, only the I2C address is used.
-    sensor._dev.platform.address = 0x29;
-
-    // Reset the sensor by toggling the LPN pin
-    Reset_Sensor(LPN_PIN);
-
-    // Make sure there is a VL53L5CX sensor connected
-    uint8_t isAlive = 0;
-    vl53l5cx_is_alive(&sensor._dev, &isAlive);
-
-    // Init VL53L5CX sensor
-    vl53l5cx_init(&sensor._dev);
+    sensor.init();
 
     /*********************************/
     /*  Program detection thresholds */
