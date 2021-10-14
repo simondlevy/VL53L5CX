@@ -54,6 +54,8 @@ void loop(void)
         // Use polling function to know when a new measurement is ready.
         if (sensor.isReady()) {
 
+            sensor.collectData();
+
             // As the sensor is set in 4x4 mode by default, we have a total of
             // 16 zones to print. For this example, only the data of first zone
             // are printed.

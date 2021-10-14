@@ -39,6 +39,8 @@ void loop(void)
 
         if (sensor.isReady()) {
 
+            sensor.collectData();
+
             // As the sensor is set in 4x4 mode by default, we have a total
             // of 16 zones to print */
             Debugger::printf("Print data no : %3u\n", sensor.getStreamCount());

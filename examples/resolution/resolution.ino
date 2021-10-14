@@ -40,6 +40,7 @@ void loop(void)
     // Use polling function to know when a new measurement is ready.
     if (sensor.isReady()) {
 
+        sensor.collectData();
 
         for (uint8_t i=SIZE; i>0; i--) {
 

@@ -49,9 +49,11 @@ class VL53L5cx {
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=1);
 
-        void begin(VL53L5CX_DetectionThresholds * thresholds);
+        void begin(VL53L5CX_DetectionThresholds * thresholds=NULL);
 
         bool isReady(void);
+
+        void collectData(void);
 
         uint8_t getStreamCount(void);
 

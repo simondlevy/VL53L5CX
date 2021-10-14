@@ -95,15 +95,14 @@ void VL53L5cx::start_ranging(void)
 
 bool VL53L5cx::isReady(void)
 {
-    uint8_t is_ready = false;
-    vl53l5cx_check_data_ready(&_dev, &is_ready);
+    uint8_t ready = false;
+    vl53l5cx_check_data_ready(&_dev, &ready);
+    return ready;
+}
 
-    if (is_ready) {
-        vl53l5cx_get_ranging_data(&_dev, &_results);
-        return true;
-    }
-
-    return false;
+void VL53L5cx::collectData(void)
+{
+    vl53l5cx_get_ranging_data(&_dev, &_results);
 }
 
 uint8_t VL53L5cx::getStreamCount(void)
