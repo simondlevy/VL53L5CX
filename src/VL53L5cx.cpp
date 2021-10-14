@@ -29,16 +29,61 @@ VL53L5cx::VL53L5cx(
     _ranging_frequency = rangingFrequency;
 }
         
-void VL53L5cx::begin(VL53L5CX_DetectionThresholds * thresholds)
+void VL53L5cx::begin(void)
 {
     init();
 
-    if (thresholds) {
-        vl53l5cx_set_ranging_frequency_hz(&_dev, 10);
-        vl53l5cx_start_ranging(&_dev);
-    }
+    start_ranging();
+}
+
+void VL53L5cx::begin(detection_thresholds_t & values)
+{
+    init();
+
+    VL53L5CX_DetectionThresholds array[VL53L5CX_NB_THRESHOLDS] = {};
+    make_detection_thresholds_array(values, array);
+    vl53l5cx_set_detection_thresholds(&_dev, array);
+    vl53l5cx_set_ranging_frequency_hz(&_dev, 10);
+    vl53l5cx_start_ranging(&_dev);
 
     start_ranging();
+}
+
+void VL53L5cx::make_detection_thresholds_array(
+        detection_thresholds_t & values, 
+        VL53L5CX_DetectionThresholds * array)
+{
+    // Add thresholds for all zones (16 zones in resolution 4x4, or 64 in 8x8)
+    for (uint8_t i = 0; i < 16; i++) {
+
+        // The first wanted thresholds is GREATER_THAN mode. Please note that
+        // the first one must always be set with a mathematic_operation
+        // VL53L5CX_OPERATION_NONE.  For this example, the signal thresholds is
+        // set to 150 kcps/spads (the format is automatically updated inside
+        // driver).
+        array[2*i].zone_num = i;
+        array[2*i].measurement = VL53L5CX_SIGNAL_PER_SPAD_KCPS;
+        array[2*i].type = VL53L5CX_GREATER_THAN_MAX_CHECKER;
+        array[2*i].mathematic_operation = VL53L5CX_OPERATION_NONE;
+        array[2*i].param_low_thresh = values.kpcs_spads_min;
+        array[2*i].param_high_thresh = values.kpcs_spads_max;
+
+        // The second wanted checker is IN_WINDOW mode. We will set a
+        // mathematical thresholds VL53L5CX_OPERATION_OR, to add the previous
+        // checker to this one.  For this example, distance thresholds are set
+        // between 200mm and 400mm (the format is automatically updated inside
+        // driver).
+        array[2*i+1].zone_num = i;
+        array[2*i+1].measurement = VL53L5CX_DISTANCE_MM;
+        array[2*i+1].type = VL53L5CX_IN_WINDOW;
+        array[2*i+1].mathematic_operation = VL53L5CX_OPERATION_OR;
+        array[2*i+1].param_low_thresh = values.distance_min;
+        array[2*i+1].param_high_thresh = values.distance_max;
+    }
+
+    // The last thresholds must be clearly indicated. As we have 32
+    // checkers (16 zones x 2), the last one is the 31
+    array[31].zone_num = VL53L5CX_LAST_THRESHOLD | array[31].zone_num;
 }
 
 void VL53L5cx::init(void)

@@ -56,7 +56,9 @@ class VL53L5cx {
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=1);
 
-        void begin(VL53L5CX_DetectionThresholds * thresholds=NULL);
+        void begin(void);
+
+        void begin(detection_thresholds_t & thresholds);
 
         bool isReady(void);
 
@@ -140,6 +142,10 @@ class VL53L5cx {
         static void bozoFilter(bool cond, const char * msg);
 
         static void rangeFilter(uint16_t val, uint16_t minval, uint16_t maxval, const char * valname);
+
+        static void make_detection_thresholds_array(
+                detection_thresholds_t & values, 
+                VL53L5CX_DetectionThresholds * array);
 
 }; // class VL53L5cx 
 
