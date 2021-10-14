@@ -50,6 +50,7 @@ void setup(void)
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
     // Start the sensor
+    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin();
 
     Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",

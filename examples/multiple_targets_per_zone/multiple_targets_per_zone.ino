@@ -26,6 +26,7 @@ void setup(void)
     Serial.begin(115200);
 
     // Start sensor
+    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin();
 
 } // setup

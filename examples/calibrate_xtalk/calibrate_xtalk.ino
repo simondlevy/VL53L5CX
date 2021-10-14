@@ -26,6 +26,7 @@ void setup(void)
     Serial.begin(115200);
 
     // Start sensor
+    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin();
 
     // Start Xtalk calibration with a 3% reflective target at 600mm for the

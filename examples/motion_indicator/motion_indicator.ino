@@ -35,6 +35,7 @@ void setup(void)
     // Add a motion indicator with min and max distances
     sensor.addMotionIndicator(1000, 2000);
 
+    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin();
 
 } // setup

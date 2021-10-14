@@ -55,7 +55,7 @@ void setup (void)
     pinMode(INT_PIN, INPUT); 
     attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
 
-    Serial.println("Starting sensor ...");
+    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin(thresholds);
     Serial.println("Put an object between 200mm and 400mm to catch an interrupt\n");
     delay(2000);
