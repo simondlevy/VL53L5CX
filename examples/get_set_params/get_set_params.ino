@@ -41,8 +41,6 @@ void setup(void)
     Wire.setClock(400000); // I2C frequency at 400 kHz  
     delay(1000);
 
-    Debugger::printf("starting\n\n");
-
     delay(1000);
 
     // Set up interrupt

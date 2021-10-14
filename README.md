@@ -28,4 +28,6 @@ I have tested this library on the following platforms:
 
 * [Ladybug STM32L432 Development Board](https://www.tindie.com/products/TleraCorp/ladybug-stm32l432-development-board/) from Tlera Corp.
 
+* [Teensy 3.2 Develeopment Board](https://www.pjrc.com/store/teensy32.html) from PJRC
+
 * [Teensy 4.0 Develeopment Board](https://www.pjrc.com/store/teensy40.html) from PJRC
