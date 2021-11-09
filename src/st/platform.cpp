@@ -46,7 +46,7 @@ uint8_t RdMulti(
 
     // Loop until the port is transmitted correctly
     do {
-        Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
+        Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F));
 
         start_transfer(RegisterAddress);
 
@@ -72,7 +72,7 @@ uint8_t RdMulti(
             // If still more than 32 bytes to go, 32, else the remaining number
             // of bytes
             byte current_read_size = (size - i > 32 ? 32 : size - i); 
-            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
+            Wire.requestFrom(((uint8_t)((p_platform->address >> 1) & 0x7F)),
                     current_read_size);
             while (Wire.available()) {
                 p_values[i] = Wire.read();
@@ -82,7 +82,7 @@ uint8_t RdMulti(
     }
     else
     {
-        Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
+        Wire.requestFrom(((uint8_t)((p_platform->address >> 1) & 0x7F)), size);
         while (Wire.available()) {
             p_values[i] = Wire.read();
             i++;
@@ -109,7 +109,7 @@ uint8_t WrMulti(
         uint32_t size)
 {
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
-    Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+    Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F));
 
     // Target register address for transfer
     start_transfer(RegisterAddress);
@@ -124,7 +124,7 @@ uint8_t WrMulti(
             Wire.endTransmission(false); 
 
             // Restart send
-            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+            Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F));
 
             start_transfer(RegisterAddress+i);
 
