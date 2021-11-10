@@ -104,7 +104,7 @@ static uint8_t _vl53l5cx_send_offset_data(
         SwapBuffer(p_dev->temp_buffer, VL53L5CX_OFFSET_BUFFER_SIZE);
     }
 
-    (void)memcpy(p_dev->temp_buffer, &(p_dev->temp_buffer[8]),
+    (void)memmove(p_dev->temp_buffer, &(p_dev->temp_buffer[8]),
             VL53L5CX_OFFSET_BUFFER_SIZE - (uint16_t)4);
     (void)memcpy(&(p_dev->temp_buffer[0x1E0]), footer, 8);
     status |= WrMulti(&(p_dev->platform), 0x2e18, p_dev->temp_buffer,
