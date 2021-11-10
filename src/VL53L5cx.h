@@ -51,7 +51,7 @@ class VL53L5cx {
 
         VL53L5cx(
                 uint8_t lpnPin,
-                uint8_t deviceAddress=0x29,
+                uint8_t deviceAddress=VL53L5CX_DEFAULT_I2C_ADDRESS,
                 resolution_t resolution=RESOLUTION_4X4,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=1);
@@ -128,6 +128,8 @@ class VL53L5cx {
     private:
 
         uint8_t _lpn_pin = 0;
+
+        uint8_t _dev_addr = VL53L5CX_DEFAULT_I2C_ADDRESS;
 
         VL53L5CX_ResultsData _results = {};
 
