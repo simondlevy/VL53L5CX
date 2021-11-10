@@ -184,6 +184,7 @@ uint8_t WaitMs(
         VL53L5CX_Platform *p_platform,
         uint32_t TimeMs)
 {
+    (void)p_platform;
     delay(TimeMs);
 
     return 0;
