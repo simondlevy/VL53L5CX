@@ -140,6 +140,8 @@ void VL53L5cx::check_ranging_frequency(resolution_t resolution,
                                        uint8_t maxval,
                                        const char *label)
 {
+    (void)resolution;
+    (void)label;
     if (_ranging_frequency < 1 || _ranging_frequency > maxval) {
         Debugger::reportForever("Ranging frequency for %s resolution " 
                 "must be at least 1 and no more than %d", maxval);
@@ -265,6 +267,7 @@ void VL53L5cx::getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 
 void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 {
+    (void)data;
 }
 
 VL53L5cxAutonomous::VL53L5cxAutonomous(

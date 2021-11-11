@@ -13,6 +13,14 @@
 #include <Wire.h>
 
 
+#ifndef DEFAULT_I2C_BUFFER_LEN
+#ifdef BUFFER_LENGTH
+#define DEFAULT_I2C_BUFFER_LEN  BUFFER_LENGTH
+#else
+#define DEFAULT_I2C_BUFFER_LEN  32
+#endif
+#endif
+
 // Helper
 static void start_transfer(uint16_t register_address)
 {
@@ -65,13 +73,13 @@ uint8_t RdMulti(
     } while (status != 0);
 
     uint32_t i = 0;
-    if(size > 32)
+    if(size > DEFAULT_I2C_BUFFER_LEN)
     {
         while(i < size)
         {
-            // If still more than 32 bytes to go, 32, else the remaining number
-            // of bytes
-            byte current_read_size = (size - i > 32 ? 32 : size - i); 
+            // If still more than DEFAULT_I2C_BUFFER_LEN bytes to go, DEFAULT_I2C_BUFFER_LEN,
+            // else the remaining number of bytes
+            byte current_read_size = (size - i > DEFAULT_I2C_BUFFER_LEN ? DEFAULT_I2C_BUFFER_LEN : size - i);
             Wire.requestFrom(((uint8_t)((p_platform->address >> 1) & 0x7F)),
                     current_read_size);
             while (Wire.available()) {
@@ -108,101 +116,30 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
-    Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F)); 
+    uint32_t i = 0;
 
-    // Target register address for transfer
-    start_transfer(RegisterAddress);
-
-    if(size > 32)
+    while(i < size)
     {
-        uint32_t i = 0;
-        uint32_t j = 0;
-        while(i < size)
+        // If still more than DEFAULT_I2C_BUFFER_LEN bytes to go, DEFAULT_I2C_BUFFER_LEN,
+        // else the remaining number of bytes
+        byte current_write_size = (size - i > DEFAULT_I2C_BUFFER_LEN ? DEFAULT_I2C_BUFFER_LEN : size - i);
+
+        Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F));
+        // Target register address for transfer
+        start_transfer(RegisterAddress + i);
+        if (Wire.write(p_values + i, current_write_size) == 0)
         {
-            // If still more than 32 bytes to go, 32, else the remaining number
-            // of bytes
-            if(size - i > 32)
-            {
-                for (j = 0; j < 32 ; j++)
-                {
-                    if (Wire.write(p_values[i+j]) == 0)
-                    {
-                        // Flush buffer but do not send stop bit so we can keep going
-                        Wire.endTransmission(false); 
-
-                        // Restart send
-                        Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F)); 
-
-                        start_transfer(RegisterAddress+i+j);
-
-                        if (Wire.write(p_values[i+j]) == 0)
-                        {
-                            Debugger::reportForever(
-                                "WrMulti failed to send %d bytes to regsiter 0x%02X",
-                                size, RegisterAddress);
-                        }
-                    }
-                }
-
-                // Flush buffer but do not send stop bit so we can keep going
-                Wire.endTransmission(false); 
-
-                // Restart send
-                Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F)); 
-
-                start_transfer(RegisterAddress+i+j);
-
-                i = i + j;
-            }
-            else
-            {
-                for (j = 0 ; j < (size - i) ; j++)
-                {
-                    if (Wire.write(p_values[i+j]) == 0)
-                    {
-                        // Flush buffer but do not send stop bit so we can keep going
-                        Wire.endTransmission(false); 
-
-                        // Restart send
-                        Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F)); 
-
-                        start_transfer(RegisterAddress+i+j);
-
-                        if (Wire.write(p_values[i+j]) == 0)
-                        {
-                            Debugger::reportForever(
-                                "WrMulti failed to send %d bytes to regsiter 0x%02X",
-                                size, RegisterAddress);
-                        }
-                    }
-                }
-
-                i = size;
-            }
+            Debugger::reportForever(
+                "WrMulti failed to send %d bytes to regsiter 0x%02X",
+                size, RegisterAddress);
         }
-    }
-    else
-    {
-        uint32_t j = 0;
-        for (j = 0 ; j < size ; j++)
+        else
         {
-            if (Wire.write(p_values[j]) == 0)
+            i += current_write_size;
+            if (size - i)
             {
                 // Flush buffer but do not send stop bit so we can keep going
-                Wire.endTransmission(false); 
-
-                // Restart send
-                Wire.beginTransmission((uint8_t)((p_platform->address >> 1) & 0x7F)); 
-
-                start_transfer(RegisterAddress+j);
-
-                if (Wire.write(p_values[j]) == 0)
-                {
-                    Debugger::reportForever(
-                        "WrMulti failed to send %d bytes to regsiter 0x%02X",
-                        size, RegisterAddress);
-                }
+                Wire.endTransmission(false);
             }
         }
     }
@@ -247,6 +184,7 @@ uint8_t WaitMs(
         VL53L5CX_Platform *p_platform,
         uint32_t TimeMs)
 {
+    (void)p_platform;
     delay(TimeMs);
 
     return 0;
