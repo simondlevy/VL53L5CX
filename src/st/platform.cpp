@@ -79,7 +79,7 @@ uint8_t RdMulti(
         {
             // If still more than DEFAULT_I2C_BUFFER_LEN bytes to go, DEFAULT_I2C_BUFFER_LEN,
             // else the remaining number of bytes
-            byte current_read_size = (size - i > DEFAULT_I2C_BUFFER_LEN ? DEFAULT_I2C_BUFFER_LEN : size - i);
+            size_t current_read_size = (size - i > DEFAULT_I2C_BUFFER_LEN ? DEFAULT_I2C_BUFFER_LEN : size - i);
             Wire.requestFrom(((uint8_t)((p_platform->address >> 1) & 0x7F)),
                     current_read_size);
             while (Wire.available()) {
