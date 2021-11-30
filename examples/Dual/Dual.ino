@@ -83,6 +83,8 @@ void setup(void)
     I2Cscan();           // should detect VL53L5CX_0 and 0x29 and VL53L5CX_1 at 0x27   
     delay(1000);
 
+    return;
+
     // Make sure there is a VL53L5CX_0 sensor connected
     isAlive = 0;
     error = vl53l5cx_is_alive(&Dev_0, &isAlive);
@@ -172,6 +174,8 @@ void setup(void)
 
 void loop(void)
 {
+    return;
+
     if (VL53L5_intFlag_0) {
         VL53L5_intFlag_0 = false;
 
