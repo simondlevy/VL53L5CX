@@ -1,5 +1,5 @@
 /*
-*  VL53L5CX ULD basic example    
+*  VL53L5CX dual-sensor example with settable I^2C addresses
 *
 *  Copyright (c) 2021 Kris Winer and Simon D. Levy
 *
@@ -47,10 +47,7 @@ const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in aut
 
 void setup(void)
 {
-    // Start serial debugging
     Serial.begin(115200);
-    delay(4000);
-    Serial.println("Serial begun!");
 
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
@@ -67,8 +64,6 @@ void setup(void)
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
 
-    I2Cscan(); // Should show 0x29 of VL53L5CX_1 on the I2C bus
-
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
     Dev_0.platform.address = 0x29;
@@ -79,11 +74,6 @@ void setup(void)
     digitalWrite(LPN_PIN_0, HIGH);   // enable VL53L5CX_0
     delay(100);
     
-    Serial.println("Scan for I2C devices:");
-    I2Cscan();           // should detect VL53L5CX_0 and 0x29 and VL53L5CX_1 at 0x27   
-    delay(1000);
-
-
     // Make sure there is a VL53L5CX_0 sensor connected
     isAlive = 0;
     error = vl53l5cx_is_alive(&Dev_0, &isAlive);
@@ -241,52 +231,6 @@ void VL53L5_intHandler_0(){
 void VL53L5_intHandler_1(){
   VL53L5_intFlag_1 = true;
 }
-
-
-// I2C scan function
-void I2Cscan()
-{
-// scan for i2c devices
-  byte error, address;
-  int nDevices;
-
-  Serial.println("Scanning...");
-
-  nDevices = 0;
-  for(address = 1; address < 127; address++ ) 
-  {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmission to see if
-    // a device did acknowledge to the address.
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
- //     error = Wire.transfer(address, NULL, 0, NULL, 0);
-      
-    if (error == 0)
-    {
-      Serial.print("I2C device found at address 0x");
-      if (address<16) 
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println("  !");
-
-      nDevices++;
-    }
-    else if (error==4) 
-    {
-      Serial.print("Unknown error at address 0x");
-      if (address<16) 
-        Serial.print("0");
-      Serial.println(address,HEX);
-    }    
-  }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
-    
-}
-
 
 void configureVL53L5_0()
 {
