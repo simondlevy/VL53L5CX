@@ -13,8 +13,10 @@
 #include "st/vl53l5cx_api.h"
 
 static const uint8_t LED_PIN = 13;
+
 static const uint8_t INT_PIN_0 =  5;
 static const uint8_t LPN_PIN_0 =  9;
+
 static const uint8_t INT_PIN_1 =  8;
 static const uint8_t LPN_PIN_1 =  4;
 
@@ -26,6 +28,7 @@ volatile bool VL53L5_intFlag_1 = false;
 
 static VL53L5CX_Configuration Dev_0 = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results_0 = {};  // Results data from VL53L5CX_0
+
 static VL53L5CX_Configuration Dev_1 = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results_1 = {};  // Results data from VL53L5CX_1
 
@@ -126,38 +129,9 @@ void setup(void)
    attachInterrupt(INT_PIN_0, VL53L5_intHandler_0, FALLING);
    attachInterrupt(INT_PIN_1, VL53L5_intHandler_1, FALLING);
   
-  // *********
-  // tailor functionality to decrease SRAM requirement, etc
-//  #define VL53L5CX_DISABLE_AMBIENT_PER_SPAD
-//  #define VL53L5CX_DISABLE_NB_SPADS_ENABLED
-//  #define VL53L5CX_DISABLE_SIGNAL_PER_SPAD
-//  #define VL53L5CX_DISABLE_RANGE_SIGMA_MM
-//  #define VL53L5CX_DISABLE_REFLECTANCE_PERCENT
-//  #define VL53L5CX_DISABLE_MOTION_INDICATOR
-  // *********
-/*
-  // Put the VL53L5CX to sleep
-  status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
-  if(status)
-  {
-    printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-  }
-  printf("VL53L5CX is now sleeping\n");
-
-  // We wait 5 seconds, only for the example //
-  printf("Waiting 5 seconds for the example...\n");
-  WaitMs(&(Dev.platform), 5000);
-
-  // After 5 seconds, the sensor needs to be restarted //
-  status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
-  if(status)
-  {
-    printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-  }
-  printf("VL53L5CX is now waking up\n");
-*/
   error = vl53l5cx_check_data_ready(&Dev_0, &isReady); // clear the interrupt
   error = vl53l5cx_check_data_ready(&Dev_1, &isReady); // clear the interrupt
+
  } /* end of setup */
 
 
