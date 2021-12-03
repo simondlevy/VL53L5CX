@@ -51,14 +51,13 @@ class VL53L5cx {
 
         VL53L5cx(
                 uint8_t lpnPin,
-                uint8_t deviceAddress=0x29,
                 resolution_t resolution=RESOLUTION_4X4,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
                 uint8_t rangingFrequency=1);
 
-        void begin(void);
+        void begin(uint8_t address=0x29);
 
-        void begin(detection_thresholds_t & thresholds);
+        void begin(detection_thresholds_t & thresholds, uint8_t address=0x29);
 
         bool isReady(void);
 
@@ -117,7 +116,7 @@ class VL53L5cx {
 
         VL53L5CX_Configuration _dev = {};
 
-        void init(void);
+        void init(uint8_t address);
 
         void start_ranging(void);
 
@@ -128,6 +127,8 @@ class VL53L5cx {
     private:
 
         uint8_t _lpn_pin = 0;
+
+        uint16_t _address = 0;
 
         VL53L5CX_ResultsData _results = {};
 
@@ -161,11 +162,10 @@ class VL53L5cxAutonomous : public VL53L5cx {
         VL53L5cxAutonomous(
                 uint8_t lpnPin,
                 uint32_t integrationTimeMsec=20,
-                uint8_t deviceAddress=0x29,
                 resolution_t resolution=RESOLUTION_8X8,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST);
 
-        void begin(void);
+        void begin(uint8_t address=0x29);
 
 }; // class VL53L5cxAutonomous
 

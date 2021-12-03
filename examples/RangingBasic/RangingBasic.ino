@@ -16,7 +16,6 @@ void setup(void)
 {
     // Start I^2C
     Wire.begin();
-
     delay(100);
 
     // Start serial debugging

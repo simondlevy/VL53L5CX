@@ -14,31 +14,31 @@
 
 VL53L5cx::VL53L5cx(
         uint8_t lpnPin,
-        uint8_t deviceAddress,
         resolution_t resolution,
         target_order_t targetOrder,
         uint8_t rangingFrequency)
 {
     _lpn_pin = lpnPin;
 
-    _dev.platform.address = deviceAddress;
-
     _resolution = resolution;
     _target_order = targetOrder;
 
     _ranging_frequency = rangingFrequency;
+
+    // This can be changed in the begin() method
+    _dev.platform.address = 0x29;
 }
         
-void VL53L5cx::begin(void)
+void VL53L5cx::begin(uint8_t address)
 {
-    init();
+    init(address);
 
     start_ranging();
 }
 
-void VL53L5cx::begin(detection_thresholds_t & values)
+void VL53L5cx::begin(detection_thresholds_t & values, uint8_t address)
 {
-    init();
+    init(address);
 
     VL53L5CX_DetectionThresholds array[VL53L5CX_NB_THRESHOLDS] = {};
     make_detection_thresholds_array(values, array, _resolution);
@@ -90,7 +90,7 @@ void VL53L5cx::make_detection_thresholds_array(
     array[last].zone_num = VL53L5CX_LAST_THRESHOLD | array[last].zone_num;
 }
 
-void VL53L5cx::init(void)
+void VL53L5cx::init(uint8_t address)
 {
     // Bozo filter for ranging frequency
     check_ranging_frequency(RESOLUTION_4X4, 60, "4X4");
@@ -98,6 +98,10 @@ void VL53L5cx::init(void)
 
     // Reset the sensor by toggling the LPN pin
     Reset_Sensor(_lpn_pin);
+
+    // Set the I^2C address
+    vl53l5cx_set_i2c_address(&_dev, address<<1);
+    _dev.platform.address = address;
 
     // Make sure there is a VL53L5CX sensor connected
     uint8_t isAlive = 0;
@@ -260,21 +264,19 @@ void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
 VL53L5cxAutonomous::VL53L5cxAutonomous(
         uint8_t lpnPin,
         uint32_t integrationTimeMsec,
-        uint8_t deviceAddress,
         resolution_t resolution,
         target_order_t targetOrder)
     : VL53L5cxAutonomous::VL53L5cx(
             lpnPin,
-            deviceAddress,
             resolution,
             targetOrder)
 {
     _integration_time_msec = integrationTimeMsec;
 }
 
-void VL53L5cxAutonomous::begin(void)
+void VL53L5cxAutonomous::begin(uint8_t address)
 {
-    init();
+    init(address);
 
     // Set ranging mode autonomous  
     checkStatus(vl53l5cx_set_ranging_mode(&_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS),
