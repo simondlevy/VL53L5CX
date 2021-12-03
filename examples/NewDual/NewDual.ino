@@ -20,8 +20,8 @@ static const uint8_t LPN_PIN_0 =  9;
 static const uint8_t INT_PIN_1 =  8;
 static const uint8_t LPN_PIN_1 =  4;
 
-uint8_t  status, isAlive = 0, isReady, error, pixels;
-uint32_t integration_time_ms;
+static uint8_t  status, isAlive = 0, isReady, error, pixels;
+static uint32_t integration_time_ms;
   
 volatile bool VL53L5_intFlag_0 = false;
 volatile bool VL53L5_intFlag_1 = false;
@@ -33,20 +33,20 @@ static VL53L5CX_Configuration Dev_1 = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results_1 = {};  // Results data from VL53L5CX_1
 
 // Configure VL53L5 measurement parameters
-const uint8_t continuous_mode = 0;
-const uint8_t autonomous_mode = 1;
-const uint8_t VL53L5_mode = autonomous_mode; // either or
+static const uint8_t continuous_mode = 0;
+static const uint8_t autonomous_mode = 1;
+static const uint8_t VL53L5_mode = autonomous_mode; // either or
 
-const uint8_t resolution_4x4 = 0;
-const uint8_t resolution_8x8 = 1;
-const uint8_t VL53L5_resolution = resolution_4x4; // either or
+static const uint8_t resolution_4x4 = 0;
+static const uint8_t resolution_8x8 = 1;
+static const uint8_t VL53L5_resolution = resolution_4x4; // either or
 
-const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
+static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
 // Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq, otherwise data rate decreased
 // so integration time must be > 18 ms at 4x4, 60 Hz, for example
 // the smaller the integration time, the less power used, the more noise in the ranging data
-const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
 
+static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
 
 void setup(void)
 {
@@ -55,14 +55,17 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
 
+    // Configure the data ready interrupt
     pinMode(INT_PIN_0, INPUT);      // VL53L5CX interrupt pin
+    attachInterrupt(INT_PIN_0, VL53L5_intHandler_0, FALLING);
     pinMode(INT_PIN_1, INPUT);      // VL53L5CX interrupt pin
+    attachInterrupt(INT_PIN_1, VL53L5_intHandler_1, FALLING);
 
     pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
     pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
     digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
     digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_0
-    
+
     Wire.begin();                    // Start I2C
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
@@ -125,10 +128,7 @@ void setup(void)
         Debugger::printf("start error = 0x%02X", error);
     }
     
-   // Configure the data ready interrupt
-   attachInterrupt(INT_PIN_0, VL53L5_intHandler_0, FALLING);
-   attachInterrupt(INT_PIN_1, VL53L5_intHandler_1, FALLING);
-  
+ 
   error = vl53l5cx_check_data_ready(&Dev_0, &isReady); // clear the interrupt
   error = vl53l5cx_check_data_ready(&Dev_1, &isReady); // clear the interrupt
 
