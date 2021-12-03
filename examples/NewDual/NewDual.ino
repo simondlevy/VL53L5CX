@@ -48,6 +48,22 @@ static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 
 
 static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
 
+static void setupInterrupt(uint8_t pin, void (*handler)(void))
+{
+    pinMode(pin, INPUT);
+    attachInterrupt(pin, handler, FALLING);
+}
+
+static void isr0()
+{
+  VL53L5_intFlag_0 = true;
+}
+
+static void isr1() 
+{
+  VL53L5_intFlag_1 = true;
+}
+
 void setup(void)
 {
     Serial.begin(115200);
@@ -55,11 +71,9 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
 
-    // Configure the data ready interrupt
-    pinMode(INT_PIN_0, INPUT);      // VL53L5CX interrupt pin
-    attachInterrupt(INT_PIN_0, VL53L5_intHandler_0, FALLING);
-    pinMode(INT_PIN_1, INPUT);      // VL53L5CX interrupt pin
-    attachInterrupt(INT_PIN_1, VL53L5_intHandler_1, FALLING);
+    // Configure the data ready interrupts
+    setupInterrupt(INT_PIN_0, isr0);
+    setupInterrupt(INT_PIN_1, isr1);
 
     pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
     pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
@@ -196,15 +210,6 @@ void loop(void)
 
 } /* end of main loop */
 
-
-void VL53L5_intHandler_0(){
-  VL53L5_intFlag_0 = true;
-}
-
-
-void VL53L5_intHandler_1(){
-  VL53L5_intFlag_1 = true;
-}
 
 void configureVL53L5_0()
 {
