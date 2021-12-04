@@ -25,12 +25,6 @@ static uint8_t  status, isAlive = 0, isReady, error, pixels;
 static volatile bool VL53L5_intFlag_0 = false;
 static volatile bool VL53L5_intFlag_1 = false;
 
-static VL53L5CX_Configuration Dev_0;  // Sensor configuration
-static VL53L5CX_ResultsData Results_0;  // Results data from VL53L5CX_0
-
-static VL53L5CX_Configuration Dev_1;  // Sensor configuration
-static VL53L5CX_ResultsData Results_1;  // Results data from VL53L5CX_1
-
 // Configure VL53L5 measurement parameters
 static const uint8_t continuous_mode = 0;
 static const uint8_t autonomous_mode = 1;
@@ -46,6 +40,90 @@ static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 
 // the smaller the integration time, the less power used, the more noise in the ranging data
 
 static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
+
+static void configure(VL53L5CX_Configuration * dev)
+{
+    //   Configure the VL53L5CX_0      //
+
+    // Set resolution. WARNING : As others settings depend to this
+    // one, it must come first.
+    // 
+    if(VL53L5_resolution == resolution_4x4){
+        pixels = 16;
+        status = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
+        if(status)
+        {
+            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
+        }
+    }
+    else
+    {
+        pixels = 64;
+        status = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_8X8);
+        if(status)
+        {
+            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
+        }
+    }
+
+    // Select operating mode //
+    if(VL53L5_mode == autonomous_mode) {
+        // set autonomous ranging mode //
+        status = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+        if(status)
+        {
+            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+        }
+
+        // can set integration time in autonomous mode //
+        status = vl53l5cx_set_integration_time_ms(dev, VL53L5_intTime); //  
+        if(status)
+        {
+            Debugger::printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
+        }
+    }
+    else 
+    { 
+        // set continuous ranging mode, integration time is fixed in continuous mode //
+        status = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+        if(status)
+        {
+            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+        }
+    }
+
+    // Select data rate //
+    status = vl53l5cx_set_ranging_frequency_hz(dev, VL53L5_freq);
+    if(status)
+    {
+        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
+    }
+
+    // Set target order to closest //
+    status = vl53l5cx_set_target_order(dev, VL53L5CX_TARGET_ORDER_CLOSEST);
+    if(status)
+    {
+        Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
+    }
+
+    // Get current integration time //
+    uint32_t integration_time_ms = 0;
+    status = vl53l5cx_get_integration_time_ms(dev, &integration_time_ms);
+    if(status)
+    {
+        Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
+    }
+
+    Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
+
+} // configure
+
+
+static VL53L5CX_Configuration Dev_0;  // Sensor configuration
+static VL53L5CX_ResultsData Results_0;  // Results data from VL53L5CX_0
+
+static VL53L5CX_Configuration Dev_1;  // Sensor configuration
+static VL53L5CX_ResultsData Results_1;  // Results data from VL53L5CX_1
 
 static void setupInterrupt(uint8_t pin, void (*handler)(void))
 {
@@ -127,7 +205,7 @@ void setup(void)
             VL53L5CX_API_REVISION);
 
     // change resolution, etc. before starting to range
-    configureVL53L5_0();
+    configure(&Dev_0);
     configureVL53L5_1();
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
@@ -213,83 +291,6 @@ void loop(void)
 
 } /* end of main loop */
 
-
-void configureVL53L5_0()
-{
-    //   Configure the VL53L5CX_0      //
-
-    // Set resolution. WARNING : As others settings depend to this
-    // one, it must come first.
-    // 
-    if(VL53L5_resolution == resolution_4x4){
-        pixels = 16;
-        status = vl53l5cx_set_resolution(&Dev_0, VL53L5CX_RESOLUTION_4X4);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
-        }
-    }
-    else
-    {
-        pixels = 64;
-        status = vl53l5cx_set_resolution(&Dev_0, VL53L5CX_RESOLUTION_8X8);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
-        }
-    }
-
-    // Select operating mode //
-    if(VL53L5_mode == autonomous_mode) {
-        // set autonomous ranging mode //
-        status = vl53l5cx_set_ranging_mode(&Dev_0, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
-        }
-
-        // can set integration time in autonomous mode //
-        status = vl53l5cx_set_integration_time_ms(&Dev_0, VL53L5_intTime); //  
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
-        }
-    }
-    else 
-    { 
-        // set continuous ranging mode, integration time is fixed in continuous mode //
-        status = vl53l5cx_set_ranging_mode(&Dev_0, VL53L5CX_RANGING_MODE_CONTINUOUS);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
-        }
-    }
-
-    // Select data rate //
-    status = vl53l5cx_set_ranging_frequency_hz(&Dev_0, VL53L5_freq);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
-    }
-
-    // Set target order to closest //
-    status = vl53l5cx_set_target_order(&Dev_0, VL53L5CX_TARGET_ORDER_CLOSEST);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
-    }
-
-    // Get current integration time //
-    uint32_t integration_time_ms = 0;
-    status = vl53l5cx_get_integration_time_ms(&Dev_0, &integration_time_ms);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
-    }
-
-    Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
-
-}
 
 
 void configureVL53L5_1()
