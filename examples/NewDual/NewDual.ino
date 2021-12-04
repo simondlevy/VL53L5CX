@@ -179,7 +179,6 @@ void loop(void)
     } // end of VL53L5CX_0 interrupt handling
 
 
-    /*
     if (VL53L5_intFlag_1) {
         VL53L5_intFlag_1 = false;
 
@@ -206,7 +205,6 @@ void loop(void)
         }
 
     } // end of VL53L5CX interrupt handling
-    */
 
     // Blinkety blink!
     digitalWrite(LED_PIN, HIGH);
