@@ -36,46 +36,61 @@ static const uint8_t VL53L5_intTime = 10;
 
 static void init(uint8_t id, VL53L5CX_Configuration * dev)
 {
-    uint8_t error = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
-    if(error) {
-        Debugger::printf("vl53l5cx_set_resolution failed, error %u\n", error);
+    // Make sure there is a VL53L5CX_0 sensor connected
+    uint8_t isAlive = 0;
+    uint8_t error = vl53l5cx_is_alive(dev, &isAlive);
+    if (!isAlive || error) {
+        Debugger::reportForever("VL53L5CX_%d not detected at requested address", id);
+    }
+
+    // Init VL53L5CX_0 sensor
+    error = vl53l5cx_init(dev);
+    if (error) {
+        Debugger::reportForever("VL53L5CX_%d ULD Loading failed", id);
+    }
+
+    Debugger::printf("VL53L5CX_%d ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION, id);
+
+    error = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
+    if (error) {
+        Debugger::printf("vl53l5CX_set_resolution failed, error %u\n", error);
     }
 
     // set autonomous ranging mode //
     error = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-    if(error) {
-        Debugger::printf("vl53l5cx_set_ranging_mode failed, error %u\n", error);
+    if (error) {
+        Debugger::printf("VL53L5cX_set_ranging_mode failed, error %u\n", error);
     }
 
     // can set integration time in autonomous mode //
     error = vl53l5cx_set_integration_time_ms(dev, VL53L5_intTime); //  
-    if(error) {
-        Debugger::printf("vl53l5cx_set_integration_time_ms failed, error %u\n", error);
+    if (error) {
+        Debugger::printf("VL53L5CX_set_integration_time_ms failed, error %u\n", error);
     }
 
     // Select data rate //
     error = vl53l5cx_set_ranging_frequency_hz(dev, VL53L5_freq);
-    if(error) {
-        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, error %u\n", error);
+    if (error) {
+        Debugger::printf("VL53L5CX_set_ranging_frequency_hz failed, error %u\n", error);
     }
 
     // Set target order to closest //
     error = vl53l5cx_set_target_order(dev, VL53L5CX_TARGET_ORDER_CLOSEST);
-    if(error) {
-        Debugger::printf("vl53l5cx_set_target_order failed, error %u\n", error);
+    if (error) {
+        Debugger::printf("VL53L5cx_set_target_order failed, error %u\n", error);
     }
 
     // Get current integration time //
     uint32_t integration_time_ms = 0;
     error = vl53l5cx_get_integration_time_ms(dev, &integration_time_ms);
-    if(error) {
-        Debugger::printf("vl53l5cx_get_integration_time_ms failed, error %u\n", error);
+    if (error) {
+        Debugger::printf("VL53L5cx_get_integration_time_ms failed, error %u\n", error);
     }
 
     Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
 
     error = vl53l5cx_start_ranging(dev);
-    if(error !=0) {
+    if (error !=0) {
         Debugger::printf("start error = 0x%02X", error);
     }
 
@@ -170,39 +185,7 @@ void setup(void)
     digitalWrite(LPN_PIN_0, HIGH);   // enable VL53L5CX_0
     delay(100);
 
-    // Make sure there is a VL53L5CX_0 sensor connected
-    uint8_t isAlive = 0;
-    uint8_t error = vl53l5cx_is_alive(&Dev_0, &isAlive);
-    if(!isAlive || error) {
-        Debugger::reportForever("VL53L5CX_0 not detected at requested address");
-    }
-
-    // Init VL53L5CX_0 sensor
-    error = vl53l5cx_init(&Dev_0);
-    if(error) {
-        Debugger::reportForever("VL53L5CX_0 ULD Loading failed");
-    }
-
-    Debugger::printf("VL53L5CX_0 ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
-
     init(0, &Dev_0);
-
-    // Make sure there is a VL53L5CX_1 sensor connected
-    isAlive = 0;
-    error = vl53l5cx_is_alive(&Dev_1, &isAlive);
-    if(!isAlive || error) {
-        Debugger::reportForever("VL53L5CX_1 not detected at requested address");
-    }
-
-
-    // Init VL53L5CX sensor
-    error = vl53l5cx_init(&Dev_1);
-    if(error) {
-        Debugger::reportForever("VL53L5CX_1 ULD Loading failed");
-    }
-
-    Debugger::printf("VL53L5CX_1 ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
-
     init(1, &Dev_1);
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
