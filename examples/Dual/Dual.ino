@@ -20,10 +20,10 @@ static const uint8_t LPN_PIN_0 =  9;
 static const uint8_t INT_PIN_1 =  8;
 static const uint8_t LPN_PIN_1 =  4;
 
+static const uint8_t VL53L5_freq = 1;
+
 static volatile bool VL53L5_intFlag_0 = false;
 static volatile bool VL53L5_intFlag_1 = false;
-
-static const uint8_t VL53L5_freq = 1;
 
 // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4) Sum of integration
 // time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq,
@@ -34,7 +34,13 @@ static const uint8_t VL53L5_freq = 1;
 // time in milliseconds, settable only when in autonomous mode, otherwise a no op
 static const uint8_t VL53L5_intTime = 10;
 
-static void init(uint8_t id, VL53L5CX_Configuration * dev)
+static void init(uint8_t pin, VL53L5CX_Configuration * dev)
+{
+    dev->platform.address = 0x29;
+    pinMode(pin, OUTPUT);
+}
+
+static void start(uint8_t id, VL53L5CX_Configuration * dev)
 {
     // Make sure there is a VL53L5CX_0 sensor connected
     uint8_t isAlive = 0;
@@ -169,13 +175,8 @@ void setup(void)
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
 
-    pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
-    pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
-
-    // Fill the platform structure with customer's implementation. For this
-    // example, only the I2C address is used.
-    Dev_0.platform.address = 0x29;
-    Dev_1.platform.address = 0x29;
+    init(LPN_PIN_0, &Dev_0);
+    init(LPN_PIN_1, &Dev_1);
 
     digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
     digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_1
@@ -185,8 +186,8 @@ void setup(void)
     digitalWrite(LPN_PIN_0, HIGH);   // enable VL53L5CX_0
     delay(100);
 
-    init(0, &Dev_0);
-    init(1, &Dev_1);
+    start(0, &Dev_0);
+    start(1, &Dev_1);
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
 
