@@ -20,98 +20,56 @@ static const uint8_t LPN_PIN_0 =  9;
 static const uint8_t INT_PIN_1 =  8;
 static const uint8_t LPN_PIN_1 =  4;
 
-static uint8_t  status, isAlive = 0, isReady, error, pixels;
-
 static volatile bool VL53L5_intFlag_0 = false;
 static volatile bool VL53L5_intFlag_1 = false;
 
-// Configure VL53L5 measurement parameters
-static const uint8_t continuous_mode = 0;
-static const uint8_t autonomous_mode = 1;
-static const uint8_t VL53L5_mode = autonomous_mode; // either or
+static const uint8_t VL53L5_freq = 1;
 
-static const uint8_t resolution_4x4 = 0;
-static const uint8_t resolution_8x8 = 1;
-static const uint8_t VL53L5_resolution = resolution_4x4; // either or
+// Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4) Sum of integration
+// time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq,
+// otherwise data rate decreased so integration time must be > 18 ms at 4x4, 60
+// Hz, for example the smaller the integration time, the less power used, the
+// more noise in the ranging data
 
-static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
-// Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq, otherwise data rate decreased
-// so integration time must be > 18 ms at 4x4, 60 Hz, for example
-// the smaller the integration time, the less power used, the more noise in the ranging data
-
-static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
+// time in milliseconds, settable only when in autonomous mode, otherwise a no op
+static const uint8_t VL53L5_intTime = 10;
 
 static void init(uint8_t id, VL53L5CX_Configuration * dev)
 {
-    //   Configure the VL53L5CX_0      //
-
-    // Set resolution. WARNING : As others settings depend to this
-    // one, it must come first.
-    // 
-    if(VL53L5_resolution == resolution_4x4){
-        pixels = 16;
-        status = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
-        }
-    }
-    else
-    {
-        pixels = 64;
-        status = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_8X8);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
-        }
+    uint8_t error = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
+    if(error) {
+        Debugger::printf("vl53l5cx_set_resolution failed, error %u\n", error);
     }
 
-    // Select operating mode //
-    if(VL53L5_mode == autonomous_mode) {
-        // set autonomous ranging mode //
-        status = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
-        }
-
-        // can set integration time in autonomous mode //
-        status = vl53l5cx_set_integration_time_ms(dev, VL53L5_intTime); //  
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
-        }
+    // set autonomous ranging mode //
+    error = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+    if(error) {
+        Debugger::printf("vl53l5cx_set_ranging_mode failed, error %u\n", error);
     }
-    else 
-    { 
-        // set continuous ranging mode, integration time is fixed in continuous mode //
-        status = vl53l5cx_set_ranging_mode(dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
-        if(status)
-        {
-            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
-        }
+
+    // can set integration time in autonomous mode //
+    error = vl53l5cx_set_integration_time_ms(dev, VL53L5_intTime); //  
+    if(error) {
+        Debugger::printf("vl53l5cx_set_integration_time_ms failed, error %u\n", error);
     }
 
     // Select data rate //
-    status = vl53l5cx_set_ranging_frequency_hz(dev, VL53L5_freq);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
+    error = vl53l5cx_set_ranging_frequency_hz(dev, VL53L5_freq);
+    if(error) {
+        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, error %u\n", error);
     }
 
     // Set target order to closest //
-    status = vl53l5cx_set_target_order(dev, VL53L5CX_TARGET_ORDER_CLOSEST);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
+    error = vl53l5cx_set_target_order(dev, VL53L5CX_TARGET_ORDER_CLOSEST);
+    if(error) {
+        Debugger::printf("vl53l5cx_set_target_order failed, error %u\n", error);
     }
 
     // Get current integration time //
     uint32_t integration_time_ms = 0;
-    status = vl53l5cx_get_integration_time_ms(dev, &integration_time_ms);
-    if(status)
-    {
-        Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
+    error = vl53l5cx_get_integration_time_ms(dev, &integration_time_ms);
+    if(error) {
+        Debugger::printf("vl53l5cx_get_integration_time_ms failed, error %u\n", error);
     }
 
     Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
@@ -121,6 +79,7 @@ static void init(uint8_t id, VL53L5CX_Configuration * dev)
         Debugger::printf("start error = 0x%02X", error);
     }
 
+    uint8_t isReady = 0;
     vl53l5cx_check_data_ready(dev, &isReady); // clear the interrupt
 
 } // init
@@ -156,7 +115,7 @@ static void checkAndReport(uint8_t id, volatile bool & flag, VL53L5CX_Configurat
             // are printed 
             Debugger::printf("VL53L5CX_%d data no : %3u\n", id, dev->streamcount);
 
-            for(uint8_t i = 0; i < pixels; i++) {
+            for(uint8_t i=0; i<16; i++) {
 
                 Debugger::printf(
                         "Zone : %3d, Status : %3u, Distance : %4d mm\n",
@@ -206,14 +165,14 @@ void setup(void)
     Dev_0.platform.address = 0x29;
     Dev_1.platform.address = 0x29;
 
-    status = vl53l5cx_set_i2c_address(&Dev_1, 0x27<<1);
+    vl53l5cx_set_i2c_address(&Dev_1, 0x27<<1);
     Dev_1.platform.address = 0x27;
     digitalWrite(LPN_PIN_0, HIGH);   // enable VL53L5CX_0
     delay(100);
 
     // Make sure there is a VL53L5CX_0 sensor connected
-    isAlive = 0;
-    error = vl53l5cx_is_alive(&Dev_0, &isAlive);
+    uint8_t isAlive = 0;
+    uint8_t error = vl53l5cx_is_alive(&Dev_0, &isAlive);
     if(!isAlive || error) {
         Debugger::reportForever("VL53L5CX_0 not detected at requested address");
     }
@@ -260,5 +219,4 @@ void loop(void)
     digitalWrite(LED_PIN, HIGH);
     delay(10);
     digitalWrite(LED_PIN, LOW); 
-
 } 
