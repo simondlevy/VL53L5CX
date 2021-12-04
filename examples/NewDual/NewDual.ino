@@ -177,6 +177,16 @@ void setup(void)
         Debugger::reportForever("VL53L5CX_0 not detected at requested address");
     }
 
+    // Init VL53L5CX_0 sensor
+    error = vl53l5cx_init(&Dev_0);
+    if(error) {
+        Debugger::reportForever("VL53L5CX_0 ULD Loading failed");
+    }
+
+    Debugger::printf("VL53L5CX_0 ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
+
+    init(0, &Dev_0);
+
     // Make sure there is a VL53L5CX_1 sensor connected
     isAlive = 0;
     error = vl53l5cx_is_alive(&Dev_1, &isAlive);
@@ -184,14 +194,6 @@ void setup(void)
         Debugger::reportForever("VL53L5CX_1 not detected at requested address");
     }
 
-    // Init VL53L5CX_0 sensor
-    error = vl53l5cx_init(&Dev_0);
-    if(error) {
-        Debugger::reportForever("VL53L5CX_0 ULD Loading failed");
-    }
-
-    Debugger::printf("VL53L5CX_0 ULD ready ! (Version : %s)\n",
-            VL53L5CX_API_REVISION);
 
     // Init VL53L5CX sensor
     error = vl53l5cx_init(&Dev_1);
@@ -199,11 +201,8 @@ void setup(void)
         Debugger::reportForever("VL53L5CX_1 ULD Loading failed");
     }
 
-    Debugger::printf("VL53L5CX_1 ULD ready ! (Version : %s)\n",
-            VL53L5CX_API_REVISION);
+    Debugger::printf("VL53L5CX_1 ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
-    // change resolution, etc. before starting to range
-    init(0, &Dev_0);
     init(1, &Dev_1);
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
