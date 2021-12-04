@@ -172,13 +172,13 @@ void setup(void)
     pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
     pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
 
-    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
-    digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_1
-
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
     Dev_0.platform.address = 0x29;
     Dev_1.platform.address = 0x29;
+
+    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
+    digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_1
 
     vl53l5cx_set_i2c_address(&Dev_1, 0x27<<1);
     Dev_1.platform.address = 0x27;
