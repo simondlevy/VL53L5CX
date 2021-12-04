@@ -77,14 +77,15 @@ void setup(void)
     setupInterrupt(INT_PIN_0, isr0);
     setupInterrupt(INT_PIN_1, isr1);
 
-    pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
-    pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
-    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
-    digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_0
-
     Wire.begin();                    // Start I2C
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
+
+    pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
+    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
+
+    digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_0
+    pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
 
     // Fill the platform structure with customer's implementation. For this
     // example, only the I2C address is used.
