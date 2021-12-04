@@ -120,16 +120,48 @@ static void configure(VL53L5CX_Configuration * dev)
 
 
 static VL53L5CX_Configuration Dev_0;  // Sensor configuration
-static VL53L5CX_ResultsData Results_0;  // Results data from VL53L5CX_0
-
 static VL53L5CX_Configuration Dev_1;  // Sensor configuration
-static VL53L5CX_ResultsData Results_1;  // Results data from VL53L5CX_1
 
 static void setupInterrupt(uint8_t pin, void (*handler)(void))
 {
     pinMode(pin, INPUT);
     attachInterrupt(pin, handler, FALLING);
 }
+
+static void checkAndReport(uint8_t id, volatile bool & flag, VL53L5CX_Configuration * dev)
+{
+    if (flag) {
+
+        flag = false;
+
+        uint8_t isReady = 0;
+
+        vl53l5cx_check_data_ready(dev, &isReady);
+
+        if (isReady) {
+
+            VL53L5CX_ResultsData results = {}; 
+
+            vl53l5cx_get_ranging_data(dev, &results);
+
+            // As the sensor is set in 4x4 mode by default, we have a total of
+            // 16 zones to print. For this example, only the data of first zone
+            // are printed 
+            Debugger::printf("VL53L5CX_%d data no : %3u\n", id, dev->streamcount);
+
+            for(uint8_t i = 0; i < pixels; i++) {
+
+                Debugger::printf(
+                        "Zone : %3d, Status : %3u, Distance : %4d mm\n",
+                        i,
+                        results.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
+                        results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
+            }
+            Debugger::printf("\n");
+        }
+    }
+}
+
 
 static void isr0()
 {
@@ -226,67 +258,14 @@ void setup(void)
 
 } // setup
 
-
 void loop(void)
 {
-    if (VL53L5_intFlag_0) {
-        VL53L5_intFlag_0 = false;
-
-        isReady = 0;
-        vl53l5cx_check_data_ready(&Dev_0, &isReady);
-
-        if (isReady) {
-
-            vl53l5cx_get_ranging_data(&Dev_0, &Results_0);
-
-            // As the sensor is set in 4x4 mode by default, we have a total of
-            // 16 zones to print. For this example, only the data of first zone
-            // are printed 
-            Debugger::printf("VL53L5CX_0 data no : %3u\n", Dev_0.streamcount);
-
-            for(uint8_t i = 0; i < pixels; i++) {
-                Debugger::printf(
-                        "Zone : %3d, Status : %3u, Distance : %4d mm\n",
-                        i,
-                        Results_0.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results_0.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
-            }
-            Debugger::printf("\n");
-        }
-
-    } // end of VL53L5CX_0 interrupt handling
-
-
-    if (VL53L5_intFlag_1) {
-        VL53L5_intFlag_1 = false;
-
-        isReady = 0;
-        vl53l5cx_check_data_ready(&Dev_1, &isReady);
-
-        if (isReady) {
-
-            vl53l5cx_get_ranging_data(&Dev_1, &Results_1);
-
-            // As the sensor is set in 4x4 mode by default, we have a total of
-            // 16 zones to print. For this example, only the data of first zone
-            // are printed 
-            Debugger::printf("VL53L5CX_1 data no : %3u\n", Dev_1.streamcount);
-
-            for(uint8_t i = 0; i < pixels; i++) {
-                Debugger::printf(
-                        "Zone : %3d, Status : %3u, Distance : %4d mm\n",
-                        i,
-                        Results_1.target_status[VL53L5CX_NB_TARGET_PER_ZONE*i],
-                        Results_1.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE*i]);
-            }
-            Debugger::printf("\n");
-        }
-
-    } // end of VL53L5CX interrupt handling
+    checkAndReport(0, VL53L5_intFlag_0, &Dev_0);
+    checkAndReport(1, VL53L5_intFlag_1, &Dev_1);
 
     // Blinkety blink!
     digitalWrite(LED_PIN, HIGH);
     delay(10);
     digitalWrite(LED_PIN, LOW); 
 
-} // loop
+} 
