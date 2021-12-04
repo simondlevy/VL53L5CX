@@ -208,8 +208,6 @@ void setup(void)
     configure(&Dev_0);
     configure(&Dev_1);
 
-    digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
-
     error = vl53l5cx_start_ranging(&Dev_0);
     if(error !=0) {
         Debugger::printf("start error = 0x%02X", error);
@@ -223,6 +221,8 @@ void setup(void)
 
     error = vl53l5cx_check_data_ready(&Dev_0, &isReady); // clear the interrupt
     error = vl53l5cx_check_data_ready(&Dev_1, &isReady); // clear the interrupt
+
+    digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
 
 } /* end of setup */
 
