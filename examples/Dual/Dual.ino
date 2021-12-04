@@ -170,9 +170,9 @@ void setup(void)
     delay(1000);
 
     pinMode(LPN_PIN_0, OUTPUT);      // VL53L5CX_0 LPN pin
-    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
-
     pinMode(LPN_PIN_1, OUTPUT);      // VL53L5CX_1 LPN pin
+
+    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
     digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_1
 
     // Fill the platform structure with customer's implementation. For this
