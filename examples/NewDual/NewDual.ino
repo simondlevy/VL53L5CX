@@ -63,9 +63,6 @@ static void isr1()
     VL53L5_intFlag_1 = true;
 }
 
-static VL53L5cxAutonomous sensor0
-  = VL53L5cxAutonomous(LPN_PIN_0, VL53L5_intTime, VL53L5cx::RESOLUTION_4X4);
-
 void setup(void)
 {
     Serial.begin(115200);
