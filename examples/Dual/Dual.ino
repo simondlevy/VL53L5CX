@@ -34,6 +34,23 @@ static volatile bool VL53L5_intFlag_1 = false;
 // time in milliseconds, settable only when in autonomous mode, otherwise a no op
 static const uint8_t VL53L5_intTime = 10;
 
+static void enable(uint8_t pin)
+{
+    digitalWrite(pin, HIGH);
+}
+
+static void disable(uint8_t pin)
+{
+    digitalWrite(pin, LOW);
+}
+
+static void setAddress(uint8_t pin, uint8_t address, VL53L5CX_Configuration * dev)
+{
+    enable(pin);   
+    vl53l5cx_set_i2c_address(dev, address<<1);
+    dev->platform.address = address;
+}
+
 static void init(uint8_t pin, VL53L5CX_Configuration * dev)
 {
     dev->platform.address = 0x29;
@@ -178,12 +195,12 @@ void setup(void)
     init(LPN_PIN_0, &Dev_0);
     init(LPN_PIN_1, &Dev_1);
 
-    digitalWrite(LPN_PIN_0, LOW);    // disable VL53L5CX_0
-    digitalWrite(LPN_PIN_1, HIGH);   // enable VL53L5CX_1
+    disable(LPN_PIN_0);  // disable VL53L5CX_0
 
-    vl53l5cx_set_i2c_address(&Dev_1, 0x27<<1);
-    Dev_1.platform.address = 0x27;
-    digitalWrite(LPN_PIN_0, HIGH);   // enable VL53L5CX_0
+    setAddress(LPN_PIN_1, 0x27, &Dev_1);
+
+    enable(LPN_PIN_0);   // enable VL53L5CX_0
+
     delay(100);
 
     start(0, &Dev_0);
