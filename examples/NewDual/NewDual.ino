@@ -41,7 +41,7 @@ static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 
 
 static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
 
-static void configure(VL53L5CX_Configuration * dev)
+static void init(uint8_t id, VL53L5CX_Configuration * dev)
 {
     //   Configure the VL53L5CX_0      //
 
@@ -116,7 +116,14 @@ static void configure(VL53L5CX_Configuration * dev)
 
     Debugger::printf("Current integration time is : %d ms\n", integration_time_ms);
 
-} // configure
+    error = vl53l5cx_start_ranging(dev);
+    if(error !=0) {
+        Debugger::printf("start error = 0x%02X", error);
+    }
+
+    vl53l5cx_check_data_ready(dev, &isReady); // clear the interrupt
+
+} // init
 
 
 static VL53L5CX_Configuration Dev_0;  // Sensor configuration
@@ -237,21 +244,8 @@ void setup(void)
             VL53L5CX_API_REVISION);
 
     // change resolution, etc. before starting to range
-    configure(&Dev_0);
-    configure(&Dev_1);
-
-    error = vl53l5cx_start_ranging(&Dev_0);
-    if(error !=0) {
-        Debugger::printf("start error = 0x%02X", error);
-    }
-
-    error = vl53l5cx_start_ranging(&Dev_1);
-    if(error !=0) {
-        Debugger::printf("start error = 0x%02X", error);
-    }
-
-    vl53l5cx_check_data_ready(&Dev_0, &isReady); // clear the interrupt
-    vl53l5cx_check_data_ready(&Dev_1, &isReady); // clear the interrupt
+    init(0, &Dev_0);
+    init(1, &Dev_1);
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
 
