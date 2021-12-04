@@ -206,7 +206,7 @@ void setup(void)
 
     // change resolution, etc. before starting to range
     configure(&Dev_0);
-    configureVL53L5_1();
+    configure(&Dev_1);
 
     digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
 
