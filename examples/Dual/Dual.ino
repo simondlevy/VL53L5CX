@@ -212,10 +212,13 @@ void setup(void)
 
     sensor0.disable();
     sensor1.enable();
-
     sensor1.setAddress();
 
+    sensor1.disable();
     sensor0.enable();
+    sensor0.setAddress();
+
+    sensor1.enable();
 
     delay(100);
 
