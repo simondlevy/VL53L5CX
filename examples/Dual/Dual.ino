@@ -12,6 +12,27 @@
 #include <Debugger.hpp>
 #include "st/vl53l5cx_api.h"
 
+class MultiSupport {
+
+    private:
+
+        uint8_t _address;
+        uint8_t _int_pin;
+        uint8_t _lpn_pin;
+        VL53L5CX_Configuration _dev;
+        void (*_isr)(void);
+
+    public:
+
+        MultiSupport(uint8_t address, uint8_t int_pin, uint8_t lpn_pin, void (*isr)(void))
+        {
+            _address = address;
+            _int_pin = int_pin;
+            _lpn_pin = lpn_pin;
+            _isr = isr;
+        }
+}; 
+
 static const uint8_t LED_PIN = 13;
 
 // Suport for sensor 0 ------------------
@@ -82,7 +103,8 @@ static void start(uint8_t id, VL53L5CX_Configuration * dev)
         Debugger::reportForever("VL53L5CX_%d ULD Loading failed", id);
     }
 
-    Debugger::printf("VL53L5CX_%d ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION, id);
+    Debugger::printf("VL53L5CX_%d ULD ready ! (Version : %s)\n",
+            VL53L5CX_API_REVISION, id);
 
     error = vl53l5cx_set_resolution(dev, VL53L5CX_RESOLUTION_4X4);
     if (error) {
@@ -173,6 +195,8 @@ static void checkAndReport(uint8_t id, volatile bool & flag, VL53L5CX_Configurat
     }
 }
 
+static MultiSupport sensor0 = MultiSupport(0x27, 5, 9, isr0);
+static MultiSupport sensor1 = MultiSupport(0x29, 8, 4, isr1);
 
 void setup(void)
 {
@@ -181,15 +205,14 @@ void setup(void)
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
 
-    // Configure the data ready interrupts
-    setupInterrupt(INT_PIN_0, isr0);
-    setupInterrupt(INT_PIN_1, isr1);
-
     Wire.begin();                    // Start I2C
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
 
+    setupInterrupt(INT_PIN_0, isr0);
     init(LPN_PIN_0, &Dev_0);
+
+    setupInterrupt(INT_PIN_1, isr1);
     init(LPN_PIN_1, &Dev_1);
 
     disable(LPN_PIN_0);  // disable VL53L5CX_0
