@@ -140,10 +140,10 @@ class MultiSupport {
             digitalWrite(_lpn_pin, LOW);
         }
 
-        void setAddress(uint8_t address)
+        void setAddress()
         {
-            vl53l5cx_set_i2c_address(&_dev, address<<1);
-            _dev.platform.address = address;
+            vl53l5cx_set_i2c_address(&_dev, _address<<1);
+            _dev.platform.address = _address;
         }
 
         void checkAndReport(void)
@@ -182,8 +182,9 @@ class MultiSupport {
 
 }; 
 
-static MultiSupport sensor0 = MultiSupport(0, 0x27, 5, 9);
-static MultiSupport sensor1 = MultiSupport(1, 0x29, 8, 4);
+// -------------------------------------- id  addr  lpn  int
+static MultiSupport sensor0 = MultiSupport(0, 0x29, 5,   9);
+static MultiSupport sensor1 = MultiSupport(1, 0x27, 8,   4);
 
 static void isr0()
 {
@@ -212,7 +213,7 @@ void setup(void)
     sensor0.disable();
     sensor1.enable();
 
-    sensor1.setAddress(0x27);
+    sensor1.setAddress();
 
     sensor0.enable();
 
