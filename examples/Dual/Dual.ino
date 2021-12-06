@@ -14,22 +14,32 @@
 
 static const uint8_t LED_PIN = 13;
 
+// Suport for sensor 0 ------------------
 static const uint8_t INT_PIN_0 =  5;
 static const uint8_t LPN_PIN_0 =  9;
+static VL53L5CX_Configuration Dev_0;
+static volatile bool VL53L5_intFlag_0;
+static void isr0()
+{
+    VL53L5_intFlag_0 = true;
+} 
 
+// Suport for sensor 1 ------------------
 static const uint8_t INT_PIN_1 =  8;
 static const uint8_t LPN_PIN_1 =  4;
-
-static const uint8_t VL53L5_freq = 1;
-
-static volatile bool VL53L5_intFlag_0 = false;
-static volatile bool VL53L5_intFlag_1 = false;
+static VL53L5CX_Configuration Dev_1;
+static volatile bool VL53L5_intFlag_1;
+static void isr1() 
+{
+    VL53L5_intFlag_1 = true;
+} 
 
 // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4) Sum of integration
 // time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq,
 // otherwise data rate decreased so integration time must be > 18 ms at 4x4, 60
 // Hz, for example the smaller the integration time, the less power used, the
 // more noise in the ranging data
+static const uint8_t VL53L5_freq = 1;
 
 // time in milliseconds, settable only when in autonomous mode, otherwise a no op
 static const uint8_t VL53L5_intTime = 10;
@@ -123,9 +133,6 @@ static void start(uint8_t id, VL53L5CX_Configuration * dev)
 } // init
 
 
-static VL53L5CX_Configuration Dev_0;  // Sensor configuration
-static VL53L5CX_Configuration Dev_1;  // Sensor configuration
-
 static void setupInterrupt(uint8_t pin, void (*handler)(void))
 {
     pinMode(pin, INPUT);
@@ -166,16 +173,6 @@ static void checkAndReport(uint8_t id, volatile bool & flag, VL53L5CX_Configurat
     }
 }
 
-
-static void isr0()
-{
-    VL53L5_intFlag_0 = true;
-}
-
-static void isr1() 
-{
-    VL53L5_intFlag_1 = true;
-}
 
 void setup(void)
 {
