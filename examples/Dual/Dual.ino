@@ -82,10 +82,17 @@ static void setAddress(uint8_t pin, uint8_t address, VL53L5CX_Configuration * de
     dev->platform.address = address;
 }
 
-static void init(uint8_t pin, VL53L5CX_Configuration * dev)
+static void init(
+        uint8_t lpn_pin,
+        VL53L5CX_Configuration * dev,
+        uint8_t int_pin, 
+        void (*isr)(void))
 {
+    pinMode(lpn_pin, OUTPUT);
     dev->platform.address = 0x29;
-    pinMode(pin, OUTPUT);
+
+    pinMode(int_pin, INPUT);
+    attachInterrupt(int_pin, isr, FALLING);
 }
 
 static void start(uint8_t id, VL53L5CX_Configuration * dev)
@@ -155,12 +162,6 @@ static void start(uint8_t id, VL53L5CX_Configuration * dev)
 } // init
 
 
-static void setupInterrupt(uint8_t pin, void (*handler)(void))
-{
-    pinMode(pin, INPUT);
-    attachInterrupt(pin, handler, FALLING);
-}
-
 static void checkAndReport(uint8_t id, volatile bool & flag, VL53L5CX_Configuration * dev)
 {
     if (flag) {
@@ -209,11 +210,8 @@ void setup(void)
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
 
-    setupInterrupt(INT_PIN_0, isr0);
-    init(LPN_PIN_0, &Dev_0);
-
-    setupInterrupt(INT_PIN_1, isr1);
-    init(LPN_PIN_1, &Dev_1);
+    init(LPN_PIN_0, &Dev_0, INT_PIN_0, isr0);
+    init(LPN_PIN_1, &Dev_1, INT_PIN_1, isr1);
 
     disable(LPN_PIN_0);  // disable VL53L5CX_0
 
