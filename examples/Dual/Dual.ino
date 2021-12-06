@@ -182,7 +182,7 @@ class MultiSupport {
 
 }; 
 
-// -------------------------------------- id  addr  lpn  int
+// -------------------------------------- id  addr  int  lpn
 static MultiSupport sensor0 = MultiSupport(0, 0x29, 5,   9);
 static MultiSupport sensor1 = MultiSupport(1, 0x27, 8,   4);
 
