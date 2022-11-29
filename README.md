@@ -11,7 +11,7 @@ Arduino library for ST Microelectronics VL53L5 multizone Time-of-Flight ranging 
 1. Connect I<sup>2</sup>C in the usual way (SCL, SDA, 3.3V, GND)
 
 2. Connect INT and LPN to digital pins on your board, making sure the pin
-numbers agree with the [pin numbers](https://github.com/simondlevy/VL53L5/blob/main/examples/GetSetParams/GetSetParams.ino#L15-L16) specified in the 
+numbers agree with the [pin numbers](https://github.com/simondlevy/VL53L5/blob/main/examples/GetSetParams/GetSetParams.ino#L14-L15) specified in the 
 <b>GetSetParams</b> test sketch.
 
 3. Flash the <b>GetSetParams</b> test sketch onto your board.
