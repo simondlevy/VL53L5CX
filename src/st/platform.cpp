@@ -113,15 +113,13 @@ uint8_t WrMulti(
 
     // Target register address for transfer
     start_transfer(RegisterAddress);
-
     for (uint32_t i = 0 ; i < size ; i++) 
     {
-        // If this returns 0, the write was not successful due to buffer being
-        // full -> flush buffer and keep going
-        if (Wire.write(p_values[i]) == 0) {
-
-            // Flush buffer but do not send stop bit so we can keep going
-            Wire.endTransmission(false); 
+        Wire.write(p_values[i]);
+        if (i > 0 && i < size - 1 && i % 16 == 0) {
+            // Flush buffer and end transmission completely
+            Wire.endTransmission(true);
+            i++; // prepare for next byte
 
             // Restart send
             Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
@@ -129,7 +127,6 @@ uint8_t WrMulti(
             start_transfer(RegisterAddress+i);
 
             if (Wire.write(p_values[i]) == 0) {
-
                 Debugger::reportForever(
                         "WrMulti failed to send %d bytes to regsiter 0x%02X",
                         size, RegisterAddress);
