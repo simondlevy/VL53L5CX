@@ -65,6 +65,8 @@
 
 #include "vl53l5cx_api.h"
 
+typedef float float_t;
+
 /**
  * @brief Motion indicator internal configuration structure.
  */
