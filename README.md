@@ -31,3 +31,5 @@ I have tested this library on the following platforms:
 * [Teensy 3.2 Develeopment Board](https://www.pjrc.com/store/teensy32.html) from PJRC
 
 * [Teensy 4.0 Develeopment Board](https://www.pjrc.com/store/teensy40.html) from PJRC
+
+For those working in the stm32duino framework, I recommend this [library](https://github.com/stm32duino/VL53L5CX).
