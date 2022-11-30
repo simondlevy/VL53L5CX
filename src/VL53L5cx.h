@@ -67,7 +67,7 @@ class VL53L5cx {
 
         uint8_t getTargetStatus(uint8_t zone, uint8_t target=0);
 
-        uint8_t getDistance(uint8_t zone, uint8_t target=0);
+        int16_t getDistance(uint8_t zone, uint8_t target=0);
 
         uint8_t getSignalPerSpad(uint8_t zone, uint8_t target=0);
 

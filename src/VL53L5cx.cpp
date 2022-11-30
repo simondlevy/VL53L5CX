@@ -115,7 +115,10 @@ void VL53L5cx::init(uint8_t address)
     if(error) {
         Debugger::reportForever("VL53L5CX ULD Loading failed");
     }
-
+   
+   // Set the range frequency
+   vl53l5cx_set_ranging_frequency_hz(&_dev, _ranging_frequency);
+   
     // Set resolution
     vl53l5cx_set_resolution(&_dev,
             _resolution == RESOLUTION_4X4 ?
@@ -168,7 +171,7 @@ uint8_t VL53L5cx::getTargetStatus(uint8_t zone, uint8_t target)
     return _results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-uint8_t VL53L5cx::getDistance(uint8_t zone, uint8_t target)
+int16_t VL53L5cx::getDistance(uint8_t zone, uint8_t target)
 {
     return _results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
