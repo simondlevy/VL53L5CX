@@ -30,11 +30,16 @@ static const uint8_t resolution_4x4 = 0;
 static const uint8_t resolution_8x8 = 1;
 static const uint8_t VL53L5_resolution = resolution_4x4; // either or
 
-static const uint8_t VL53L5_freq = 1;     // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
-// Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less than 1/freq, otherwise data rate decreased
-// so integration time must be > 18 ms at 4x4, 60 Hz, for example
-// the smaller the integration time, the less power used, the more noise in the ranging data
-static const uint8_t VL53L5_intTime = 10; // in milliseconds, settable only when in autonomous mode, otherwise a no op
+// Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
+static const uint8_t VL53L5_freq = 1;     
+
+// Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
+// than 1/freq, otherwise data rate decreased so integration time must be > 18
+// ms at 4x4, 60 Hz, for example the smaller the integration time, the less
+// power used, the more noise in the ranging data
+
+// in milliseconds, settable only when in autonomous mode, otherwise a no op
+static const uint8_t VL53L5_intTime = 10; 
 
 static volatile bool VL53L5_intFlag;
 
@@ -80,6 +85,7 @@ void setup(void)
     }
 
     if (isAlive) {
+
         // (Mandatory) Init VL53L5CX sensor
         error = vl53l5cx_init(&Dev);
         Serial.print("error = 0x"); Serial.println(error, HEX);
@@ -213,7 +219,7 @@ void loop(void)
             // status = vl53l5cx_get_resolution(&Dev, &resolution);
             status = vl53l5cx_get_ranging_data(&Dev, &Results);
 
-            for (int i = 0; i < pixels; i++) {
+            for (auto i=0; i<pixels; i++) {
 
                 // Print per zone results 
                 Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
@@ -226,7 +232,8 @@ void loop(void)
                     Debugger::printf("Target status : %3u, Distance : %4d mm\n",
                             Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * i],
                             Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
-                }else{
+                }
+                else {
                     Debugger::printf("Target status : 255, Distance : No target\n");
                 }
             }
