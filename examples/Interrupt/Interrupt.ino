@@ -14,6 +14,8 @@
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
+static VL53L5cx sensor;
+
 static uint8_t  pixels;
 
 static VL53L5CX_Configuration Dev;   // Sensor configuration

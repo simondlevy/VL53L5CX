@@ -15,6 +15,11 @@
 
 class VL53L5cx {
 
+    private:
+
+        VL53L5CX_Configuration Dev;
+        VL53L5CX_ResultsData Results;
+
     public:
 
 }; // class VL53L5cx
