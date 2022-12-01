@@ -33,16 +33,20 @@ class VL53L5cx {
         static const uint8_t autonomous_mode = 1;
         static const uint8_t VL53L5_mode = autonomous_mode; // either or
 
+        // Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
+        // than 1/freq, otherwise data rate decreased so integration time must be > 18
+        // ms at 4x4, 60 Hz, for example the smaller the integration time, the less
+        // power used, the more noise in the ranging data
+
         // in milliseconds, settable only when in autonomous mode, otherwise a no op
         static const uint8_t VL53L5_intTime = 10; 
 
-    //private:
     public:
 
         VL53L5CX_Configuration Dev;
         VL53L5CX_ResultsData Results;
 
-        uint8_t  pixels;
+        uint8_t pixels;
 
     public:
 
@@ -196,6 +200,12 @@ class VL53L5cx {
             }
 
             return isReady != 0;
+        }
+
+        void readData(void)
+        {
+            // status = vl53l5cx_get_resolution(&Dev, &resolution);
+            vl53l5cx_get_ranging_data(&Dev, &Results);
         }
 
 }; // class VL53L5cx

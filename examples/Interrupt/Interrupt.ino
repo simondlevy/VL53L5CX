@@ -11,29 +11,24 @@
 #include "NewVL53L5cx.h"
 #include "Debugger.h"
 
-static const uint8_t INT_PIN =  4;  // 8;
+static const uint8_t INTERRUPT_PIN =  4;
 
 static VL53L5cx _sensor;
 
-// Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
-// than 1/freq, otherwise data rate decreased so integration time must be > 18
-// ms at 4x4, 60 Hz, for example the smaller the integration time, the less
-// power used, the more noise in the ranging data
+static volatile bool gotInterrupt;
 
-static volatile bool gotnterrupt;
-
-static void interruptHandler() {
-    gotnterrupt = true;
+static void interruptHandler() 
+{
+    gotInterrupt = true;
 }
 
 void setup(void)
 {
-    // Start serial debugging
     Serial.begin(115200);
     delay(4000);
     Debugger::printf("Serial begun!\n");
 
-    pinMode(INT_PIN, INPUT);     // VL53L5CX interrupt pin
+    pinMode(INTERRUPT_PIN, INPUT);     // VL53L5CX interrupt pin
 
     Wire.begin();                // Start I2C
     Wire.setClock(400000);       // Set I2C frequency at 400 kHz  
@@ -43,26 +38,22 @@ void setup(void)
 
     delay(1000);
 
-    // Configure the data ready interrupt
-    attachInterrupt(INT_PIN, interruptHandler, FALLING);
+    attachInterrupt(INTERRUPT_PIN, interruptHandler, FALLING);
 
     _sensor.begin();
-
-} // setup
-
+}
 
 void loop(void)
 {
-    if (gotnterrupt) {
+    if (gotInterrupt) {
 
-        gotnterrupt = false;
+        gotInterrupt = false;
 
         while (!_sensor.dataIsReady()) {
             delay(10);
         }
 
-        // status = vl53l5cx_get_resolution(&_sensor.Dev, &resolution);
-        vl53l5cx_get_ranging_data(&_sensor.Dev, &_sensor.Results);
+        _sensor.readData();
 
         for (auto i=0; i<_sensor.pixels; i++) {
 
@@ -83,9 +74,7 @@ void loop(void)
             }
         }
         Debugger::printf("\n");
-
-    } // end of VL53L5CX interrupt handling
-
-} // loop
+    } 
+}
 
 
