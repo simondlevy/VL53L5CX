@@ -14,7 +14,7 @@
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
-static uint8_t  status, pixels;
+static uint8_t  pixels;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
@@ -97,14 +97,14 @@ void setup(void)
     // come first.
     if (VL53L5_resolution == resolution_4x4) {
         pixels = 16;
-        status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
+        uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
         if (status) {
             Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
         }
     }
     else {
         pixels = 64;
-        status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
+        uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
         if (status) {
             Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
         }
@@ -113,7 +113,7 @@ void setup(void)
     // Select operating mode
     if (VL53L5_mode == autonomous_mode) {
         // set autonomous ranging mode
-        status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+        uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
         if (status) {
             Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         }
@@ -126,14 +126,14 @@ void setup(void)
     }
     else { 
         // set continuous ranging mode, integration time is fixed in continuous mode
-        status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+        uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
         if (status) {
             Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         }
     }
 
     // Select data rate 
-    status = vl53l5cx_set_ranging_frequency_hz(&Dev, VL53L5_freq);
+    uint8_t status = vl53l5cx_set_ranging_frequency_hz(&Dev, VL53L5_freq);
     if (status) {
         Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
     }
@@ -213,7 +213,7 @@ void loop(void)
         if (isReady) {
 
             // status = vl53l5cx_get_resolution(&Dev, &resolution);
-            status = vl53l5cx_get_ranging_data(&Dev, &Results);
+            vl53l5cx_get_ranging_data(&Dev, &Results);
 
             for (auto i=0; i<pixels; i++) {
 
