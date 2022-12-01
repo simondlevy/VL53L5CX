@@ -22,7 +22,6 @@ class VL53L5cx {
         static const uint8_t resolution_4x4 = 0;
         static const uint8_t resolution_8x8 = 1;
 
-        static const uint8_t LPN_PIN =  14; // 9;
         static const uint8_t VL53L5_resolution = resolution_4x4; // either or
 
         // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
@@ -47,7 +46,14 @@ class VL53L5cx {
 
         uint8_t m_pixels;
 
+        uint8_t m_lpnPin;
+
     public:
+
+        VL53L5cx(uint8_t lpnPin)
+        {
+            m_lpnPin = lpnPin;
+        }
 
         void begin(void)
         {
@@ -56,7 +62,7 @@ class VL53L5cx {
             m_dev.platform.address = 0x29;
 
             // Reset the sensor by toggling the LPN pin
-            Reset_Sensor(LPN_PIN);
+            Reset_Sensor(m_lpnPin);
 
             // (Optional) Set a new I2C address if the wanted address is different from
             // the default one (filled with 0x20 for this example).

@@ -11,9 +11,10 @@
 #include "NewVL53L5cx.h"
 #include "Debugger.h"
 
-static const uint8_t INTERRUPT_PIN =  4;
+static const uint8_t LPN_PIN =  14;
+static const uint8_t INT_PIN =  4;
 
-static VL53L5cx _sensor;
+static VL53L5cx _sensor(LPN_PIN);
 
 static volatile bool _gotInterrupt;
 
@@ -28,7 +29,7 @@ void setup(void)
     delay(4000);
     Debugger::printf("Serial begun!\n");
 
-    pinMode(INTERRUPT_PIN, INPUT);     
+    pinMode(INT_PIN, INPUT);     
 
     Wire.begin();                
     Wire.setClock(400000);      
@@ -38,7 +39,7 @@ void setup(void)
 
     delay(1000);
 
-    attachInterrupt(INTERRUPT_PIN, interruptHandler, FALLING);
+    attachInterrupt(INT_PIN, interruptHandler, FALLING);
 
     _sensor.begin();
 }
