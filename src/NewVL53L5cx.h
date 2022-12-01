@@ -99,29 +99,37 @@ class VL53L5cx {
             // Select operating mode
             if (VL53L5_mode == autonomous_mode) {
                 // set autonomous ranging mode
-                uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+                uint8_t status =
+                    vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+                    Debugger::printf(
+                            "vl53l5cx_set_ranging_mode failed, status %u\n", status);
                 }
 
                 // can set integration time in autonomous mode
                 status = vl53l5cx_set_integration_time_ms(&Dev, VL53L5_intTime); //  
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
+                    Debugger::printf(
+                            "vl53l5cx_set_integration_time_ms failed, status %u\n",
+                            status);
                 }
             }
             else { 
-                // set continuous ranging mode, integration time is fixed in continuous mode
-                uint8_t status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+                // set continuous ranging mode, integration time is fixed in
+                // continuous mode
+                uint8_t status =
+                    vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+                    Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n",
+                            status);
                 }
             }
 
             // Select data rate 
             uint8_t status = vl53l5cx_set_ranging_frequency_hz(&Dev, VL53L5_freq);
             if (status) {
-                Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
+                Debugger::printf(
+                        "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
             }
 
             // Set target order to closest 
@@ -134,9 +142,28 @@ class VL53L5cx {
             uint32_t integration_time_ms = 0;
             status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
             if (status) {
-                Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
+                Debugger::printf(
+                        "vl53l5cx_get_integration_time_ms failed, status %u\n", status);
             }
-            Debugger::printf("Current integration time is : %d ms\n", (int)integration_time_ms);
+            Debugger::printf(
+                    "Current integration time is : %d ms\n", (int)integration_time_ms);
+
+            // *********
+            // tailor functionality to decrease SRAM requirement, etc
+            //  #define VL53L5CX_DISABLE_AMBIENT_PER_SPAD
+            //  #define VL53L5CX_DISABLE_NB_SPADS_ENABLED
+            //  #define VL53L5CX_DISABLE_SIGNAL_PER_SPAD
+            //  #define VL53L5CX_DISABLE_RANGE_SIGMA_MM
+            //  #define VL53L5CX_DISABLE_REFLECTANCE_PERCENT
+            //  #define VL53L5CX_DISABLE_MOTION_INDICATOR
+            // *********
+
+            // Put the VL53L5CX to sleep
+            status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
+            if (status) {
+                Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+            }
+            Debugger::printf("VL53L5CX is now sleeping\n");
 
         }
 

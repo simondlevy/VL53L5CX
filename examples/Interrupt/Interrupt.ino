@@ -48,29 +48,12 @@ void setup(void)
 
     _sensor.foo();
 
-    // *********
-    // tailor functionality to decrease SRAM requirement, etc
-    //  #define VL53L5CX_DISABLE_AMBIENT_PER_SPAD
-    //  #define VL53L5CX_DISABLE_NB_SPADS_ENABLED
-    //  #define VL53L5CX_DISABLE_SIGNAL_PER_SPAD
-    //  #define VL53L5CX_DISABLE_RANGE_SIGMA_MM
-    //  #define VL53L5CX_DISABLE_REFLECTANCE_PERCENT
-    //  #define VL53L5CX_DISABLE_MOTION_INDICATOR
-    // *********
-
-    // Put the VL53L5CX to sleep
-    uint8_t status = vl53l5cx_set_power_mode(&_sensor.Dev, VL53L5CX_POWER_MODE_SLEEP);
-    if (status) {
-        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-    }
-    Debugger::printf("VL53L5CX is now sleeping\n");
-
-    // We wait 5 seconds, only for the example 
+   // We wait 5 seconds, only for the example 
     Debugger::printf("Waiting 5 seconds for the example...\n");
     delay(5000);
 
     // After 5 seconds, the sensor needs to be restarted 
-    status = vl53l5cx_set_power_mode(&_sensor.Dev, VL53L5CX_POWER_MODE_WAKEUP);
+    uint8_t status = vl53l5cx_set_power_mode(&_sensor.Dev, VL53L5CX_POWER_MODE_WAKEUP);
     if (status) {
         Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
     }
