@@ -16,8 +16,8 @@ static const uint8_t LPN_PIN =  14; // 9;
 
 static uint8_t  pixels;
 
-static VL53L5CX_Configuration Dev = {};  // Sensor configuration
-static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
+static VL53L5CX_Configuration Dev;   // Sensor configuration
+static VL53L5CX_ResultsData Results; // Results data from VL53L5CX
 
 // Configure VL53L5 measurement parameters
 static const uint8_t continuous_mode = 0;
