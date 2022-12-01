@@ -26,7 +26,7 @@ numbers agree with the [pin numbers](https://github.com/simondlevy/VL53L5/blob/m
 
 I have tested this library on the following platforms:
 
-* [Ladybug STM32L432 Development Board](https://www.tindie.com/products/TleraCorp/ladybug-stm32l432-development-board/) from Tlera Corp.
+* [Ladybug STM32L432 Development Board](https://www.tindie.com/products/TleraCorp/ladybug-stm32l432-development-board/)
 
 * [Teensy 3.2 Develeopment Board](https://www.pjrc.com/store/teensy32.html) 
 
