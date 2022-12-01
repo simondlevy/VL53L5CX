@@ -43,11 +43,9 @@ class VL53L5cx {
 
         VL53L5CX_Configuration Dev;
 
-        uint8_t pixels;
-
-    public:
-
         VL53L5CX_ResultsData Results;
+
+        uint8_t pixels;
 
     public:
 
@@ -217,6 +215,11 @@ class VL53L5cx {
         uint8_t getTargetStatus(uint8_t pixel)
         {
             return Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
+        }
+
+        int16_t getDistanceMm(uint8_t pixel)
+        {
+            return Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
         uint8_t getTargetDetectedCount(uint8_t pixel)
