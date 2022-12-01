@@ -10,19 +10,22 @@
 #include "Debugger.hpp"
 #include "VL53L5cx.h"
 
-static VL53L5cx sensor = VL53L5cx(14); // LPN pin
+static const uint8_t LPN_PIN = 14;
+
+static VL53L5cx sensor = VL53L5cx(LPN_PIN);
 
 void setup(void)
 {
-    // Start I^2C
+    Serial.begin(115200);
+    delay(4000);
+    Debugger::printf("Starting sensor; may take a few seconds ...\n");
+
+    // Start I^2C at 400kHz
     Wire.begin();
+    Wire.setClock(400000);
     delay(100);
 
-    // Start serial debugging
-    Serial.begin(115200);
-
     // Start sensor
-    Serial.println("Starting sensor; may take a few seconds ...");
     sensor.begin();
 
 } // setup
