@@ -14,7 +14,7 @@
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
-static uint8_t  status, isAlive, isReady, error, pixels;
+static uint8_t  status, error, pixels;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
@@ -74,6 +74,7 @@ void setup(void)
     //status = vl53l5cx_set_i2c_address(&Dev, 0x20);
 
     // Check if there is a VL53L5CX sensor connected
+    uint8_t isAlive = 0;
     error = vl53l5cx_is_alive(&Dev, &isAlive);
     if (!isAlive || error) {
         Debugger::reportForever("VL53L5CX not detected at requested address");
@@ -189,6 +190,7 @@ void setup(void)
     error = vl53l5cx_start_ranging(&Dev);
     if (error !=0) {Serial.print("start error = "); Serial.println(error);}
 
+    uint8_t isReady = 0;
     error = vl53l5cx_check_data_ready(&Dev, &isReady); // clear the interrupt
 
 } // setup
@@ -200,7 +202,8 @@ void loop(void)
 
         gotnterrupt = false;
 
-        isReady = 0, error = 0;
+        uint8_t isReady = 0;
+        uint8_t error = 0;
 
         while (isReady == 0) {
             error = vl53l5cx_check_data_ready(&Dev, &isReady);
