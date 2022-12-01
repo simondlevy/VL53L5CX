@@ -55,7 +55,7 @@ void loop(void)
 
         _sensor.readData();
 
-        for (auto i=0; i<_sensor.pixelCount(); i++) {
+        for (auto i=0; i<_sensor.getPixelCount(); i++) {
 
             // Print per zone results 
             Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
@@ -66,7 +66,7 @@ void loop(void)
             // Print per target results 
             if (_sensor.Results.nb_target_detected[i] > 0) {
                 Debugger::printf("Target status : %3u, Distance : %4d mm\n",
-                        _sensor.Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * i],
+                        _sensor.getTargetStatus(i),
                         _sensor.Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
             }
             else {
