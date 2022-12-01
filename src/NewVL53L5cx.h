@@ -50,12 +50,22 @@ class VL53L5cx {
 
         uint8_t m_address;
 
+        uint8_t m_resolution;
+
     public:
 
-        VL53L5cx(uint8_t lpnPin, uint8_t address=0x29)
+        typedef enum {
+
+            RESOLUTION_4X4,
+            RESOLUTION_8X8 
+
+        } resolution_t;
+
+        VL53L5cx(uint8_t lpnPin, resolution_t resolution=RESOLUTION_4X4, uint8_t address=0x29)
         {
             m_lpnPin = lpnPin;
             m_address = address;
+            m_resolution = resolution == RESOLUTION_8X8 ? 1 : 0;
         }
 
         void begin(void)
@@ -65,9 +75,7 @@ class VL53L5cx {
             // Reset the sensor by toggling the LPN pin
             Reset_Sensor(m_lpnPin);
 
-            // (Optional) Set a new I2C address if the wanted address is different from
-            // the default one (filled with 0x20 for this example).
-            //status = vl53l5cx_set_i2c_address(&m_dev, 0x20);
+            //status = vl53l5cx_set_i2c_address(&m_dev, m_address);
 
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
