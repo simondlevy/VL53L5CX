@@ -177,7 +177,8 @@ void setup(void)
 
     // We wait 5 seconds, only for the example 
     Debugger::printf("Waiting 5 seconds for the example...\n");
-    WaitMs(&(Dev.platform), 5000);
+    delay(5000);
+    //WaitMs(&(Dev.platform), 5000);
 
     // After 5 seconds, the sensor needs to be restarted 
     status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
