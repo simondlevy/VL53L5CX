@@ -60,7 +60,7 @@ void loop(void)
             // Print per zone results 
             Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
                     i,
-                    _sensor.Results.nb_target_detected[i],
+                    _sensor.getTargetDetectedCount(i),
                     _sensor.Results.ambient_per_spad[i]);
 
             // Print per target results 

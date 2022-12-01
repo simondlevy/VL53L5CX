@@ -219,6 +219,11 @@ class VL53L5cx {
             return Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
+        uint8_t getTargetDetectedCount(uint8_t pixel)
+        {
+            return Results.nb_target_detected[pixel];
+        }
+
 }; // class VL53L5cx
 
 
