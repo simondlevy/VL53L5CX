@@ -46,7 +46,7 @@ class VL53L5cx {
 
     public:
 
-        void foo(void)
+        void begin(void)
         {
             // Fill the platform structure with customer's implementation. For this
             // example, only the I2C address is used.

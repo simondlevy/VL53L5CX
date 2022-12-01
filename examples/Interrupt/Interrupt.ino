@@ -46,7 +46,7 @@ void setup(void)
     // Configure the data ready interrupt
     attachInterrupt(INT_PIN, interruptHandler, FALLING);
 
-    _sensor.foo();
+    _sensor.begin();
 
 } // setup
 
