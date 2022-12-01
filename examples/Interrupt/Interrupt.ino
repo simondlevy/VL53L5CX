@@ -57,20 +57,7 @@ void loop(void)
 
         gotnterrupt = false;
 
-        while (true) {
-
-            uint8_t isReady = 0;
-
-            uint8_t error = vl53l5cx_check_data_ready(&_sensor.Dev, &isReady);
-
-            if (error !=0) {
-                Debugger::printf("ready error = 0x%02X\n", error); 
-            }
-
-            if (isReady) {
-                break;
-            }
-
+        while (!_sensor.dataIsReady()) {
             delay(10);
         }
 

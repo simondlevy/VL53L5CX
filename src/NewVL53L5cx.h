@@ -85,14 +85,16 @@ class VL53L5cx {
                 pixels = 16;
                 uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
+                    Debugger::printf(
+                            "vl53l5cx_set_resolution failed, status %u\n", status);
                 }
             }
             else {
                 pixels = 64;
                 uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
+                    Debugger::printf(
+                            "vl53l5cx_set_resolution failed, status %u\n", status);
                 }
             }
 
@@ -181,6 +183,19 @@ class VL53L5cx {
             uint8_t isReady = 0;
             error =
                 vl53l5cx_check_data_ready(&Dev, &isReady); // clear the interrupt
+        }
+
+        bool dataIsReady(void)
+        {
+            uint8_t isReady = 0;
+
+            uint8_t error = vl53l5cx_check_data_ready(&Dev, &isReady);
+
+            if (error !=0) {
+                Debugger::printf("ready error = 0x%02X\n", error); 
+            }
+
+            return isReady != 0;
         }
 
 }; // class VL53L5cx
