@@ -55,7 +55,7 @@ void loop(void)
 
         _sensor.readData();
 
-        for (auto i=0; i<_sensor.pixels; i++) {
+        for (auto i=0; i<_sensor.pixelCount(); i++) {
 
             // Print per zone results 
             Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",

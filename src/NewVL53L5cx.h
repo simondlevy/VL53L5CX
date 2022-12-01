@@ -41,12 +41,12 @@ class VL53L5cx {
         // in milliseconds, settable only when in autonomous mode, otherwise a no op
         static const uint8_t VL53L5_intTime = 10; 
 
+        uint8_t pixels;
+
     public:
 
         VL53L5CX_Configuration Dev;
         VL53L5CX_ResultsData Results;
-
-        uint8_t pixels;
 
     public:
 
@@ -206,6 +206,11 @@ class VL53L5cx {
         {
             // status = vl53l5cx_get_resolution(&Dev, &resolution);
             vl53l5cx_get_ranging_data(&Dev, &Results);
+        }
+
+        uint8_t pixelCount(void)
+        {
+            return pixels;
         }
 
 }; // class VL53L5cx
