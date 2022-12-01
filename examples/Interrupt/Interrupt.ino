@@ -62,7 +62,7 @@ void loop(void)
                     i, _sensor.getTargetDetectedCount(i), _sensor.getAmbientPerSpad(i));
 
             // Print per target results 
-            if (_sensor.Results.nb_target_detected[i] > 0) {
+            if (_sensor.getTargetDetectedCount(i) > 0) {
                 Debugger::printf("Target status : %3u, Distance : %4d mm\n",
                         _sensor.getTargetStatus(i),
                         _sensor.Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
