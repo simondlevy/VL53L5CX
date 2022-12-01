@@ -48,18 +48,19 @@ class VL53L5cx {
 
         uint8_t m_lpnPin;
 
+        uint8_t m_address;
+
     public:
 
-        VL53L5cx(uint8_t lpnPin)
+        VL53L5cx(uint8_t lpnPin, uint8_t address=0x29)
         {
             m_lpnPin = lpnPin;
+            m_address = address;
         }
 
         void begin(void)
         {
-            // Fill the platform structure with customer's implementation. For this
-            // example, only the I2C address is used.
-            m_dev.platform.address = 0x29;
+            m_dev.platform.address = m_address;
 
             // Reset the sensor by toggling the LPN pin
             Reset_Sensor(m_lpnPin);
