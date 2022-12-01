@@ -15,7 +15,6 @@ static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
 static uint8_t  status, isAlive, isReady, error, pixels;
-static uint32_t integration_time_ms;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
@@ -40,10 +39,10 @@ static const uint8_t VL53L5_freq = 1;
 // in milliseconds, settable only when in autonomous mode, otherwise a no op
 static const uint8_t VL53L5_intTime = 10; 
 
-static volatile bool VL53L5_intFlag;
+static volatile bool gotnterrupt;
 
-static void VL53L5_intHandler() {
-    VL53L5_intFlag = true;
+static void interruptHandler() {
+    gotnterrupt = true;
 }
 
 void setup(void)
@@ -146,6 +145,7 @@ void setup(void)
     }
 
     // Get current integration time 
+    uint32_t integration_time_ms = 0;
     status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
     if (status) {
         Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
@@ -154,7 +154,7 @@ void setup(void)
 
 
     // Configure the data ready interrupt
-    attachInterrupt(INT_PIN, VL53L5_intHandler, FALLING);
+    attachInterrupt(INT_PIN, interruptHandler, FALLING);
 
     // *********
     // tailor functionality to decrease SRAM requirement, etc
@@ -196,9 +196,9 @@ void setup(void)
 
 void loop(void)
 {
-    if (VL53L5_intFlag) {
+    if (gotnterrupt) {
 
-        VL53L5_intFlag = false;
+        gotnterrupt = false;
 
         isReady = 0, error = 0;
 
