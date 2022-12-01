@@ -11,7 +11,6 @@
 #include "VL53L5cx.h"
 #include "Debugger.hpp"
 
-static const uint8_t LED_PIN = 13;
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
@@ -54,9 +53,6 @@ void setup(void)
     delay(4000);
     Serial.println("Serial begun!");
 
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH); // start with led on, active HIGH
-
     pinMode(INT_PIN, INPUT);     // VL53L5CX interrupt pin
 
     Wire.begin();                // Start I2C
@@ -95,8 +91,6 @@ void setup(void)
 
         Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
                 VL53L5CX_API_REVISION);
-
-        digitalWrite(LED_PIN, LOW); // turn off led when initiation successful
     }
 
 
