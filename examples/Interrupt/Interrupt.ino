@@ -15,11 +15,11 @@ static const uint8_t INTERRUPT_PIN =  4;
 
 static VL53L5cx _sensor;
 
-static volatile bool gotInterrupt;
+static volatile bool _gotInterrupt;
 
 static void interruptHandler() 
 {
-    gotInterrupt = true;
+    _gotInterrupt = true;
 }
 
 void setup(void)
@@ -28,10 +28,10 @@ void setup(void)
     delay(4000);
     Debugger::printf("Serial begun!\n");
 
-    pinMode(INTERRUPT_PIN, INPUT);     // VL53L5CX interrupt pin
+    pinMode(INTERRUPT_PIN, INPUT);     
 
-    Wire.begin();                // Start I2C
-    Wire.setClock(400000);       // Set I2C frequency at 400 kHz  
+    Wire.begin();                
+    Wire.setClock(400000);      
     delay(1000);
 
     Debugger::printf("starting\n\n");
@@ -45,9 +45,9 @@ void setup(void)
 
 void loop(void)
 {
-    if (gotInterrupt) {
+    if (_gotInterrupt) {
 
-        gotInterrupt = false;
+        _gotInterrupt = false;
 
         while (!_sensor.dataIsReady()) {
             delay(10);

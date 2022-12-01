@@ -41,11 +41,11 @@ class VL53L5cx {
         // in milliseconds, settable only when in autonomous mode, otherwise a no op
         static const uint8_t VL53L5_intTime = 10; 
 
-        VL53L5CX_Configuration Dev;
+        VL53L5CX_Configuration m_dev;
 
-        VL53L5CX_ResultsData Results;
+        VL53L5CX_ResultsData m_results;
 
-        uint8_t pixels;
+        uint8_t m_pixels;
 
     public:
 
@@ -53,18 +53,18 @@ class VL53L5cx {
         {
             // Fill the platform structure with customer's implementation. For this
             // example, only the I2C address is used.
-            Dev.platform.address = 0x29;
+            m_dev.platform.address = 0x29;
 
             // Reset the sensor by toggling the LPN pin
             Reset_Sensor(LPN_PIN);
 
             // (Optional) Set a new I2C address if the wanted address is different from
             // the default one (filled with 0x20 for this example).
-            //status = vl53l5cx_set_i2c_address(&Dev, 0x20);
+            //status = vl53l5cx_set_i2c_address(&m_dev, 0x20);
 
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
-            uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
+            uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
             if (!isAlive || error) {
                 Debugger::reportForever("VL53L5CX not detected at requested address");
             }
@@ -72,7 +72,7 @@ class VL53L5cx {
             if (isAlive) {
 
                 // (Mandatory) Init VL53L5CX sensor
-                error = vl53l5cx_init(&Dev);
+                error = vl53l5cx_init(&m_dev);
                 Debugger::printf("error = 0x%02X\n", error); 
                 if (error) {
                     Debugger::reportForever("VL53L5CX ULD Loading failed");
@@ -85,16 +85,16 @@ class VL53L5cx {
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
             if (VL53L5_resolution == resolution_4x4) {
-                pixels = 16;
-                uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
+                m_pixels = 16;
+                uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_4X4);
                 if (status) {
                     Debugger::printf(
                             "vl53l5cx_set_resolution failed, status %u\n", status);
                 }
             }
             else {
-                pixels = 64;
-                uint8_t status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
+                m_pixels = 64;
+                uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_8X8);
                 if (status) {
                     Debugger::printf(
                             "vl53l5cx_set_resolution failed, status %u\n", status);
@@ -105,14 +105,14 @@ class VL53L5cx {
             if (VL53L5_mode == autonomous_mode) {
                 // set autonomous ranging mode
                 uint8_t status =
-                    vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
+                    vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
                 if (status) {
                     Debugger::printf(
                             "vl53l5cx_set_ranging_mode failed, status %u\n", status);
                 }
 
                 // can set integration time in autonomous mode
-                status = vl53l5cx_set_integration_time_ms(&Dev, VL53L5_intTime); //  
+                status = vl53l5cx_set_integration_time_ms(&m_dev, VL53L5_intTime); //  
                 if (status) {
                     Debugger::printf(
                             "vl53l5cx_set_integration_time_ms failed, status %u\n",
@@ -123,7 +123,7 @@ class VL53L5cx {
                 // set continuous ranging mode, integration time is fixed in
                 // continuous mode
                 uint8_t status =
-                    vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+                    vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
                 if (status) {
                     Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n",
                             status);
@@ -131,21 +131,21 @@ class VL53L5cx {
             }
 
             // Select data rate 
-            uint8_t status = vl53l5cx_set_ranging_frequency_hz(&Dev, VL53L5_freq);
+            uint8_t status = vl53l5cx_set_ranging_frequency_hz(&m_dev, VL53L5_freq);
             if (status) {
                 Debugger::printf(
                         "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
             }
 
             // Set target order to closest 
-            status = vl53l5cx_set_target_order(&Dev, VL53L5CX_TARGET_ORDER_CLOSEST);
+            status = vl53l5cx_set_target_order(&m_dev, VL53L5CX_TARGET_ORDER_CLOSEST);
             if (status) {
                 Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
             }
 
             // Get current integration time 
             uint32_t integration_time_ms = 0;
-            status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
+            status = vl53l5cx_get_integration_time_ms(&m_dev, &integration_time_ms);
             if (status) {
                 Debugger::printf(
                         "vl53l5cx_get_integration_time_ms failed, status %u\n", status);
@@ -164,35 +164,35 @@ class VL53L5cx {
             // *********
 
             // Put the VL53L5CX to sleep
-            status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
+            status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP);
             if (status) {
                 Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
             }
             Debugger::printf("VL53L5CX is now sleeping\n");
 
             // Restart
-            status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
+            status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP);
             if (status) {
                 Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
             }
             Debugger::printf("VL53L5CX is now waking up\n");
 
             // Start ranging 
-            error = vl53l5cx_start_ranging(&Dev);
+            error = vl53l5cx_start_ranging(&m_dev);
             if (error !=0) {
                 Debugger::printf("start error = 0x%02X\n", error); 
             }
 
             uint8_t isReady = 0;
             error =
-                vl53l5cx_check_data_ready(&Dev, &isReady); // clear the interrupt
+                vl53l5cx_check_data_ready(&m_dev, &isReady); // clear the interrupt
         }
 
         bool dataIsReady(void)
         {
             uint8_t isReady = 0;
 
-            uint8_t error = vl53l5cx_check_data_ready(&Dev, &isReady);
+            uint8_t error = vl53l5cx_check_data_ready(&m_dev, &isReady);
 
             if (error !=0) {
                 Debugger::printf("ready error = 0x%02X\n", error); 
@@ -203,33 +203,33 @@ class VL53L5cx {
 
         void readData(void)
         {
-            // status = vl53l5cx_get_resolution(&Dev, &resolution);
-            vl53l5cx_get_ranging_data(&Dev, &Results);
+            // status = vl53l5cx_get_resolution(&m_dev, &resolution);
+            vl53l5cx_get_ranging_data(&m_dev, &m_results);
         }
 
         uint8_t getPixelCount(void)
         {
-            return pixels;
+            return m_pixels;
         }
 
         uint8_t getTargetStatus(uint8_t pixel)
         {
-            return Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
+            return m_results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
         int16_t getDistanceMm(uint8_t pixel)
         {
-            return Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
+            return m_results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
         uint8_t getTargetDetectedCount(uint8_t pixel)
         {
-            return Results.nb_target_detected[pixel];
+            return m_results.nb_target_detected[pixel];
         }
 
         uint8_t getAmbientPerSpad(uint8_t pixel)
         {
-            return Results.ambient_per_spad[pixel];
+            return m_results.ambient_per_spad[pixel];
         }
 
 }; // class VL53L5cx
