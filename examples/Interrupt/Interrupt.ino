@@ -57,41 +57,45 @@ void loop(void)
 
         gotnterrupt = false;
 
-        uint8_t isReady = 0;
+        while (true) {
 
-        while (isReady == 0) {
+            uint8_t isReady = 0;
+
             uint8_t error = vl53l5cx_check_data_ready(&_sensor.Dev, &isReady);
+
             if (error !=0) {
                 Debugger::printf("ready error = 0x%02X\n", error); 
             }
+
+            if (isReady) {
+                break;
+            }
+
             delay(10);
         }
 
-        if (isReady) {
+        // status = vl53l5cx_get_resolution(&_sensor.Dev, &resolution);
+        vl53l5cx_get_ranging_data(&_sensor.Dev, &_sensor.Results);
 
-            // status = vl53l5cx_get_resolution(&_sensor.Dev, &resolution);
-            vl53l5cx_get_ranging_data(&_sensor.Dev, &_sensor.Results);
+        for (auto i=0; i<_sensor.pixels; i++) {
 
-            for (auto i=0; i<_sensor.pixels; i++) {
+            // Print per zone results 
+            Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
+                    i,
+                    _sensor.Results.nb_target_detected[i],
+                    _sensor.Results.ambient_per_spad[i]);
 
-                // Print per zone results 
-                Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
-                        i,
-                        _sensor.Results.nb_target_detected[i],
-                        _sensor.Results.ambient_per_spad[i]);
-
-                // Print per target results 
-                if (_sensor.Results.nb_target_detected[i] > 0) {
-                    Debugger::printf("Target status : %3u, Distance : %4d mm\n",
-                            _sensor.Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * i],
-                            _sensor.Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
-                }
-                else {
-                    Debugger::printf("Target status : 255, Distance : No target\n");
-                }
+            // Print per target results 
+            if (_sensor.Results.nb_target_detected[i] > 0) {
+                Debugger::printf("Target status : %3u, Distance : %4d mm\n",
+                        _sensor.Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * i],
+                        _sensor.Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
             }
-            Debugger::printf("\n");
+            else {
+                Debugger::printf("Target status : 255, Distance : No target\n");
+            }
         }
+        Debugger::printf("\n");
 
     } // end of VL53L5CX interrupt handling
 
