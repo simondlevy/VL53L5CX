@@ -224,6 +224,11 @@ class VL53L5cx {
             return Results.nb_target_detected[pixel];
         }
 
+        uint8_t getAmbientPerSpad(uint8_t pixel)
+        {
+            return Results.ambient_per_spad[pixel];
+        }
+
 }; // class VL53L5cx
 
 
