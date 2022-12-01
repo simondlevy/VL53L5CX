@@ -32,4 +32,4 @@ I have tested this library on the following platforms:
 
 * [Teensy 4.0 Develeopment Board](https://www.pjrc.com/store/teensy40.html)
 
-* [TinyPICO.ESP32 Develeopment Board](https://www.tinypico.com) 
+* [TinyPICO ESP32 Develeopment Board](https://www.tinypico.com) 
