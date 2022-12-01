@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#include "Debugger.hpp"
+#include "Debugger.h"
 
 /**
  * @brief Inner function, not available outside this file. This function is used

@@ -7,7 +7,7 @@
  */
 
 #include <Wire.h>
-#include "Debugger.hpp"
+#include "Debugger.h"
 #include "VL53L5cx.h"
 
 // static const uint8_t LED_PIN = 13;

@@ -9,7 +9,7 @@
 #include <Wire.h>
 
 #include <VL53L5cx.h>
-#include <Debugger.hpp>
+#include <Debugger.h>
 #include "st/vl53l5cx_api.h"
 
 

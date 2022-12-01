@@ -9,7 +9,7 @@
 #include <Wire.h>
 
 #include "VL53L5cx.h"
-#include "Debugger.hpp"
+#include "Debugger.h"
 
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;

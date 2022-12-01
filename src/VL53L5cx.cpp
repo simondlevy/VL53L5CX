@@ -7,7 +7,7 @@
  */
 
 #include "VL53L5cx.h"
-#include "Debugger.hpp"
+#include "Debugger.h"
 
 #include "st/vl53l5cx_plugin_motion_indicator.h"
 #include "st/vl53l5cx_plugin_xtalk.h"

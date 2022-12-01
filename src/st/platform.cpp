@@ -7,7 +7,7 @@
 */
 
 #include "platform.h"
-#include "Debugger.hpp"
+#include "Debugger.h"
 
 #include <Arduino.h>
 #include <Wire.h>
