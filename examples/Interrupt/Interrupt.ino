@@ -50,7 +50,7 @@ void setup(void)
     // Start serial debugging
     Serial.begin(115200);
     delay(4000);
-    Serial.println("Serial begun!");
+    Debugger::printf("Serial begun!\n");
 
     pinMode(INT_PIN, INPUT);     // VL53L5CX interrupt pin
 
@@ -84,7 +84,7 @@ void setup(void)
 
         // (Mandatory) Init VL53L5CX sensor
         error = vl53l5cx_init(&Dev);
-        Serial.print("error = 0x"); Serial.println(error, HEX);
+        Debugger::printf("error = 0x%02X\n", error); 
         if (error) {
             Debugger::reportForever("VL53L5CX ULD Loading failed");
         }
@@ -187,7 +187,9 @@ void setup(void)
 
     // Start ranging 
     error = vl53l5cx_start_ranging(&Dev);
-    if (error !=0) {Serial.print("start error = "); Serial.println(error);}
+    if (error !=0) {
+        Debugger::printf("start error = 0x%02X\n", error); 
+    }
 
     uint8_t isReady = 0;
     error = vl53l5cx_check_data_ready(&Dev, &isReady); // clear the interrupt
@@ -202,11 +204,12 @@ void loop(void)
         gotnterrupt = false;
 
         uint8_t isReady = 0;
-        uint8_t error = 0;
 
         while (isReady == 0) {
-            error = vl53l5cx_check_data_ready(&Dev, &isReady);
-            if (error !=0) {Serial.print("ready error = "); Serial.println(error);}
+            uint8_t error = vl53l5cx_check_data_ready(&Dev, &isReady);
+            if (error !=0) {
+                Debugger::printf("ready error = 0x%02X\n", error); 
+            }
             delay(10);
         }
 
