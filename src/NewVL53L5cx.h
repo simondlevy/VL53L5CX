@@ -165,6 +165,22 @@ class VL53L5cx {
             }
             Debugger::printf("VL53L5CX is now sleeping\n");
 
+            // Restart
+            status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
+            if (status) {
+                Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+            }
+            Debugger::printf("VL53L5CX is now waking up\n");
+
+            // Start ranging 
+            error = vl53l5cx_start_ranging(&Dev);
+            if (error !=0) {
+                Debugger::printf("start error = 0x%02X\n", error); 
+            }
+
+            uint8_t isReady = 0;
+            error =
+                vl53l5cx_check_data_ready(&Dev, &isReady); // clear the interrupt
         }
 
 }; // class VL53L5cx

@@ -48,27 +48,6 @@ void setup(void)
 
     _sensor.foo();
 
-   // We wait 5 seconds, only for the example 
-    //Debugger::printf("Waiting 5 seconds for the example...\n");
-    //delay(5000);
-
-    // After 5 seconds, the sensor needs to be restarted 
-    uint8_t status = vl53l5cx_set_power_mode(&_sensor.Dev, VL53L5CX_POWER_MODE_WAKEUP);
-    if (status) {
-        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
-    }
-    Debugger::printf("VL53L5CX is now waking up\n");
-
-
-    // Start ranging 
-    uint8_t error = vl53l5cx_start_ranging(&_sensor.Dev);
-    if (error !=0) {
-        Debugger::printf("start error = 0x%02X\n", error); 
-    }
-
-    uint8_t isReady = 0;
-    error = vl53l5cx_check_data_ready(&_sensor.Dev, &isReady); // clear the interrupt
-
 } // setup
 
 
