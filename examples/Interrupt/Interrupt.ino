@@ -43,10 +43,10 @@ void setup(void)
 
     delay(1000);
 
-    _sensor.foo();
-
     // Configure the data ready interrupt
     attachInterrupt(INT_PIN, interruptHandler, FALLING);
+
+    _sensor.foo();
 
     // *********
     // tailor functionality to decrease SRAM requirement, etc
