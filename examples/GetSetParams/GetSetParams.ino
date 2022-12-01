@@ -10,8 +10,9 @@
 #include "Debugger.hpp"
 #include "VL53L5cx.h"
 
-static const uint8_t LED_PIN = 13;
-static const uint8_t INT_PIN = 8;
+// static const uint8_t LED_PIN = 13;
+
+static const uint8_t INT_PIN = 4;
 static const uint8_t LPN_PIN = 5;
 
 static VL53L5cx sensor = VL53L5cx(LPN_PIN, 
@@ -32,8 +33,8 @@ void setup(void)
     Serial.begin(115200);
 
     // Turn LED on
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH); 
+    //pinMode(LED_PIN, OUTPUT);
+    //digitalWrite(LED_PIN, HIGH); 
 
     // Start I^2C
     Wire.begin();
@@ -57,7 +58,7 @@ void setup(void)
     Debugger::printf("Current integration time is : %d ms\n", sensor.getIntegrationTimeMsec());
 
     // Turn off led when initiation successfull
-    digitalWrite(LED_PIN, LOW); 
+    //digitalWrite(LED_PIN, LOW); 
 
     delay(3000);
 
@@ -87,9 +88,9 @@ void loop(void)
     } // end of VL53L5CX interrupt handling
 
     // Flash the LED
-    digitalWrite(LED_PIN, HIGH);
+    //digitalWrite(LED_PIN, HIGH);
     delay(10);
-    digitalWrite(LED_PIN, LOW);
+    //digitalWrite(LED_PIN, LOW);
 
 } // loop
 

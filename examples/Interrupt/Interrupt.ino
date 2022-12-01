@@ -105,14 +105,14 @@ void setup(void)
         pixels = 16;
         status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_4X4);
         if(status) {
-            printf("vl53l5cx_set_resolution failed, status %u\n", status);
+            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
         }
     }
     else {
         pixels = 64;
         status = vl53l5cx_set_resolution(&Dev, VL53L5CX_RESOLUTION_8X8);
         if(status) {
-            printf("vl53l5cx_set_resolution failed, status %u\n", status);
+            Debugger::printf("vl53l5cx_set_resolution failed, status %u\n", status);
         }
     }
 
@@ -121,41 +121,41 @@ void setup(void)
         /* set autonomous ranging mode */
         status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
         if(status) {
-            printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         }
 
         /* can set integration time in autonomous mode */
         status = vl53l5cx_set_integration_time_ms(&Dev, VL53L5_intTime); //  
         if(status) {
-            printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
+            Debugger::printf("vl53l5cx_set_integration_time_ms failed, status %u\n", status);
         }
     }
     else { 
         /* set continuous ranging mode, integration time is fixed in continuous mode */
         status = vl53l5cx_set_ranging_mode(&Dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
         if(status) {
-            printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
+            Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n", status);
         }
     }
 
     /* Select data rate */
     status = vl53l5cx_set_ranging_frequency_hz(&Dev, VL53L5_freq);
     if(status) {
-        printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
+        Debugger::printf("vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
     }
 
     /* Set target order to closest */
     status = vl53l5cx_set_target_order(&Dev, VL53L5CX_TARGET_ORDER_CLOSEST);
     if(status) {
-        printf("vl53l5cx_set_target_order failed, status %u\n", status);
+        Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
     }
 
     /* Get current integration time */
     status = vl53l5cx_get_integration_time_ms(&Dev, &integration_time_ms);
     if(status) {
-        printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
+        Debugger::printf("vl53l5cx_get_integration_time_ms failed, status %u\n", status);
     }
-    printf("Current integration time is : %d ms\n", (int)integration_time_ms);
+    Debugger::printf("Current integration time is : %d ms\n", (int)integration_time_ms);
 
 
     // Configure the data ready interrupt
@@ -174,20 +174,20 @@ void setup(void)
     // Put the VL53L5CX to sleep
     status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_SLEEP);
     if(status) {
-        printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
     }
-    printf("VL53L5CX is now sleeping\n");
+    Debugger::printf("VL53L5CX is now sleeping\n");
 
     /* We wait 5 seconds, only for the example */
-    printf("Waiting 5 seconds for the example...\n");
+    Debugger::printf("Waiting 5 seconds for the example...\n");
     WaitMs(&(Dev.platform), 5000);
 
     /* After 5 seconds, the sensor needs to be restarted */
     status = vl53l5cx_set_power_mode(&Dev, VL53L5CX_POWER_MODE_WAKEUP);
     if(status) {
-        printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+        Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
     }
-    printf("VL53L5CX is now waking up\n");
+    Debugger::printf("VL53L5CX is now waking up\n");
 
 
     /* Start ranging */
@@ -220,24 +220,22 @@ void loop(void)
 
             for(int i = 0; i < pixels; i++){
                 /* Print per zone results */
-                printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
+                Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
                         i,
                         Results.nb_target_detected[i],
                         Results.ambient_per_spad[i]);
 
                 /* Print per target results */
                 if(Results.nb_target_detected[i] > 0){
-                    printf("Target status : %3u, Distance : %4d mm\n",
+                    Debugger::printf("Target status : %3u, Distance : %4d mm\n",
                             Results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * i],
                             Results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * i]);
                 }else{
-                    printf("Target status : 255, Distance : No target\n");
+                    Debugger::printf("Target status : 255, Distance : No target\n");
                 }
             }
-            printf("\n");
+            Debugger::printf("\n");
         }
-
-        digitalWrite(LED_PIN, HIGH); delay(10); digitalWrite(LED_PIN, LOW);
 
     } // end of VL53L5CX interrupt handling
 
