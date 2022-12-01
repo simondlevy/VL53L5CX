@@ -14,7 +14,7 @@
 static const uint8_t INT_PIN =  4;  // 8;
 static const uint8_t LPN_PIN =  14; // 9;
 
-static uint8_t  status, error, pixels;
+static uint8_t  status, pixels;
 
 static VL53L5CX_Configuration Dev = {};  // Sensor configuration
 static VL53L5CX_ResultsData Results = {};  // Results data from VL53L5CX
@@ -75,7 +75,7 @@ void setup(void)
 
     // Check if there is a VL53L5CX sensor connected
     uint8_t isAlive = 0;
-    error = vl53l5cx_is_alive(&Dev, &isAlive);
+    uint8_t error = vl53l5cx_is_alive(&Dev, &isAlive);
     if (!isAlive || error) {
         Debugger::reportForever("VL53L5CX not detected at requested address");
     }
@@ -92,7 +92,6 @@ void setup(void)
         Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
                 VL53L5CX_API_REVISION);
     }
-
 
     // Set resolution. WARNING : As others settings depend to this one, it must
     // come first.
