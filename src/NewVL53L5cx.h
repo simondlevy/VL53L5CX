@@ -19,12 +19,6 @@ class VL53L5cx {
 
     private:
 
-        /*
-        static const uint8_t resolution_4x4 = 0;
-        static const uint8_t resolution_8x8 = 1;
-        static const uint8_t VL53L5_resolution = resolution_4x4; // either or
-        */
-
         // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
         static const uint8_t VL53L5_freq = 1;     
 
@@ -99,15 +93,8 @@ class VL53L5cx {
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
             uint8_t status = vl53l5cx_set_resolution(&m_dev, m_resolution);
-            /*
-                    VL53L5_resolution == resolution_8x8 ?
-                    VL53L5CX_RESOLUTION_8X8 :
-                    VL53L5CX_RESOLUTION_4X4);
-                    */
-
             if (status) {
-                Debugger::reportForever(
-                        "vl53l5cx_set_resolution failed, status %u\n", status);
+                Debugger::reportForever("vl53l5cx_set_resolution failed, status %u\n", status);
             }
 
             // Select operating mode
