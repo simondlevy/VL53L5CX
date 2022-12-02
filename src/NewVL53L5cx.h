@@ -97,19 +97,14 @@ class VL53L5cx {
 
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
-            if (VL53L5_resolution == resolution_4x4) {
-                uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_4X4);
-                if (status) {
-                    Debugger::reportForever(
-                            "vl53l5cx_set_resolution failed, status %u\n", status);
-                }
-            }
-            else {
-                uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_8X8);
-                if (status) {
-                    Debugger::reportForever(
-                            "vl53l5cx_set_resolution failed, status %u\n", status);
-                }
+            uint8_t status = vl53l5cx_set_resolution(&m_dev, 
+                    VL53L5_resolution == resolution_8x8 ?
+                    VL53L5CX_RESOLUTION_8X8 :
+                    VL53L5CX_RESOLUTION_4X4);
+
+            if (status) {
+                Debugger::reportForever(
+                        "vl53l5cx_set_resolution failed, status %u\n", status);
             }
 
             // Select operating mode
@@ -142,7 +137,7 @@ class VL53L5cx {
             }
 
             // Select data rate 
-            uint8_t status = vl53l5cx_set_ranging_frequency_hz(&m_dev, VL53L5_freq);
+            status = vl53l5cx_set_ranging_frequency_hz(&m_dev, VL53L5_freq);
             if (status) {
                 Debugger::reportForever(
                         "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
