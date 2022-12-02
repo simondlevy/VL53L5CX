@@ -22,11 +22,6 @@ class VL53L5cx {
         // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
         static const uint8_t VL53L5_freq = 1;     
 
-        // Configure VL53L5 measurement parameters
-        static const uint8_t continuous_mode = 0;
-        static const uint8_t autonomous_mode = 1;
-        static const uint8_t VL53L5_mode = autonomous_mode; // either or
-
         // Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
         // than 1/freq, otherwise data rate decreased so integration time must be > 18
         // ms at 4x4, 60 Hz, for example the smaller the integration time, the less
@@ -102,7 +97,7 @@ class VL53L5cx {
             }
 
             // Select operating mode
-            if (VL53L5_mode == autonomous_mode) {
+            if (m_integralTime > 0) {
                 // set autonomous ranging mode
                 uint8_t status =
                     vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
