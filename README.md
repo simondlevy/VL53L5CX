@@ -6,6 +6,9 @@
 A lightweight, header-only Arduino library for ST Microelectronics VL53L5
 multizone Time-of-Flight ranging camera (get it
 [here](https://www.tindie.com/products/onehorse/vl53l5cx-ranging-camera/)!)
+This library is designed to simplify the use of the sensor by helping you avoid
+illegal configurations; e.g., specifying an integration constant in continuous mode,
+or specifying too high a sampling frequency at a given resolution.
 
 ## Quickstart
 

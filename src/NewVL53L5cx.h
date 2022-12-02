@@ -19,45 +19,131 @@ class VL53L5cx {
 
     private:
 
-        // Min freq is 1 Hz max is 15 Hz (8 x 8) or 60 Hz (4 x 4)
-        static const uint8_t VL53L5_freq = 1;     
-
         // Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
         // than 1/freq, otherwise data rate decreased so integration time must be > 18
-        // ms at 4x4, 60 Hz, for example the smaller the integration time, the less
+        // ms at 4X4, 60 Hz, for example the smaller the integration time, the less
         // power used, the more noise in the ranging data
 
         VL53L5CX_Configuration m_dev;
-
         VL53L5CX_ResultsData m_results;
 
         uint8_t m_lpnPin;
-
         uint8_t m_address;
-
         uint8_t m_resolution;
-
+        uint8_t m_frequency;
         uint8_t m_integralTime;
 
     public:
 
         typedef enum {
 
-            RESOLUTION_4X4 = VL53L5CX_RESOLUTION_4X4,
-            RESOLUTION_8X8 = VL53L5CX_RESOLUTION_8X8
+            RES_4X4_HZ_1 = 1,
+            RES_4X4_HZ_2,
+            RES_4X4_HZ_3,
+            RES_4X4_HZ_4,
+            RES_4X4_HZ_5,
+            RES_4X4_HZ_6,
+            RES_4X4_HZ_7,
+            RES_4X4_HZ_8,
+            RES_4X4_HZ_9,
+            RES_4X4_HZ_10,
+            RES_4X4_HZ_11,
+            RES_4X4_HZ_12,
+            RES_4X4_HZ_13,
+            RES_4X4_HZ_14,
+            RES_4X4_HZ_15,
+            RES_4X4_HZ_16,
+            RES_4X4_HZ_17,
+            RES_4X4_HZ_18,
+            RES_4X4_HZ_19,
+            RES_4X4_HZ_20,
+            RES_4X4_HZ_21,
+            RES_4X4_HZ_22,
+            RES_4X4_HZ_23,
+            RES_4X4_HZ_24,
+            RES_4X4_HZ_25,
+            RES_4X4_HZ_26,
+            RES_4X4_HZ_27,
+            RES_4X4_HZ_28,
+            RES_4X4_HZ_29,
+            RES_4X4_HZ_30,
+            RES_4X4_HZ_31,
+            RES_4X4_HZ_32,
+            RES_4X4_HZ_33,
+            RES_4X4_HZ_34,
+            RES_4X4_HZ_35,
+            RES_4X4_HZ_36,
+            RES_4X4_HZ_37,
+            RES_4X4_HZ_38,
+            RES_4X4_HZ_39,
+            RES_4X4_HZ_40,
+            RES_4X4_HZ_41,
+            RES_4X4_HZ_42,
+            RES_4X4_HZ_43,
+            RES_4X4_HZ_44,
+            RES_4X4_HZ_45,
+            RES_4X4_HZ_46,
+            RES_4X4_HZ_47,
+            RES_4X4_HZ_48,
+            RES_4X4_HZ_49,
+            RES_4X4_HZ_50,
+            RES_4X4_HZ_51,
+            RES_4X4_HZ_52,
+            RES_4X4_HZ_53,
+            RES_4X4_HZ_54,
+            RES_4X4_HZ_55,
+            RES_4X4_HZ_56,
+            RES_4X4_HZ_57,
+            RES_4X4_HZ_58,
+            RES_4X4_HZ_59,
+            RES_4X4_HZ_60
 
-        } resolution_t;
+        } res4X4_t;
+
+        typedef enum {
+
+            RES_8X8_HZ_1 = 1,
+            RES_8X8_HZ_2,
+            RES_8X8_HZ_3,
+            RES_8X8_HZ_4,
+            RES_8X8_HZ_5,
+            RES_8X8_HZ_6,
+            RES_8X8_HZ_7,
+            RES_8X8_HZ_8,
+            RES_8X8_HZ_9,
+            RES_8X8_HZ_10,
+            RES_8X8_HZ_11,
+            RES_8X8_HZ_12,
+            RES_8X8_HZ_13,
+            RES_8X8_HZ_14,
+            RES_8X8_HZ_15,
+
+        } res8X8_t;
 
         VL53L5cx(
                 uint8_t lpnPin,
                 uint8_t integralTime,
-                resolution_t resolution,
+                res4X4_t resFreq,
                 uint8_t address=0x29)
         {
             m_lpnPin = lpnPin;
             m_address = address;
             m_integralTime = integralTime;
-            m_resolution = (uint8_t)resolution;
+            m_resolution = 16;
+            m_frequency = (uint8_t)resFreq;
+        }
+
+        VL53L5cx(
+                uint8_t lpnPin,
+                uint8_t integralTime,
+                res8X8_t resFreq,
+                uint8_t address=0x29)
+        {
+            m_lpnPin = lpnPin;
+            m_address = address;
+            m_integralTime = integralTime;
+            m_resolution = 64;
+            m_frequency = (uint8_t)resFreq;
         }
 
         void begin(void)
@@ -126,7 +212,7 @@ class VL53L5cx {
             }
 
             // Select data rate 
-            status = vl53l5cx_set_ranging_frequency_hz(&m_dev, VL53L5_freq);
+            status = vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency);
             if (status) {
                 Debugger::reportForever(
                         "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
