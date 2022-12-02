@@ -14,7 +14,10 @@
 static const uint8_t LPN_PIN =  14;
 static const uint8_t INT_PIN =  4;
 
-static VL53L5cx _sensor(LPN_PIN);
+// Set to 0 for continuous mode
+static const uint8_t INTEGRAL_TIME_MS = 10;
+
+static VL53L5cx _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RESOLUTION_4X4);
 
 static volatile bool _gotInterrupt;
 

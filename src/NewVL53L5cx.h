@@ -32,9 +32,6 @@ class VL53L5cx {
         // ms at 4x4, 60 Hz, for example the smaller the integration time, the less
         // power used, the more noise in the ranging data
 
-        // in milliseconds, settable only when in autonomous mode, otherwise a no op
-        static const uint8_t VL53L5_intTime = 10; 
-
         VL53L5CX_Configuration m_dev;
 
         VL53L5CX_ResultsData m_results;
@@ -45,6 +42,8 @@ class VL53L5cx {
 
         uint8_t m_resolution;
 
+        uint8_t m_integralTime;
+
     public:
 
         typedef enum {
@@ -54,10 +53,15 @@ class VL53L5cx {
 
         } resolution_t;
 
-        VL53L5cx(uint8_t lpnPin, resolution_t resolution=RESOLUTION_4X4, uint8_t address=0x29)
+        VL53L5cx(
+                uint8_t lpnPin,
+                uint8_t integralTime,
+                resolution_t resolution,
+                uint8_t address=0x29)
         {
             m_lpnPin = lpnPin;
             m_address = address;
+            m_integralTime = integralTime;
             m_resolution = (uint8_t)resolution;
         }
 
@@ -108,7 +112,7 @@ class VL53L5cx {
                 }
 
                 // can set integration time in autonomous mode
-                status = vl53l5cx_set_integration_time_ms(&m_dev, VL53L5_intTime); //  
+                status = vl53l5cx_set_integration_time_ms(&m_dev, m_integralTime);
                 if (status) {
                     Debugger::reportForever(
                             "vl53l5cx_set_integration_time_ms failed, status %u\n",
