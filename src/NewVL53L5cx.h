@@ -103,7 +103,7 @@ class VL53L5cx {
                 m_pixels = 16;
                 uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_4X4);
                 if (status) {
-                    Debugger::printf(
+                    Debugger::reportForever(
                             "vl53l5cx_set_resolution failed, status %u\n", status);
                 }
             }
@@ -111,7 +111,7 @@ class VL53L5cx {
                 m_pixels = 64;
                 uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_8X8);
                 if (status) {
-                    Debugger::printf(
+                    Debugger::reportForever(
                             "vl53l5cx_set_resolution failed, status %u\n", status);
                 }
             }
@@ -122,14 +122,14 @@ class VL53L5cx {
                 uint8_t status =
                     vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
                 if (status) {
-                    Debugger::printf(
+                    Debugger::reportForever(
                             "vl53l5cx_set_ranging_mode failed, status %u\n", status);
                 }
 
                 // can set integration time in autonomous mode
                 status = vl53l5cx_set_integration_time_ms(&m_dev, VL53L5_intTime); //  
                 if (status) {
-                    Debugger::printf(
+                    Debugger::reportForever(
                             "vl53l5cx_set_integration_time_ms failed, status %u\n",
                             status);
                 }
@@ -140,7 +140,7 @@ class VL53L5cx {
                 uint8_t status =
                     vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
                 if (status) {
-                    Debugger::printf("vl53l5cx_set_ranging_mode failed, status %u\n",
+                    Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n",
                             status);
                 }
             }
@@ -148,21 +148,21 @@ class VL53L5cx {
             // Select data rate 
             uint8_t status = vl53l5cx_set_ranging_frequency_hz(&m_dev, VL53L5_freq);
             if (status) {
-                Debugger::printf(
+                Debugger::reportForever(
                         "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
             }
 
             // Set target order to closest 
             status = vl53l5cx_set_target_order(&m_dev, VL53L5CX_TARGET_ORDER_CLOSEST);
             if (status) {
-                Debugger::printf("vl53l5cx_set_target_order failed, status %u\n", status);
+                Debugger::reportForever("vl53l5cx_set_target_order failed, status %u\n", status);
             }
 
             // Get current integration time 
             uint32_t integration_time_ms = 0;
             status = vl53l5cx_get_integration_time_ms(&m_dev, &integration_time_ms);
             if (status) {
-                Debugger::printf(
+                Debugger::reportForever(
                         "vl53l5cx_get_integration_time_ms failed, status %u\n", status);
             }
             Debugger::printf(
@@ -181,14 +181,14 @@ class VL53L5cx {
             // Put the VL53L5CX to sleep
             status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP);
             if (status) {
-                Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+                Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", status);
             }
             Debugger::printf("VL53L5CX is now sleeping\n");
 
             // Restart
             status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP);
             if (status) {
-                Debugger::printf("vl53l5cx_set_power_mode failed, status %u\n", status);
+                Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", status);
             }
             Debugger::printf("VL53L5CX is now waking up\n");
 
