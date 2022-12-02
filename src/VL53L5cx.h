@@ -215,6 +215,7 @@ class VL53L5cx {
             Debugger::printf(
                     "Current integration time is : %d ms\n", (int)integration_time_ms);
 
+            /*
             // Put the VL53L5CX to sleep
             checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP),
                 "vl53l5cx_set_power_mode failed, status %u\n");
@@ -224,6 +225,7 @@ class VL53L5cx {
             checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP),
                 "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now waking up\n");
+            */
 
             // Start ranging 
             checkStatus(vl53l5cx_start_ranging(&m_dev), "start error = 0x%02X\n"); 

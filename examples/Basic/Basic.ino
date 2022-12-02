@@ -14,7 +14,7 @@
 static const uint8_t LPN_PIN =  14;
 
 // Set to 0 for polling
-static const uint8_t INT_PIN =  4;
+static const uint8_t INT_PIN = 4;
 
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
@@ -81,5 +81,3 @@ void loop(void)
         Debugger::printf("\n");
     } 
 }
-
-
