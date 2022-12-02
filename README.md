@@ -39,4 +39,4 @@ I have tested this library on the following platforms:
 
 * [SparkFun VL53L5CX Arduino Library](https://github.com/sparkfun/SparkFun_VL53L5CX_Arduino_Library)
 
-* [stm32duino VL53L5CX)](https://github.com/stm32duino/VL53L5CX)
+* [stm32duino VL53L5CX](https://github.com/stm32duino/VL53L5CX)
