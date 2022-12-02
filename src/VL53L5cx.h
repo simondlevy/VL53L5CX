@@ -154,30 +154,28 @@ class VL53L5cx {
             // Reset the sensor by toggling the LPN pin
             Reset_Sensor(m_lpnPin);
 
-            //status = vl53l5cx_set_i2c_address(&m_dev, m_address);
+            //uint8_t status = vl53l5cx_set_i2c_address(&m_dev, m_address);
 
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
-            uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
-            Debugger::checkStatus(!isAlive || error,
-                    "VL53L5CX not detected at address 0x%02X", m_address);
 
-            // (Mandatory) Init VL53L5CX sensor
-            error = vl53l5cx_init(&m_dev);
-            Debugger::printf("error = 0x%02X\n", error); 
-            if (error) {
-                Debugger::reportForever("VL53L5CX ULD Loading failed");
+            uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
+
+            Debugger::checkStatus(error, "VL53L5CX could not write to device");
+
+            if (!isAlive) {
+                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_address);
             }
 
-            Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
-                    VL53L5CX_API_REVISION);
+            // (Mandatory) Init VL53L5CX sensor
+            Debugger::checkStatus(vl53l5cx_init(&m_dev), "VL53L5CX ULD Loading failed");
+
+            Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
-            uint8_t status = vl53l5cx_set_resolution(&m_dev, m_resolution);
-            if (status) {
-                Debugger::reportForever("vl53l5cx_set_resolution failed, status %u\n", status);
-            }
+            Debugger::checkStatus(vl53l5cx_set_resolution(&m_dev, m_resolution),
+                "vl53l5cx_set_resolution failed, status %u\n");
 
             // Select operating mode
             if (m_integralTime > 0) {
@@ -209,7 +207,7 @@ class VL53L5cx {
             }
 
             // Select data rate 
-            status = vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency);
+            uint8_t status = vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency);
             if (status) {
                 Debugger::reportForever(
                         "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
