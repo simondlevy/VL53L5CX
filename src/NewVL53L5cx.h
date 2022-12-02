@@ -19,11 +19,6 @@ class VL53L5cx {
 
     private:
 
-        // Sum of integration time (1x for 4 x 4 and 4x for 8 x 8) must be 1 ms less
-        // than 1/freq, otherwise data rate decreased so integration time must be > 18
-        // ms at 4X4, 60 Hz, for example the smaller the integration time, the less
-        // power used, the more noise in the ranging data
-
         VL53L5CX_Configuration m_dev;
         VL53L5CX_ResultsData m_results;
 
