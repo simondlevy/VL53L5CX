@@ -1,14 +1,14 @@
 /*
  *  VL53L5CX ULD basic example    
  *
- *  Copyright (c) 2021 Kris Winer and Simon D. Levy
+ *  Copyright (c) 2022 Kris Winer and Simon D. Levy
  *
  *  MIT License
  */
 
 #include <Wire.h>
 
-#include "NewVL53L5cx.h"
+#include "VL53L5cx.h"
 #include "Debugger.h"
 
 static const uint8_t LPN_PIN =  14;
