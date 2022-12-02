@@ -33,6 +33,20 @@ class VL53L5cx {
         uint8_t m_frequency;
         uint8_t m_integralTime;
 
+        VL53L5cx(
+                uint8_t lpnPin,
+                uint8_t integralTime,
+                uint8_t res,
+                uint8_t freq,
+                uint8_t address)
+        {
+            m_lpnPin = lpnPin;
+            m_address = address;
+            m_integralTime = integralTime;
+            m_resolution = res;
+            m_frequency = freq;
+        }
+
     public:
 
         typedef enum {
@@ -125,12 +139,8 @@ class VL53L5cx {
                 uint8_t integralTime,
                 res4X4_t resFreq,
                 uint8_t address=0x29)
+            : VL53L5cx(lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
-            m_lpnPin = lpnPin;
-            m_address = address;
-            m_integralTime = integralTime;
-            m_resolution = 16;
-            m_frequency = (uint8_t)resFreq;
         }
 
         VL53L5cx(
@@ -138,12 +148,8 @@ class VL53L5cx {
                 uint8_t integralTime,
                 res8X8_t resFreq,
                 uint8_t address=0x29)
+            : VL53L5cx(lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
-            m_lpnPin = lpnPin;
-            m_address = address;
-            m_integralTime = integralTime;
-            m_resolution = 64;
-            m_frequency = (uint8_t)resFreq;
         }
 
         void begin(void)
@@ -233,16 +239,6 @@ class VL53L5cx {
             }
             Debugger::printf(
                     "Current integration time is : %d ms\n", (int)integration_time_ms);
-
-            // *********
-            // tailor functionality to decrease SRAM requirement, etc
-            //  #define VL53L5CX_DISABLE_AMBIENT_PER_SPAD
-            //  #define VL53L5CX_DISABLE_NB_SPADS_ENABLED
-            //  #define VL53L5CX_DISABLE_SIGNAL_PER_SPAD
-            //  #define VL53L5CX_DISABLE_RANGE_SIGMA_MM
-            //  #define VL53L5CX_DISABLE_REFLECTANCE_PERCENT
-            //  #define VL53L5CX_DISABLE_MOTION_INDICATOR
-            // *********
 
             // Put the VL53L5CX to sleep
             status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP);
