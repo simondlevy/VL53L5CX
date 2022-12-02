@@ -215,7 +215,7 @@ class VL53L5cx {
 
         uint8_t getPixelCount(void)
         {
-            return VL53L5_resolution == resolution_8x8 ? 64 : 16;
+            return m_resolution; // VL53L5_resolution == resolution_8x8 ? 64 : 16;
          }
 
         uint8_t getTargetStatus(uint8_t pixel)
