@@ -159,22 +159,18 @@ class VL53L5cx {
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
             uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
-            if (!isAlive || error) {
-                Debugger::reportForever("VL53L5CX not detected at requested address");
+            Debugger::checkStatus(!isAlive || error,
+                    "VL53L5CX not detected at address 0x%02X", m_address);
+
+            // (Mandatory) Init VL53L5CX sensor
+            error = vl53l5cx_init(&m_dev);
+            Debugger::printf("error = 0x%02X\n", error); 
+            if (error) {
+                Debugger::reportForever("VL53L5CX ULD Loading failed");
             }
 
-            if (isAlive) {
-
-                // (Mandatory) Init VL53L5CX sensor
-                error = vl53l5cx_init(&m_dev);
-                Debugger::printf("error = 0x%02X\n", error); 
-                if (error) {
-                    Debugger::reportForever("VL53L5CX ULD Loading failed");
-                }
-
-                Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
-                        VL53L5CX_API_REVISION);
-            }
+            Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n",
+                    VL53L5CX_API_REVISION);
 
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.

@@ -74,4 +74,22 @@ class Debugger {
             printf("\n");
         }
 
+        static void checkStatus(uint8_t error, const char * fmt, ...)
+        {
+            if (error) {
+                va_list ap;
+                va_start(ap, fmt);
+                char buf[200];
+                vsnprintf(buf, 200, fmt, ap); 
+                va_end(ap);
+
+                strcat(buf, "\n");
+
+                while (true) {
+                    outbuf(buf);
+                    delay(500);
+                }
+            }
+        }
+
 }; // class Debugger
