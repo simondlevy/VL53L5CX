@@ -12,6 +12,8 @@
 #include "Debugger.h"
 
 static const uint8_t LPN_PIN =  14;
+
+// Set to 0 for polling
 static const uint8_t INT_PIN =  4;
 
 // Set to 0 for continuous mode
@@ -42,14 +44,16 @@ void setup(void)
 
     delay(1000);
 
-    attachInterrupt(INT_PIN, interruptHandler, FALLING);
+    if (INT_PIN > 0) {
+        attachInterrupt(INT_PIN, interruptHandler, FALLING);
+    }
 
     _sensor.begin();
 }
 
 void loop(void)
 {
-    if (_gotInterrupt) {
+    if (INT_PIN == 0 || _gotInterrupt) {
 
         _gotInterrupt = false;
 
