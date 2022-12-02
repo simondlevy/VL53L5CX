@@ -44,8 +44,6 @@ class VL53L5cx {
 
         VL53L5CX_ResultsData m_results;
 
-        uint8_t m_pixels;
-
         uint8_t m_lpnPin;
 
         uint8_t m_address;
@@ -100,7 +98,6 @@ class VL53L5cx {
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
             if (VL53L5_resolution == resolution_4x4) {
-                m_pixels = 16;
                 uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_4X4);
                 if (status) {
                     Debugger::reportForever(
@@ -108,7 +105,6 @@ class VL53L5cx {
                 }
             }
             else {
-                m_pixels = 64;
                 uint8_t status = vl53l5cx_set_resolution(&m_dev, VL53L5CX_RESOLUTION_8X8);
                 if (status) {
                     Debugger::reportForever(
@@ -224,8 +220,8 @@ class VL53L5cx {
 
         uint8_t getPixelCount(void)
         {
-            return m_pixels;
-        }
+            return VL53L5_resolution == resolution_8x8 ? 64 : 16;
+         }
 
         uint8_t getTargetStatus(uint8_t pixel)
         {
