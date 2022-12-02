@@ -15,10 +15,10 @@ or specifying too high a sampling frequency at a given resolution.
 1. Connect I<sup>2</sup>C in the usual way (SCL, SDA, 3.3V, GND)
 
 2. Connect INT and LPN to digital pins on your board, making sure the pin
-numbers agree with the [pin numbers](https://github.com/simondlevy/VL53L5/blob/main/examples/GetSetParams/GetSetParams.ino#L15-L16) specified in the 
-<b>GetSetParams</b> test sketch.
+numbers agree with the [pin numbers](https://github.com/simondlevy/VL53L5/blob/main/examples/Basic/Basic.ino#L15-L16) specified in the 
+<b>Basic</b> test sketch.
 
-3. Flash the <b>GetSetParams</b> test sketch onto your board.
+3. Flash the <b>Basic</b> test sketch onto your board.
 
 4. After a few seconds you should see the LED turn on solid.
 

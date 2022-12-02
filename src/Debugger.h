@@ -77,7 +77,6 @@ class Debugger {
         static void checkStatus(uint8_t error, const char * fmt)
         {
             if (error) {
-
                 reportForever(fmt, error);
             }
         }

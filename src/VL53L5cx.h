@@ -279,5 +279,3 @@ class VL53L5cx {
         }
 
 }; // class VL53L5cx
-
-
