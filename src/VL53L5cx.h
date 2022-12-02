@@ -42,6 +42,11 @@ class VL53L5cx {
             m_frequency = freq;
         }
 
+        static void checkStatus(uint8_t error, const char * fmt)
+        {
+            Debugger::checkStatus(error, fmt);
+        }
+
     public:
 
         typedef enum {
@@ -161,97 +166,72 @@ class VL53L5cx {
 
             uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
 
-            Debugger::checkStatus(error, "VL53L5CX could not write to device");
+            checkStatus(error, "VL53L5CX could not write to device");
 
             if (!isAlive) {
                 Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_address);
             }
 
             // (Mandatory) Init VL53L5CX sensor
-            Debugger::checkStatus(vl53l5cx_init(&m_dev), "VL53L5CX ULD Loading failed");
+            checkStatus(vl53l5cx_init(&m_dev), "VL53L5CX ULD Loading failed");
 
             Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
             // Set resolution. WARNING : As others settings depend to this one, it must
             // come first.
-            Debugger::checkStatus(vl53l5cx_set_resolution(&m_dev, m_resolution),
+            checkStatus(vl53l5cx_set_resolution(&m_dev, m_resolution),
                 "vl53l5cx_set_resolution failed, status %u\n");
 
             // Select operating mode
             if (m_integralTime > 0) {
-                // set autonomous ranging mode
-                uint8_t status =
-                    vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS);
-                if (status) {
-                    Debugger::reportForever(
-                            "vl53l5cx_set_ranging_mode failed, status %u\n", status);
-                }
+
+                checkStatus(
+                        vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS),
+                            "vl53l5cx_set_ranging_mode failed, status %u\n");
 
                 // can set integration time in autonomous mode
-                status = vl53l5cx_set_integration_time_ms(&m_dev, m_integralTime);
-                if (status) {
-                    Debugger::reportForever(
-                            "vl53l5cx_set_integration_time_ms failed, status %u\n",
-                            status);
-                }
+                checkStatus(vl53l5cx_set_integration_time_ms(&m_dev, m_integralTime),
+                            "vl53l5cx_set_integration_time_ms failed, status %u\n");
             }
             else { 
                 // set continuous ranging mode, integration time is fixed in
                 // continuous mode
-                uint8_t status =
-                    vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
-                if (status) {
-                    Debugger::reportForever("vl53l5cx_set_ranging_mode failed, status %u\n",
-                            status);
-                }
+                checkStatus(vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_CONTINUOUS),
+                        "vl53l5cx_set_ranging_mode failed, status %u\n");
             }
 
             // Select data rate 
-            uint8_t status = vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency);
-            if (status) {
-                Debugger::reportForever(
-                        "vl53l5cx_set_ranging_frequency_hz failed, status %u\n", status);
-            }
+            checkStatus(vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency),
+                    "vl53l5cx_set_ranging_frequency_hz failed, status %u\n");
 
             // Set target order to closest 
-            status = vl53l5cx_set_target_order(&m_dev, VL53L5CX_TARGET_ORDER_CLOSEST);
-            if (status) {
-                Debugger::reportForever("vl53l5cx_set_target_order failed, status %u\n", status);
-            }
+            checkStatus(vl53l5cx_set_target_order(&m_dev, VL53L5CX_TARGET_ORDER_CLOSEST),
+                "vl53l5cx_set_target_order failed, status %u\n");
 
             // Get current integration time 
             uint32_t integration_time_ms = 0;
-            status = vl53l5cx_get_integration_time_ms(&m_dev, &integration_time_ms);
-            if (status) {
-                Debugger::reportForever(
-                        "vl53l5cx_get_integration_time_ms failed, status %u\n", status);
-            }
+            checkStatus(vl53l5cx_get_integration_time_ms(&m_dev, &integration_time_ms),
+                        "vl53l5cx_get_integration_time_ms failed, status %u\n");
             Debugger::printf(
                     "Current integration time is : %d ms\n", (int)integration_time_ms);
 
             // Put the VL53L5CX to sleep
-            status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP);
-            if (status) {
-                Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", status);
-            }
+            checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP),
+                "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now sleeping\n");
 
             // Restart
-            status = vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP);
-            if (status) {
-                Debugger::reportForever("vl53l5cx_set_power_mode failed, status %u\n", status);
-            }
+            checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP),
+                "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now waking up\n");
 
             // Start ranging 
-            error = vl53l5cx_start_ranging(&m_dev);
-            if (error !=0) {
-                Debugger::printf("start error = 0x%02X\n", error); 
-            }
+            checkStatus(vl53l5cx_start_ranging(&m_dev), "start error = 0x%02X\n"); 
 
             uint8_t isReady = 0;
-            error =
-                vl53l5cx_check_data_ready(&m_dev, &isReady); // clear the interrupt
+
+            // Clear the interrupt
+            checkStatus(vl53l5cx_check_data_ready(&m_dev, &isReady), "check data ready: %u\n"); 
         }
 
         bool dataIsReady(void)
