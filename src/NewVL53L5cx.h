@@ -54,8 +54,8 @@ class VL53L5cx {
 
         typedef enum {
 
-            RESOLUTION_4X4,
-            RESOLUTION_8X8 
+            RESOLUTION_4X4 = VL53L5CX_RESOLUTION_4X4,
+            RESOLUTION_8X8 = VL53L5CX_RESOLUTION_8X8
 
         } resolution_t;
 
@@ -63,7 +63,7 @@ class VL53L5cx {
         {
             m_lpnPin = lpnPin;
             m_address = address;
-            m_resolution = resolution == RESOLUTION_8X8 ? 1 : 0;
+            m_resolution = (uint8_t)resolution;
         }
 
         void begin(void)
