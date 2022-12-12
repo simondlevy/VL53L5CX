@@ -1,16 +1,16 @@
-/*
-*  VL53L5CX ULD basic example    
-*
-*  Copyright (c) 2021 Seth Bonn, Simon D. Levy
-*
-*  MIT License
-*/
-
 #include "platform.h"
 #include "Debugger.h"
 
 #include <Arduino.h>
 #include <Wire.h>
+
+static TwoWire * _wire;
+
+// Called from VL53L5cx constructor
+void setI2CDevice(void * dev)
+{
+    _wire = (TwoWire *)dev;
+}
 
 
 // Helper
@@ -18,7 +18,7 @@ static void start_transfer(uint16_t register_address)
 {
     uint8_t buffer[2] {(uint8_t)(register_address >> 8),
                        (uint8_t)(register_address & 0xFF) }; 
-    Wire.write(buffer, 2);
+    _wire->write(buffer, 2);
 }
 
 // All these functions return 0 on success, nonzero on error
@@ -46,18 +46,18 @@ uint8_t RdMulti(
 
     // Loop until the port is transmitted correctly
     do {
-        Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
+        _wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
         start_transfer(RegisterAddress);
 
-        status = Wire.endTransmission(false);
+        status = _wire->endTransmission(false);
 
         // Fix for some STM32 boards
         // Reinitialize the i2c bus with the default parameters
 #ifdef ARDUINO_ARCH_STM32
             if (status) {
-                Wire.end();
-                Wire.begin();
+                _wire->end();
+                _wire->begin();
             }
 #endif
         // End of fix
@@ -72,19 +72,19 @@ uint8_t RdMulti(
             // If still more than 32 bytes to go, 32, else the remaining number
             // of bytes
             byte current_read_size = (size - i > 32 ? 32 : size - i); 
-            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
+            _wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
                     current_read_size);
-            while (Wire.available()) {
-                p_values[i] = Wire.read();
+            while (_wire->available()) {
+                p_values[i] = _wire->read();
                 i++;
             }
         }
     }
     else
     {
-        Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
-        while (Wire.available()) {
-            p_values[i] = Wire.read();
+        _wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
+        while (_wire->available()) {
+            p_values[i] = _wire->read();
             i++;
         }
     }
@@ -109,24 +109,24 @@ uint8_t WrMulti(
         uint32_t size)
 {
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
-    Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+    _wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     // Target register address for transfer
     start_transfer(RegisterAddress);
     for (uint32_t i = 0 ; i < size ; i++) 
     {
-        Wire.write(p_values[i]);
+        _wire->write(p_values[i]);
         if (i > 0 && i < size - 1 && i % 16 == 0) {
             // Flush buffer and end transmission completely
-            Wire.endTransmission(true);
+            _wire->endTransmission(true);
             i++; // prepare for next byte
 
             // Restart send
-            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+            _wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
             start_transfer(RegisterAddress+i);
 
-            if (Wire.write(p_values[i]) == 0) {
+            if (_wire->write(p_values[i]) == 0) {
                 Debugger::reportForever(
                         "WrMulti failed to send %d bytes to regsiter 0x%02X",
                         size, RegisterAddress);
@@ -134,7 +134,7 @@ uint8_t WrMulti(
         }
     }
 
-    return Wire.endTransmission(true);
+    return _wire->endTransmission(true);
 }
 
 uint8_t Reset_Sensor(uint8_t lpn_pin)

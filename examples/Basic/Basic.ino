@@ -1,7 +1,7 @@
 /*
  *  VL53L5CX ULD basic example    
  *
- *  Copyright (c) 2022 Kris Winer and Simon D. Levy
+ *  Copyright (c) 2022 Kris Winer, Seth Bonn, Simon D. Levy
  *
  *  MIT License
  */
@@ -19,7 +19,7 @@ static const uint8_t INT_PIN = 4;
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static VL53L5cx _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
+static VL53L5cx _sensor(Wire, LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
 
 static volatile bool _gotInterrupt;
 

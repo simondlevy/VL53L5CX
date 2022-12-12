@@ -12,6 +12,8 @@ typedef struct
 
 static const uint8_t VL53L5CX_NB_TARGET_PER_ZONE = 1; 
 
+void setI2CDevice(void * dev);
+
 uint8_t RdByte(
   VL53L5CX_Platform *p_platform,
   uint16_t RegisterAdress,

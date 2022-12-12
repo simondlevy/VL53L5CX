@@ -10,6 +10,7 @@
 
 #include "Debugger.h"
 
+#include "st/platform.h"
 #include "st/vl53l5cx_api.h"
 #include "st/vl53l5cx_plugin_detection_thresholds.h"
 
@@ -105,20 +106,22 @@ class VL53L5cx {
         } res8X8_t;
 
         VL53L5cx(
+                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res4X4_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(lpnPin, integralTime, 16, (uint8_t)resFreq, address)
+            : VL53L5cx(wire, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
         }
 
         VL53L5cx(
+                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(lpnPin, integralTime, 64, (uint8_t)resFreq, address)
+            : VL53L5cx(wire, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
         }
 
@@ -261,12 +264,15 @@ class VL53L5cx {
         uint8_t m_integralTime;
 
         VL53L5cx(
+                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const uint8_t res,
                 const uint8_t freq,
                 const uint8_t address)
         {
+            setI2CDevice(&wire);
+
             m_lpnPin = lpnPin;
             m_address = address;
             m_integralTime = integralTime;
