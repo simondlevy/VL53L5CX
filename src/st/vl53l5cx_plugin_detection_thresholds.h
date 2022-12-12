@@ -60,8 +60,7 @@
 *
 *******************************************************************************/
 
-#ifndef VL53L5CX_PLUGIN_DETECTION_THRESHOLDS_H_
-#define VL53L5CX_PLUGIN_DETECTION_THRESHOLDS_H_
+#pragma once
 
 #include "vl53l5cx_api.h"
 
@@ -192,5 +191,3 @@ uint8_t vl53l5cx_get_detection_thresholds(
 uint8_t vl53l5cx_set_detection_thresholds(
 		VL53L5CX_Configuration		*p_dev,
 		VL53L5CX_DetectionThresholds	*p_thresholds);
-
-#endif /* VL53L5CX_PLUGIN_DETECTION_THRESHOLDS_H_ */
