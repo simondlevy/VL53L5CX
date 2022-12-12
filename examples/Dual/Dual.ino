@@ -1,5 +1,5 @@
 /*
- *  VL53L5CX ULD basic example    
+ *  VL53L5CX two-sensor example    
  *
  *  Copyright (c) 2022 Kris Winer, Seth Bonn, Simon D. Levy
  *
@@ -11,15 +11,15 @@
 #include "VL53L5cx.h"
 #include "Debugger.h"
 
-static const uint8_t LPN_PIN =  14;
+static const uint8_t LPN0_PIN =  14;
 
 // Set to 0 for polling
-static const uint8_t INT_PIN = 4;
+static const uint8_t INT0_PIN = 4;
 
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static VL53L5cx _sensor(Wire, LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
+static VL53L5cx _sensor(Wire, LPN0_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
 
 static volatile bool _gotInterrupt;
 
@@ -34,7 +34,7 @@ void setup(void)
     delay(4000);
     Debugger::printf("Serial begun!\n");
 
-    pinMode(INT_PIN, INPUT);     
+    pinMode(INT0_PIN, INPUT);     
 
     Wire.begin();                
     Wire.setClock(400000);      
@@ -44,8 +44,8 @@ void setup(void)
 
     delay(1000);
 
-    if (INT_PIN > 0) {
-        attachInterrupt(INT_PIN, interruptHandler, FALLING);
+    if (INT0_PIN > 0) {
+        attachInterrupt(INT0_PIN, interruptHandler, FALLING);
     }
 
     _sensor.begin();
@@ -53,7 +53,7 @@ void setup(void)
 
 void loop(void)
 {
-    if (INT_PIN == 0 || _gotInterrupt) {
+    if (INT0_PIN == 0 || _gotInterrupt) {
 
         _gotInterrupt = false;
 

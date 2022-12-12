@@ -1,5 +1,5 @@
 /*
- *  VL53L5CX ULD basic example    
+ *  VL53L5CX basic example    
  *
  *  Copyright (c) 2022 Kris Winer, Seth Bonn, Simon D. Levy
  *
@@ -10,6 +10,7 @@
 
 #include "VL53L5cx.h"
 #include "Debugger.h"
+#include "I2CScanner.h"
 
 static const uint8_t LPN_PIN =  14;
 
@@ -32,7 +33,6 @@ void setup(void)
 {
     Serial.begin(115200);
     delay(4000);
-    Debugger::printf("Serial begun!\n");
 
     pinMode(INT_PIN, INPUT);     
 
@@ -40,7 +40,9 @@ void setup(void)
     Wire.setClock(400000);      
     delay(1000);
 
-    Debugger::printf("starting\n\n");
+    Debugger::printf("Starting\n\n");
+
+    I2CScanner::scan(Wire);
 
     delay(1000);
 
