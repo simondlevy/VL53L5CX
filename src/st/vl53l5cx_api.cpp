@@ -597,7 +597,6 @@ uint8_t vl53l5cx_start_ranging(
         VL53L5CX_TARGET_STATUS_BH,
         VL53L5CX_MOTION_DETECT_BH};
 
-    /* Enable selected outputs in the 'platform.h' file */
 #ifndef VL53L5CX_DISABLE_AMBIENT_PER_SPAD
     output_bh_enable[0] += (uint32_t)8;
 #endif

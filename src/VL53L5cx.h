@@ -147,8 +147,7 @@ class VL53L5cx {
 
             Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
-            // Set resolution. WARNING : As others settings depend to this one, it must
-            // come first.
+            // Set resolution. As others settings depend to this one, it must come first.
             checkStatus(vl53l5cx_set_resolution(&m_dev, m_resolution),
                 "vl53l5cx_set_resolution failed, status %u\n");
 
