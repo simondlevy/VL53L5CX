@@ -17,36 +17,6 @@
 
 class VL53L5cx {
 
-    private:
-
-        VL53L5CX_Configuration m_dev;
-        VL53L5CX_ResultsData m_results;
-
-        uint8_t m_lpnPin;
-        uint8_t m_address;
-        uint8_t m_resolution;
-        uint8_t m_frequency;
-        uint8_t m_integralTime;
-
-        VL53L5cx(
-                uint8_t lpnPin,
-                uint8_t integralTime,
-                uint8_t res,
-                uint8_t freq,
-                uint8_t address)
-        {
-            m_lpnPin = lpnPin;
-            m_address = address;
-            m_integralTime = integralTime;
-            m_resolution = res;
-            m_frequency = freq;
-        }
-
-        static void checkStatus(uint8_t error, const char * fmt)
-        {
-            Debugger::checkStatus(error, fmt);
-        }
-
     public:
 
         typedef enum {
@@ -135,19 +105,19 @@ class VL53L5cx {
         } res8X8_t;
 
         VL53L5cx(
-                uint8_t lpnPin,
-                uint8_t integralTime,
-                res4X4_t resFreq,
-                uint8_t address=0x29)
+                const uint8_t lpnPin,
+                const uint8_t integralTime,
+                const res4X4_t resFreq,
+                const uint8_t address=0x29)
             : VL53L5cx(lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
         }
 
         VL53L5cx(
-                uint8_t lpnPin,
-                uint8_t integralTime,
-                res8X8_t resFreq,
-                uint8_t address=0x29)
+                const uint8_t lpnPin,
+                const uint8_t integralTime,
+                const res8X8_t resFreq,
+                const uint8_t address=0x29)
             : VL53L5cx(lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
         }
@@ -260,24 +230,54 @@ class VL53L5cx {
             return m_resolution;
          }
 
-        uint8_t getTargetStatus(uint8_t pixel)
+        uint8_t getTargetStatus(const uint8_t pixel)
         {
             return m_results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
-        int16_t getDistanceMm(uint8_t pixel)
+        int16_t getDistanceMm(const uint8_t pixel)
         {
             return m_results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * pixel];
         }
 
-        uint8_t getTargetDetectedCount(uint8_t pixel)
+        uint8_t getTargetDetectedCount(const uint8_t pixel)
         {
             return m_results.nb_target_detected[pixel];
         }
 
-        uint8_t getAmbientPerSpad(uint8_t pixel)
+        uint8_t getAmbientPerSpad(const uint8_t pixel)
         {
             return m_results.ambient_per_spad[pixel];
+        }
+
+    private:
+
+        VL53L5CX_Configuration m_dev;
+        VL53L5CX_ResultsData m_results;
+
+        uint8_t m_lpnPin;
+        uint8_t m_address;
+        uint8_t m_resolution;
+        uint8_t m_frequency;
+        uint8_t m_integralTime;
+
+        VL53L5cx(
+                const uint8_t lpnPin,
+                const uint8_t integralTime,
+                const uint8_t res,
+                const uint8_t freq,
+                const uint8_t address)
+        {
+            m_lpnPin = lpnPin;
+            m_address = address;
+            m_integralTime = integralTime;
+            m_resolution = res;
+            m_frequency = freq;
+        }
+
+        static void checkStatus(const uint8_t error, const char * fmt)
+        {
+            Debugger::checkStatus(error, fmt);
         }
 
 }; // class VL53L5cx
