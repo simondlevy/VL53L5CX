@@ -132,7 +132,12 @@ class VL53L5cx {
             // Reset the sensor by toggling the LPN pin
             Reset_Sensor(m_lpnPin);
 
-            //uint8_t status = vl53l5cx_set_i2c_address(&m_dev, m_address);
+            uint8_t status = vl53l5cx_set_i2c_address(&m_dev, m_address<<1);
+
+            while (true) {
+                Debugger::printf("0x%02X: 0x%02X\n", m_address, status);
+                delay(500);
+            }
 
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;

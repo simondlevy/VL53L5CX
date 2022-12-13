@@ -10,7 +10,6 @@
 
 #include "VL53L5cx.h"
 #include "Debugger.h"
-#include "I2CScanner.h"
 
 static const uint8_t LPN_PIN =  14;
 
@@ -41,8 +40,6 @@ void setup(void)
     delay(1000);
 
     Debugger::printf("Starting\n\n");
-
-    I2CScanner::scan(Wire);
 
     delay(1000);
 
