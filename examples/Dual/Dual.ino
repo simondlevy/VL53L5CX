@@ -24,8 +24,8 @@ static const uint8_t INTEGRAL_TIME_MS = 10;
 
 static const VL53L5cx::res4X4_t resolution = VL53L5cx::RES_4X4_HZ_1;
 
-static VL53L5cx _sensor0(LPN_PIN_0, INTEGRAL_TIME_MS, resolution);
-static VL53L5cx _sensor1(LPN_PIN_1, INTEGRAL_TIME_MS, resolution);
+static VL53L5cx _sensor0(Wire, LPN_PIN_0, INTEGRAL_TIME_MS, resolution);
+static VL53L5cx _sensor1(Wire, LPN_PIN_1, INTEGRAL_TIME_MS, resolution);
 
 static volatile bool interruptFlag0 = false;
 static void interruptHandler0()
