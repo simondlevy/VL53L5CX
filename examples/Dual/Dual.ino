@@ -11,12 +11,12 @@
 #include "VL53L5cx.h"
 #include "Debugger.h"
 #include "I2CScanner.h"
-#include "st/vl53l5cx_api.h"
 
 static const uint8_t LPN_PIN_0 = 17;
-static const uint8_t INT_PIN_0 = 14;
-
 static const uint8_t LPN_PIN_1 = 15;
+
+// Set interrupt pins to 0 for polling
+static const uint8_t INT_PIN_0 = 14;
 static const uint8_t INT_PIN_1 = 16;
 
 // Set to 0 for continuous mode
@@ -45,9 +45,9 @@ static void setupInterrupt(const uint8_t pin, void (*handler)(void))
     attachInterrupt(pin, handler, FALLING);
 }
 
-static void checkInterrupt(VL53L5cx & sensor, const uint8_t id, volatile bool & flag)
+static void checkInterrupt(VL53L5cx & sensor, const uint8_t pin, const uint8_t id, volatile bool & flag)
 {
-    if (flag) {
+    if (pin == 0 || flag) {
 
         flag = false;
 
@@ -110,8 +110,8 @@ void setup(void)
 
 void loop(void)
 {
-    checkInterrupt(_sensor0, 0, interruptFlag0);
-    checkInterrupt(_sensor1, 1, interruptFlag1);
+    checkInterrupt(_sensor0, INT_PIN_0, 0, interruptFlag0);
+    checkInterrupt(_sensor1, INT_PIN_1, 1, interruptFlag1);
 
 } // loop
 
