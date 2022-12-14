@@ -427,36 +427,36 @@ union Block_header {
 };
 
 uint8_t vl53l5cx_is_alive(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_is_alive);
 
 /**
  * @brief Mandatory function used to initialize the sensor. This function must
  * be called after a power on, to load the firmware into the VL53L5CX. It takes
  * a few hundred milliseconds.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @return (uint8_t) status : 0 if initialization is OK.
  */
 
 uint8_t vl53l5cx_init(
-		VL53L5CX_Configuration		*p_dev);
+		VL53L5CX_Configuration		*p_config);
 
 /**
  * @brief This function is used to change the I2C address of the sensor. If
  * multiple VL53L5 sensors are connected to the same I2C line, all other LPn
  * pins needs to be set to Low. The default sensor address is 0x52.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint16_t) i2c_address : New I2C address.
  * @return (uint8_t) status : 0 if new address is OK
  */
 
 uint8_t vl53l5cx_set_i2c_address(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint16_t			i2c_address);
 
 /**
  * @brief This function is used to get the current sensor power mode.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_power_mode : Current power mode. The value of this
  * pointer is equal to 0 if the sensor is in low power,
  * (VL53L5CX_POWER_MODE_SLEEP), or 1 if sensor is in standard mode
@@ -465,7 +465,7 @@ uint8_t vl53l5cx_set_i2c_address(
  */
 
 uint8_t vl53l5cx_get_power_mode(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_power_mode);
 
 /**
@@ -474,7 +474,7 @@ uint8_t vl53l5cx_get_power_mode(
  * VL53L5CX_POWER_MODE_SLEEP can be used to enable the low power mode. When user
  * want to restart the sensor, he can use macro VL53L5CX_POWER_MODE_WAKEUP.
  * Please ensure that the device is not streaming before calling the function.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) power_mode : Selected power mode (VL53L5CX_POWER_MODE_SLEEP
  * or VL53L5CX_POWER_MODE_WAKEUP)
  * @return (uint8_t) status : 0 if power mode is OK, or 127 if power mode
@@ -482,95 +482,95 @@ uint8_t vl53l5cx_get_power_mode(
  */
 
 uint8_t vl53l5cx_set_power_mode(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				power_mode);
 
 /**
  * @brief This function starts a ranging session. When the sensor streams, host
  * cannot change settings 'on-the-fly'.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @return (uint8_t) status : 0 if start is OK.
  */
 
 uint8_t vl53l5cx_start_ranging(
-		VL53L5CX_Configuration		*p_dev);
+		VL53L5CX_Configuration		*p_config);
 
 /**
  * @brief This function stops the ranging session. It must be used when the
  * sensor streams, after calling vl53l5cx_start_ranging().
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @return (uint8_t) status : 0 if stop is OK
  */
 
 uint8_t vl53l5cx_stop_ranging(
-		VL53L5CX_Configuration		*p_dev);
+		VL53L5CX_Configuration		*p_config);
 
 /**
  * @brief This function checks if a new data is ready by polling I2C. If a new
  * data is ready, a flag will be raised.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_isReady : Value of this pointer be updated to 0 if data
  * is not ready, or 1 if a new data is ready.
  * @return (uint8_t) status : 0 if I2C reading is OK
  */
 
 uint8_t vl53l5cx_check_data_ready(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_isReady);
 
 /**
  * @brief This function gets the ranging data, using the selected output and the
  * resolution.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (VL53L5CX_ResultsData) *p_results : VL53L5 results structure.
  * @return (uint8_t) status : 0 data are successfully get.
  */
 
 uint8_t vl53l5cx_get_ranging_data(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		VL53L5CX_ResultsData		*p_results);
 
 /**
  * @brief This function gets the current resolution (4x4 or 8x8).
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_resolution : Value of this pointer will be equal to 16
  * for 4x4 mode, and 64 for 8x8 mode.
  * @return (uint8_t) status : 0 if resolution is OK.
  */
 
 uint8_t vl53l5cx_get_resolution(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_resolution);
 
 /**
  * @brief This function sets a new resolution (4x4 or 8x8).
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) resolution : Use macro VL53L5CX_RESOLUTION_4X4 or
  * VL53L5CX_RESOLUTION_8X8 to set the resolution.
  * @return (uint8_t) status : 0 if set resolution is OK.
  */
 
 uint8_t vl53l5cx_set_resolution(
-		VL53L5CX_Configuration		 *p_dev,
+		VL53L5CX_Configuration		 *p_config,
 		uint8_t                         resolution);
 
 /**
  * @brief This function gets the current ranging frequency in Hz. Ranging
  * frequency corresponds to the time between each measurement.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_frequency_hz: Contains the ranging frequency in Hz.
  * @return (uint8_t) status : 0 if ranging frequency is OK.
  */
 
 uint8_t vl53l5cx_get_ranging_frequency_hz(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_frequency_hz);
 
 /**
  * @brief This function sets a new ranging frequency in Hz. Ranging frequency
  * corresponds to the measurements frequency. This setting depends of
  * the resolution, so please select your resolution before using this function.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) frequency_hz : Contains the ranging frequency in Hz.
  * - For 4x4, min and max allowed values are : [1;60]
  * - For 8x8, min and max allowed values are : [1;15]
@@ -579,25 +579,25 @@ uint8_t vl53l5cx_get_ranging_frequency_hz(
  */
 
 uint8_t vl53l5cx_set_ranging_frequency_hz(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				frequency_hz);
 
 /**
  * @brief This function gets the current integration time in ms.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint32_t) *p_time_ms: Contains integration time in ms.
  * @return (uint8_t) status : 0 if integration time is OK.
  */
 
 uint8_t vl53l5cx_get_integration_time_ms(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint32_t			*p_time_ms);
 
 /**
  * @brief This function sets a new integration time in ms. Integration time must
  * be computed to be lower than the ranging period, for a selected resolution.
  * Please note that this function has no impact on ranging mode continous.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint32_t) time_ms : Contains the integration time in ms. For all
  * resolutions and frequency, the minimum value is 2ms, and the maximum is
  * 1000ms.
@@ -605,43 +605,43 @@ uint8_t vl53l5cx_get_integration_time_ms(
  */
 
 uint8_t vl53l5cx_set_integration_time_ms(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint32_t			integration_time_ms);
 
 /**
  * @brief This function gets the current sharpener in percent. Sharpener can be
  * changed to blur more or less zones depending of the application.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint32_t) *p_sharpener_percent: Contains the sharpener in percent.
  * @return (uint8_t) status : 0 if get sharpener is OK.
  */
 
 uint8_t vl53l5cx_get_sharpener_percent(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_sharpener_percent);
 
 /**
  * @brief This function sets a new sharpener value in percent. Sharpener can be
  * changed to blur more or less zones depending of the application. Min value is
  * 0 (disabled), and max is 99.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint32_t) sharpener_percent : Value between 0 (disabled) and 99%.
  * @return (uint8_t) status : 0 if set sharpener is OK.
  */
 
 uint8_t vl53l5cx_set_sharpener_percent(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				sharpener_percent);
 
 /**
  * @brief This function gets the current target order (closest or strongest).
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_target_order: Contains the target order.
  * @return (uint8_t) status : 0 if get target order is OK.
  */
 
 uint8_t vl53l5cx_get_target_order(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_target_order);
 
 /**
@@ -649,47 +649,47 @@ uint8_t vl53l5cx_get_target_order(
  * VL53L5CX_TARGET_ORDER_STRONGEST and VL53L5CX_TARGET_ORDER_CLOSEST to define
  * the new output order. By default, the sensor is configured with the strongest
  * output.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) target_order : Required target order.
  * @return (uint8_t) status : 0 if set target order is OK, or 127 if target
  * order is unknown.
  */
 
 uint8_t vl53l5cx_set_target_order(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				target_order);
 
 /**
  * @brief This function is used to get the ranging mode. Two modes are
  * available using ULD : Continuous and autonomous. The default
  * mode is Autonomous.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *p_ranging_mode : current ranging mode
  * @return (uint8_t) status : 0 if get ranging mode is OK.
  */
 
 uint8_t vl53l5cx_get_ranging_mode(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*p_ranging_mode);
 
 /**
  * @brief This function is used to set the ranging mode. Two modes are
  * available using ULD : Continuous and autonomous. The default
  * mode is Autonomous.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) ranging_mode : Use macros VL53L5CX_RANGING_MODE_CONTINUOUS,
  * VL53L5CX_RANGING_MODE_CONTINUOUS.
  * @return (uint8_t) status : 0 if set ranging mode is OK.
  */
 
 uint8_t vl53l5cx_set_ranging_mode(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				ranging_mode);
 
 /**
  * @brief This function can be used to read 'extra data' from DCI. Using a known
  * index, the function fills the casted structure passed in argument.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *data : This field can be a casted structure, or a simple
  * array. Please note that the FW only accept data of 32 bits. So field data can
  * only have a size of 32, 64, 96, 128, bits ....
@@ -700,7 +700,7 @@ uint8_t vl53l5cx_set_ranging_mode(
  */
 
 uint8_t vl53l5cx_dci_read_data(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*data,
 		uint32_t			index,
 		uint16_t			data_size);
@@ -708,7 +708,7 @@ uint8_t vl53l5cx_dci_read_data(
 /**
  * @brief This function can be used to write 'extra data' to DCI. The data can
  * be simple data, or casted structure.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *data : This field can be a casted structure, or a simple
  * array. Please note that the FW only accept data of 32 bits. So field data can
  * only have a size of 32, 64, 96, 128, bits ..
@@ -719,7 +719,7 @@ uint8_t vl53l5cx_dci_read_data(
  */
 
 uint8_t vl53l5cx_dci_write_data(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*data,
 		uint32_t			index,
 		uint16_t			data_size);
@@ -727,7 +727,7 @@ uint8_t vl53l5cx_dci_write_data(
 /**
  * @brief This function can be used to replace 'extra data' in DCI. The data can
  * be simple data, or casted structure.
- * @param (VL53L5CX_Configuration) *p_dev : VL53L5CX configuration structure.
+ * @param (VL53L5CX_Configuration) *p_config : VL53L5CX configuration structure.
  * @param (uint8_t) *data : This field can be a casted structure, or a simple
  * array. Please note that the FW only accept data of 32 bits. So field data can
  * only have a size of 32, 64, 96, 128, bits ..
@@ -741,7 +741,7 @@ uint8_t vl53l5cx_dci_write_data(
  */
 
 uint8_t vl53l5cx_dci_replace_data(
-		VL53L5CX_Configuration		*p_dev,
+		VL53L5CX_Configuration		*p_config,
 		uint8_t				*data,
 		uint32_t			index,
 		uint16_t			data_size,
