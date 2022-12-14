@@ -139,8 +139,8 @@ class VL53L5cx {
         void setAddress(const uint8_t addr)
         {
             enable();
-            vl53l5cx_set_i2c_address(&m_dev, 0x27<<1);
-            m_dev.platform.address = 0x27;
+            vl53l5cx_set_i2c_address(&m_dev, addr<<1);
+            m_dev.platform.address = addr;
         }
 
         void begin(void)
