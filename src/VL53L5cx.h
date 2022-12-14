@@ -10,7 +10,6 @@
 
 #include "Debugger.h"
 
-#include "st/platform.h"
 #include "st/vl53l5cx_api.h"
 #include "st/vl53l5cx_plugin_detection_thresholds.h"
 
@@ -106,38 +105,49 @@ class VL53L5cx {
         } res8X8_t;
 
         VL53L5cx(
-                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res4X4_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(wire, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
+            : VL53L5cx(lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
         }
 
         VL53L5cx(
-                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(wire, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
+            : VL53L5cx(lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
+        }
+
+        void enable(void)
+        {
+            pinMode(m_lpnPin, OUTPUT);
+            digitalWrite(m_lpnPin, HIGH);
+            delay(100);
+        }
+
+        void disable(void)
+        {
+            pinMode(m_lpnPin, OUTPUT);
+            digitalWrite(m_lpnPin, LOW);
+            delay(100);
+        }
+
+        void setAddress(const uint8_t addr)
+        {
+            enable();
+            vl53l5cx_set_i2c_address(&m_dev, 0x27<<1);
+            m_dev.platform.address = 0x27;
         }
 
         void begin(void)
         {
-            m_dev.platform.address = m_address;
-
-            // Reset the sensor by toggling the LPN pin
-            Reset_Sensor(m_lpnPin);
-
-            uint8_t status = vl53l5cx_set_i2c_address(&m_dev, m_address<<1);
-
-            while (true) {
-                Debugger::printf("0x%02X: 0x%02X\n", m_address, status);
-                delay(500);
-            }
+            // Reset
+            disable();
+            enable();
 
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
@@ -147,7 +157,7 @@ class VL53L5cx {
             checkStatus(error, "VL53L5CX could not write to device");
 
             if (!isAlive) {
-                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_address);
+                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_dev.platform.address);
             }
 
             // (Mandatory) Init VL53L5CX sensor
@@ -263,23 +273,19 @@ class VL53L5cx {
         VL53L5CX_ResultsData m_results;
 
         uint8_t m_lpnPin;
-        uint8_t m_address;
         uint8_t m_resolution;
         uint8_t m_frequency;
         uint8_t m_integralTime;
 
         VL53L5cx(
-                TwoWire & wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const uint8_t res,
                 const uint8_t freq,
                 const uint8_t address)
         {
-            setI2CDevice(&wire);
-
             m_lpnPin = lpnPin;
-            m_address = address;
+            m_dev.platform.address = address;
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;

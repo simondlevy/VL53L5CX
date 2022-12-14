@@ -1,7 +1,7 @@
 /*
- *  VL53L5CX basic example    
+ *  VL53L5CX ULD basic example    
  *
- *  Copyright (c) 2022 Kris Winer, Seth Bonn, Simon D. Levy
+ *  Copyright (c) 2022 Kris Winer and Simon D. Levy
  *
  *  MIT License
  */
@@ -11,15 +11,15 @@
 #include "VL53L5cx.h"
 #include "Debugger.h"
 
-static const uint8_t LPN_PIN =  14;
+static const uint8_t LPN_PIN =  17;
 
 // Set to 0 for polling
-static const uint8_t INT_PIN = 4;
+static const uint8_t INT_PIN = 16;
 
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static VL53L5cx _sensor(Wire, LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
+static VL53L5cx _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5cx::RES_4X4_HZ_1);
 
 static volatile bool _gotInterrupt;
 
@@ -32,6 +32,7 @@ void setup(void)
 {
     Serial.begin(115200);
     delay(4000);
+    Debugger::printf("Serial begun!\n");
 
     pinMode(INT_PIN, INPUT);     
 
@@ -39,7 +40,7 @@ void setup(void)
     Wire.setClock(400000);      
     delay(1000);
 
-    Debugger::printf("Starting\n\n");
+    Debugger::printf("starting\n\n");
 
     delay(1000);
 

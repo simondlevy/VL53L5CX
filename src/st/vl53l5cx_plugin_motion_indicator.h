@@ -60,7 +60,8 @@
 *
 *******************************************************************************/
 
-#pragma once
+#ifndef VL53L5CX_PLUGIN_MOTION_INDICATOR_H_
+#define VL53L5CX_PLUGIN_MOTION_INDICATOR_H_
 
 #include "vl53l5cx_api.h"
 
@@ -143,3 +144,5 @@ uint8_t vl53l5cx_motion_indicator_set_resolution(
 		VL53L5CX_Configuration		*p_dev,
 		VL53L5CX_Motion_Configuration	*p_motion_config,
 		uint8_t				resolution);
+
+#endif /* VL53L5CX_PLUGIN_MOTION_INDICATOR_H_ */
