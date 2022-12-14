@@ -141,8 +141,8 @@ class VL53L5cx {
         void setAddress(const uint8_t addr)
         {
             enable();
-            vl53l5cx_set_i2c_address(&m_dev, addr<<1);
-            m_dev.platform.address = addr;
+            vl53l5cx_set_i2c_address(&m_config, addr<<1);
+            m_config.platform.address = addr;
         }
 
         void begin(void)
@@ -154,82 +154,82 @@ class VL53L5cx {
             // Check if there is a VL53L5CX sensor connected
             uint8_t isAlive = 0;
 
-            uint8_t error = vl53l5cx_is_alive(&m_dev, &isAlive);
+            uint8_t error = vl53l5cx_is_alive(&m_config, &isAlive);
 
             checkStatus(error, "VL53L5CX could not write to device");
 
             if (!isAlive) {
-                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_dev.platform.address);
+                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_config.platform.address);
             }
 
             // (Mandatory) Init VL53L5CX sensor
-            checkStatus(vl53l5cx_init(&m_dev), "VL53L5CX ULD Loading failed");
+            checkStatus(vl53l5cx_init(&m_config), "VL53L5CX ULD Loading failed");
 
             Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
 
             // Set resolution. As others settings depend to this one, it must come first.
-            checkStatus(vl53l5cx_set_resolution(&m_dev, m_resolution),
+            checkStatus(vl53l5cx_set_resolution(&m_config, m_resolution),
                 "vl53l5cx_set_resolution failed, status %u\n");
 
             // Select operating mode
             if (m_integralTime > 0) {
 
                 checkStatus(
-                        vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_AUTONOMOUS),
+                        vl53l5cx_set_ranging_mode(&m_config, VL53L5CX_RANGING_MODE_AUTONOMOUS),
                             "vl53l5cx_set_ranging_mode failed, status %u\n");
 
                 // can set integration time in autonomous mode
-                checkStatus(vl53l5cx_set_integration_time_ms(&m_dev, m_integralTime),
+                checkStatus(vl53l5cx_set_integration_time_ms(&m_config, m_integralTime),
                             "vl53l5cx_set_integration_time_ms failed, status %u\n");
             }
             else { 
                 // set continuous ranging mode, integration time is fixed in
                 // continuous mode
-                checkStatus(vl53l5cx_set_ranging_mode(&m_dev, VL53L5CX_RANGING_MODE_CONTINUOUS),
+                checkStatus(vl53l5cx_set_ranging_mode(&m_config, VL53L5CX_RANGING_MODE_CONTINUOUS),
                         "vl53l5cx_set_ranging_mode failed, status %u\n");
             }
 
             // Select data rate 
-            checkStatus(vl53l5cx_set_ranging_frequency_hz(&m_dev, m_frequency),
+            checkStatus(vl53l5cx_set_ranging_frequency_hz(&m_config, m_frequency),
                     "vl53l5cx_set_ranging_frequency_hz failed, status %u\n");
 
             // Set target order to closest 
-            checkStatus(vl53l5cx_set_target_order(&m_dev, VL53L5CX_TARGET_ORDER_CLOSEST),
+            checkStatus(vl53l5cx_set_target_order(&m_config, VL53L5CX_TARGET_ORDER_CLOSEST),
                 "vl53l5cx_set_target_order failed, status %u\n");
 
             // Get current integration time 
             uint32_t integration_time_ms = 0;
-            checkStatus(vl53l5cx_get_integration_time_ms(&m_dev, &integration_time_ms),
+            checkStatus(vl53l5cx_get_integration_time_ms(&m_config, &integration_time_ms),
                         "vl53l5cx_get_integration_time_ms failed, status %u\n");
             Debugger::printf(
                     "Current integration time is : %d ms\n", (int)integration_time_ms);
 
             /*
             // Put the VL53L5CX to sleep
-            checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_SLEEP),
+            checkStatus(vl53l5cx_set_power_mode(&m_config, VL53L5CX_POWER_MODE_SLEEP),
                 "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now sleeping\n");
 
             // Restart
-            checkStatus(vl53l5cx_set_power_mode(&m_dev, VL53L5CX_POWER_MODE_WAKEUP),
+            checkStatus(vl53l5cx_set_power_mode(&m_config, VL53L5CX_POWER_MODE_WAKEUP),
                 "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now waking up\n");
             */
 
             // Start ranging 
-            checkStatus(vl53l5cx_start_ranging(&m_dev), "start error = 0x%02X\n"); 
+            checkStatus(vl53l5cx_start_ranging(&m_config), "start error = 0x%02X\n"); 
 
             uint8_t isReady = 0;
 
             // Clear the interrupt
-            checkStatus(vl53l5cx_check_data_ready(&m_dev, &isReady), "check data ready: %u\n"); 
+            checkStatus(vl53l5cx_check_data_ready(&m_config, &isReady), "check data ready: %u\n"); 
         }
 
         bool dataIsReady(void)
         {
             uint8_t isReady = 0;
 
-            uint8_t error = vl53l5cx_check_data_ready(&m_dev, &isReady);
+            uint8_t error = vl53l5cx_check_data_ready(&m_config, &isReady);
 
             if (error !=0) {
                 Debugger::printf("ready error = 0x%02X\n", error); 
@@ -240,8 +240,8 @@ class VL53L5cx {
 
         void readData(void)
         {
-            // status = vl53l5cx_get_resolution(&m_dev, &resolution);
-            vl53l5cx_get_ranging_data(&m_dev, &m_results);
+            // status = vl53l5cx_get_resolution(&m_config, &resolution);
+            vl53l5cx_get_ranging_data(&m_config, &m_results);
         }
 
         uint8_t getPixelCount(void)
@@ -271,7 +271,7 @@ class VL53L5cx {
 
     private:
 
-        VL53L5CX_Configuration m_dev;
+        VL53L5CX_Configuration m_config;
         VL53L5CX_ResultsData m_results;
 
         uint8_t m_lpnPin;
@@ -288,7 +288,7 @@ class VL53L5cx {
                 const uint8_t address)
         {
             m_lpnPin = lpnPin;
-            m_dev.platform.address = address;
+            m_config.platform.address = address;
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;
