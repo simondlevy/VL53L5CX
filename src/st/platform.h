@@ -7,6 +7,7 @@
 typedef struct
 {
     uint16_t address;
+    void * device;
 
 } VL53L5CX_Platform;
 

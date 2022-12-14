@@ -289,6 +289,7 @@ class VL53L5cx {
         {
             m_lpnPin = lpnPin;
             m_config.platform.address = address;
+            m_config.platform.device = &wire;
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;
