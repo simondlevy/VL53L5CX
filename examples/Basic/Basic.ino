@@ -1,5 +1,5 @@
 /*
- *  VL53L5CX ULD basic example    
+ *  VL53L5CX basic example    
  *
  *  Copyright (c) 2022 Kris Winer and Simon D. Levy
  *

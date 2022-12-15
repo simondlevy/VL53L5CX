@@ -1,5 +1,5 @@
 /*
-*  VL53L5CX ULD basic example    
+*  VL53L5CX two-sensor example    
 *
 *  Copyright (c) 2021 Seth Bonn, Simon D. Levy
 *
