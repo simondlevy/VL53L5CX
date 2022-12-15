@@ -12,7 +12,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-
 // Helper
 static void start_transfer(uint16_t register_address)
 {
@@ -108,25 +107,27 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
+    TwoWire * wire = (TwoWire *)p_platform->device;
+
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
-    Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+    wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     // Target register address for transfer
     start_transfer(RegisterAddress);
     for (uint32_t i = 0 ; i < size ; i++) 
     {
-        Wire.write(p_values[i]);
+        wire->write(p_values[i]);
         if (i > 0 && i < size - 1 && i % 16 == 0) {
             // Flush buffer and end transmission completely
-            Wire.endTransmission(true);
+            wire->endTransmission(true);
             i++; // prepare for next byte
 
             // Restart send
-            Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
+            wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
             start_transfer(RegisterAddress+i);
 
-            if (Wire.write(p_values[i]) == 0) {
+            if (wire->write(p_values[i]) == 0) {
                 Debugger::reportForever(
                         "WrMulti failed to send %d bytes to regsiter 0x%02X",
                         size, RegisterAddress);
@@ -134,10 +135,10 @@ uint8_t WrMulti(
         }
     }
 
-    return Wire.endTransmission(true);
+    return wire->endTransmission(true);
 }
 
-void SwapBuffer( uint8_t   *buffer, uint16_t     size) {
+void SwapBuffer(uint8_t * buffer, uint16_t size) {
 
     // Example of possible implementation using <string.h>
     for(uint32_t i = 0; i < size; i = i + 4) {
@@ -152,9 +153,7 @@ void SwapBuffer( uint8_t   *buffer, uint16_t     size) {
     }
 } 
 
-uint8_t WaitMs(
-        VL53L5CX_Platform *p_platform,
-        uint32_t TimeMs)
+uint8_t WaitMs( VL53L5CX_Platform *p_platform, uint32_t TimeMs)
 {
     delay(TimeMs);
 
