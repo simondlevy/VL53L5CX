@@ -13,11 +13,11 @@
 #include <Wire.h>
 
 // Helper
-static void start_transfer(uint16_t register_address)
+static void start_transfer(TwoWire * wire, uint16_t register_address)
 {
     uint8_t buffer[2] {(uint8_t)(register_address >> 8),
                        (uint8_t)(register_address & 0xFF) }; 
-    Wire.write(buffer, 2);
+    wire->write(buffer, 2);
 }
 
 // All these functions return 0 on success, nonzero on error
@@ -39,24 +39,24 @@ uint8_t RdMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CRead()
+    TwoWire * wire = (TwoWire *)p_platform->device;
 
     int status = 0;
 
     // Loop until the port is transmitted correctly
     do {
-        Wire.beginTransmission((uint8_t)((p_platform->address) & 0x7F));
+        wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
-        start_transfer(RegisterAddress);
+        start_transfer(wire, RegisterAddress);
 
-        status = Wire.endTransmission(false);
+        status = wire->endTransmission(false);
 
         // Fix for some STM32 boards
         // Reinitialize the i2c bus with the default parameters
 #ifdef ARDUINO_ARCH_STM32
             if (status) {
-                Wire.end();
-                Wire.begin();
+                wire->end();
+                wire->begin();
             }
 #endif
         // End of fix
@@ -64,26 +64,23 @@ uint8_t RdMulti(
     } while (status != 0);
 
     uint32_t i = 0;
-    if(size > 32)
-    {
-        while(i < size)
-        {
+    if(size > 32) {
+        while(i < size) {
             // If still more than 32 bytes to go, 32, else the remaining number
             // of bytes
             byte current_read_size = (size - i > 32 ? 32 : size - i); 
-            Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
+            wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
                     current_read_size);
-            while (Wire.available()) {
-                p_values[i] = Wire.read();
+            while (wire->available()) {
+                p_values[i] = wire->read();
                 i++;
             }
         }
     }
-    else
-    {
-        Wire.requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
-        while (Wire.available()) {
-            p_values[i] = Wire.read();
+    else {
+        wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
+        while (wire->available()) {
+            p_values[i] = wire->read();
             i++;
         }
     }
@@ -113,7 +110,7 @@ uint8_t WrMulti(
     wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     // Target register address for transfer
-    start_transfer(RegisterAddress);
+    start_transfer(wire, RegisterAddress);
     for (uint32_t i = 0 ; i < size ; i++) 
     {
         wire->write(p_values[i]);
@@ -125,7 +122,7 @@ uint8_t WrMulti(
             // Restart send
             wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
-            start_transfer(RegisterAddress+i);
+            start_transfer(wire, RegisterAddress+i);
 
             if (wire->write(p_values[i]) == 0) {
                 Debugger::reportForever(
