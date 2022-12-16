@@ -1,5 +1,5 @@
 /*
- *  VL53L5CX ULD basic example    
+ *  VL53L5CX dual-sensor example    
  *
  *  Copyright (c) 2021 Kris Winer and Simon D. Levy
  *
@@ -22,10 +22,10 @@ static const uint8_t INT_PIN_1 = 16;
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static const VL53L5cx::res4X4_t resolution = VL53L5cx::RES_4X4_HZ_1;
+static const VL53L5cx::res4X4_t RESOLUTION = VL53L5cx::RES_4X4_HZ_1;
 
-static VL53L5cx _sensor0(Wire, LPN_PIN_0, INTEGRAL_TIME_MS, resolution);
-static VL53L5cx _sensor1(Wire, LPN_PIN_1, INTEGRAL_TIME_MS, resolution);
+static VL53L5cx _sensor0(Wire, LPN_PIN_0, INTEGRAL_TIME_MS, RESOLUTION);
+static VL53L5cx _sensor1(Wire, LPN_PIN_1, INTEGRAL_TIME_MS, RESOLUTION);
 
 static volatile bool interruptFlag0 = false;
 static void interruptHandler0()
@@ -89,13 +89,13 @@ void setup(void)
     Wire.setClock(400000);           // Set I2C frequency at 400 kHz  
     delay(1000);
 
+    // Disable sensor0 before starting sensor1 on a different address
     _sensor0.disable();
-    _sensor1.enable();
 
-    _sensor1.setAddress(0x27);
+    _sensor1.begin(0x27);
 
+    // Now we can start sensor 0
     _sensor0.begin();
-    _sensor1.begin();
 
     Serial.println("Scan for I2C devices: should see 0x27, 0x29");
     I2CScanner::scan(Wire);           // should detect VL53L5CX_0 at 0x29 and VL53L5CX_1 at 0x27   
@@ -107,13 +107,9 @@ void setup(void)
 
 } // setup
 
-
 void loop(void)
 {
     checkInterrupt(_sensor0, INT_PIN_0, 0, interruptFlag0);
     checkInterrupt(_sensor1, INT_PIN_1, 1, interruptFlag1);
 
 } // loop
-
-
-

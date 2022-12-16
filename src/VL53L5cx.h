@@ -124,13 +124,6 @@ class VL53L5cx {
         {
         }
 
-        void enable(void)
-        {
-            pinMode(m_lpnPin, OUTPUT);
-            digitalWrite(m_lpnPin, HIGH);
-            delay(100);
-        }
-
         void disable(void)
         {
             pinMode(m_lpnPin, OUTPUT);
@@ -138,11 +131,13 @@ class VL53L5cx {
             delay(100);
         }
 
-        void setAddress(const uint8_t addr)
+        void begin(const uint8_t address)
         {
             enable();
-            vl53l5cx_set_i2c_address(&m_config, addr<<1);
-            m_config.platform.address = addr;
+            vl53l5cx_set_i2c_address(&m_config, address<<1);
+            m_config.platform.address = address;
+
+            begin();
         }
 
         void begin(void)
@@ -293,6 +288,13 @@ class VL53L5cx {
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;
+        }
+
+        void enable(void)
+        {
+            pinMode(m_lpnPin, OUTPUT);
+            digitalWrite(m_lpnPin, HIGH);
+            delay(100);
         }
 
         static void checkStatus(const uint8_t error, const char * fmt)
