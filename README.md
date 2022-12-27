@@ -37,10 +37,17 @@ I have tested this library on the following platforms:
 
 * [Teensy 4.0 Develeopment Board](https://www.pjrc.com/store/teensy40.html)
 
-* [TinyPICO ESP32 Develeopment Board](https://www.tinypico.com) 
+* [TinyPICO ESP32 Develeopment Board](https://www.tinypico.com)
 
 ## Related projects
 
 * [SparkFun VL53L5CX Arduino Library](https://github.com/sparkfun/SparkFun_VL53L5CX_Arduino_Library)
 
 * [stm32duino VL53L5CX](https://github.com/stm32duino/VL53L5CX)
+
+## Known issues
+
+Compiling on ESP32 with warnings set to More or All, you may get a memory warning that is treated as an error.
+Although ST claims to have [fixed](https://community.st.com/s/question/0D53W000014wZaESAU/vl53l5cxsatel-and-rpi-linux-driver-build-failure)
+this problem, I was unable to get their code working on my ESP32.  So I have opted to include the older code and set warnings to 
+Default.
