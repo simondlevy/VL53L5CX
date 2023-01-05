@@ -11,10 +11,10 @@
 #include "VL53L5cx.h"
 #include "Debugger.h"
 
-static const uint8_t LPN_PIN =  17;
-
 // Set to 0 for polling
-static const uint8_t INT_PIN = 16;
+static const uint8_t INT_PIN = 4;
+
+static const uint8_t LPN_PIN =  14;
 
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
