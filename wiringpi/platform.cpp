@@ -10,13 +10,16 @@
 #include "Debugger.h"
 
 // Helper
+/*
 static void start_transfer(void * wire, uint16_t register_address)
 {
     uint8_t buffer[2] {(uint8_t)(register_address >> 8),
                        (uint8_t)(register_address & 0xFF) }; 
 
+    (void)buffer;
+
     // wire->write(buffer, 2);
-}
+}*/
 
 // All these functions return 0 on success, nonzero on error
 
