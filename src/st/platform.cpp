@@ -1,5 +1,5 @@
 /*
-*  VL53L5CX two-sensor example    
+*  VL53l5cx Arduino support
 *
 *  Copyright (c) 2021 Seth Bonn, Simon D. Levy
 *

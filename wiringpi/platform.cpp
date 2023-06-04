@@ -1,7 +1,7 @@
 /*
-*  VL53L5CX two-sensor example    
+*  VL53L5CX WiringPi support
 *
-*  Copyright (c) 2021 Seth Bonn, Simon D. Levy
+*  Copyright (c) 2023 Seth Bonn, Simon D. Levy
 *
 *  MIT License
 */
@@ -9,15 +9,13 @@
 #include "platform.h"
 #include "Debugger.h"
 
-#include <Arduino.h>
-#include <Wire.h>
-
 // Helper
-static void start_transfer(TwoWire * wire, uint16_t register_address)
+static void start_transfer(void * wire, uint16_t register_address)
 {
     uint8_t buffer[2] {(uint8_t)(register_address >> 8),
                        (uint8_t)(register_address & 0xFF) }; 
-    wire->write(buffer, 2);
+
+    // wire->write(buffer, 2);
 }
 
 // All these functions return 0 on success, nonzero on error
@@ -39,7 +37,8 @@ uint8_t RdMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    TwoWire * wire = (TwoWire *)p_platform->device;
+    /*
+    void * wire = (void *)p_platform->device;
 
     int status = 0;
 
@@ -86,6 +85,8 @@ uint8_t RdMulti(
     }
     
     return i != size;
+    */
+    return 0;
 }
 
 uint8_t WrByte(
@@ -104,7 +105,8 @@ uint8_t WrMulti(
         uint8_t *p_values,
         uint32_t size)
 {
-    TwoWire * wire = (TwoWire *)p_platform->device;
+    /*
+    void * wire = (void *)p_platform->device;
 
     // Partially based on https://github.com/stm32duino/VL53L1 VL53L1_I2CWrite()
     wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
@@ -133,6 +135,9 @@ uint8_t WrMulti(
     }
 
     return wire->endTransmission(true);
+    */
+
+    return 0;
 }
 
 void SwapBuffer(uint8_t * buffer, uint16_t size) {
