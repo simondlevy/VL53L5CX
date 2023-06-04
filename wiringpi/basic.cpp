@@ -6,7 +6,8 @@
    MIT license
 */
 
-#include <wiringPi.h>
+// #include <wiringPi.h>
+#include <VL53L5cx.h>
 
 int main(int argc, char ** argv)
 {

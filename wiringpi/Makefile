@@ -11,20 +11,15 @@ CPDB = $(HOME)/CrossPlatformDataBus
 
 ALL = basic
 
-LIS2MDLSRC = ../../src
-
-CPSRC  = $(CPDB)/src
-CPEXT  = $(CPDB)/extras
-CPCMN  = $(CPEXT)/common
-I2CSRC = $(CPEXT)/i2c/wiringpi/src
+SRC = ../src
 
 all: $(ALL)
 
 basic: basic.o 
-	g++ -std=c++11 -o basic basic.o -lwiringPi
+	g++ -std=c++11 -o basic basic.o # -lwiringPi
 
 basic.o: basic.cpp 
-	g++ -std=c++11 -Wall -I$(CPSRC) -c basic.cpp
+	g++ -std=c++11 -Wall -I$(SRC) -c basic.cpp
 
 run: basic
 	./basic
