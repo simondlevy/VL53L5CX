@@ -105,7 +105,7 @@ class VL53L5cx {
         } res8X8_t;
 
         VL53L5cx(
-                TwoWire & wire,
+                void * wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res4X4_t resFreq,
@@ -116,7 +116,7 @@ class VL53L5cx {
 
         VL53L5cx(
                 const uint8_t lpnPin,
-                TwoWire & wire,
+                void * wire,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
@@ -275,7 +275,7 @@ class VL53L5cx {
         uint8_t m_integralTime;
 
         VL53L5cx(
-                TwoWire & wire,
+                void * wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const uint8_t res,
@@ -284,7 +284,7 @@ class VL53L5cx {
         {
             m_lpnPin = lpnPin;
             m_config.platform.address = address;
-            m_config.platform.device = &wire;
+            m_config.platform.device = wire;
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;
