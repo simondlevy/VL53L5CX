@@ -13,6 +13,8 @@
 #include "st/vl53l5cx_api.h"
 #include "st/vl53l5cx_plugin_detection_thresholds.h"
 
+#include "compat.h"
+
 #include <stdint.h>
 
 class VL53L5cx {

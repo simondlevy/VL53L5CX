@@ -8,28 +8,14 @@
 
 #pragma once
 
-#ifndef __linux__
-#include <Arduino.h>
-#endif
-
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdint.h>
+
+#include "compat.h"
+
 
 class Debugger {
-
-    protected:
-
-        static void outbuf(char * buf)
-        {
-#ifdef __linux
-            puts(buf);
-#else
-            Serial.print(buf);
-            Serial.flush();
-#endif
-        }
 
     public:
 
