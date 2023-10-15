@@ -117,8 +117,8 @@ class VL53L5cx {
         }
 
         VL53L5cx(
-                const uint8_t lpnPin,
                 void * wire,
+                const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
