@@ -104,26 +104,6 @@ class VL53L5CX {
 
         } res8X8_t;
 
-        VL53L5CX(
-                void * i2c_device,
-                const uint8_t lpnPin,
-                const uint8_t integralTime,
-                const res4X4_t resFreq,
-                const uint8_t address=0x29)
-            : VL53L5CX(i2c_device, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
-        {
-        }
-
-        VL53L5CX(
-                void * i2c_device,
-                const uint8_t lpnPin,
-                const uint8_t integralTime,
-                const res8X8_t resFreq,
-                const uint8_t address=0x29)
-            : VL53L5CX(i2c_device, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
-        {
-        }
-
         void disable(void)
         {
             pinMode(m_lpnPin, OUTPUT);
@@ -270,6 +250,26 @@ class VL53L5CX {
         }
 
     protected:
+
+        VL53L5CX(
+                void * i2c_device,
+                const uint8_t lpnPin,
+                const uint8_t integralTime,
+                const res4X4_t resFreq,
+                const uint8_t address=0x29)
+            : VL53L5CX(i2c_device, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
+        {
+        }
+
+        VL53L5CX(
+                void * i2c_device,
+                const uint8_t lpnPin,
+                const uint8_t integralTime,
+                const res8X8_t resFreq,
+                const uint8_t address=0x29)
+            : VL53L5CX(i2c_device, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
+        {
+        }
 
         VL53L5CX(
                 void * i2c_device,
