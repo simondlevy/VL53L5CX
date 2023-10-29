@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#include "Debugger.h"
+#include "debugger.hpp"
 
 static void SwapBuffer(uint8_t * buffer, uint16_t size) {
 

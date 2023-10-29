@@ -7,7 +7,7 @@
 */
 
 #include "vendor/vl53l5cx_i2.h"
-#include "Debugger.h"
+#include "debugger.hpp"
 
 #include <Arduino.h>
 #include <Wire.h>

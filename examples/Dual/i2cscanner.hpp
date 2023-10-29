@@ -9,7 +9,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "Debugger.h"
+#include "debugger.hpp"
 
 class I2CScanner {
 

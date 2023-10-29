@@ -8,9 +8,9 @@
 
 #include <Wire.h>
 
-#include "VL53L5CX.h"
-#include "Debugger.h"
-#include "I2CScanner.h"
+#include "vl53l5cx.hpp"
+#include "debugger.hpp"
+#include "i2cscanner.hpp"
 
 static const uint8_t LPN_PIN_0 = 17;
 static const uint8_t LPN_PIN_1 = 15;

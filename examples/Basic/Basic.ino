@@ -8,8 +8,8 @@
 
 #include <Wire.h>
 
-#include "VL53L5CX.h"
-#include "Debugger.h"
+#include "vl53l5cx.hpp"
+#include "debugger.hpp"
 
 // Set to 0 for polling
 static const uint8_t INT_PIN = 4;
