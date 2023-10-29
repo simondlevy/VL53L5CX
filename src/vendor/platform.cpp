@@ -134,10 +134,3 @@ uint8_t WrMulti(
 
     return wire->endTransmission(true);
 }
-
-uint8_t WaitMs( VL53L5CX_Platform *p_platform, uint32_t TimeMs)
-{
-    delay(TimeMs);
-
-    return 0;
-}

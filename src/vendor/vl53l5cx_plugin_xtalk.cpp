@@ -62,6 +62,8 @@
 
 #include "vl53l5cx_plugin_xtalk.h"
 
+extern void delay(const uint32_t msec);
+
 /*
  * Inner function, not available outside this file. This function is used to
  * wait for an answer from VL53L5 sensor.
@@ -78,7 +80,7 @@ static uint8_t _vl53l5cx_poll_for_answer(
 	do {
 		status |= RdMulti(&(p_dev->platform), 
                                   address, p_dev->temp_buffer, 4);
-		status |= WaitMs(&(p_dev->platform), 10);
+		delay(10);
 		
                 /* 2s timeout or FW error*/
 		if((timeout >= (uint8_t)200) 
@@ -280,107 +282,107 @@ uint8_t vl53l5cx_calibrate_xtalk(
                                                VL53L5CX_XTALK_BUFFER_SIZE);
 				}
 				continue_loop = (uint8_t)0;
-			}
-			else if(timeout >= (uint16_t)400)
-			{
-				status |= VL53L5CX_STATUS_ERROR;
-				continue_loop = (uint8_t)0;
-			}
-                        else
-                        {
-				timeout++;
-				status |= WaitMs(&(p_dev->platform), 50);
-                        }
+            }
+            else if(timeout >= (uint16_t)400)
+            {
+                status |= VL53L5CX_STATUS_ERROR;
+                continue_loop = (uint8_t)0;
+            }
+            else
+            {
+                timeout++;
+                delay(50);
+            }
 
-		}while (continue_loop == (uint8_t)1);
-	}
+        }while (continue_loop == (uint8_t)1);
+    }
 
-	/* Save Xtalk data into the Xtalk buffer */
-        (void)memcpy(p_dev->temp_buffer, VL53L5CX_GET_XTALK_CMD, 
-               sizeof(VL53L5CX_GET_XTALK_CMD));
-	status |= WrMulti(&(p_dev->platform), 0x2fb8,
-			p_dev->temp_buffer, 
-                        (uint16_t)sizeof(VL53L5CX_GET_XTALK_CMD));
-	status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
-	status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
-			p_dev->temp_buffer, 
-                        VL53L5CX_XTALK_BUFFER_SIZE + (uint16_t)4);
+    /* Save Xtalk data into the Xtalk buffer */
+    (void)memcpy(p_dev->temp_buffer, VL53L5CX_GET_XTALK_CMD, 
+            sizeof(VL53L5CX_GET_XTALK_CMD));
+    status |= WrMulti(&(p_dev->platform), 0x2fb8,
+            p_dev->temp_buffer, 
+            (uint16_t)sizeof(VL53L5CX_GET_XTALK_CMD));
+    status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
+    status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
+            p_dev->temp_buffer, 
+            VL53L5CX_XTALK_BUFFER_SIZE + (uint16_t)4);
 
-	(void)memcpy(&(p_dev->xtalk_data[0]), &(p_dev->temp_buffer[8]),
-			VL53L5CX_XTALK_BUFFER_SIZE - (uint16_t)8);
-	(void)memcpy(&(p_dev->xtalk_data[VL53L5CX_XTALK_BUFFER_SIZE 
-                       - (uint16_t)8]), footer, sizeof(footer));
+    (void)memcpy(&(p_dev->xtalk_data[0]), &(p_dev->temp_buffer[8]),
+            VL53L5CX_XTALK_BUFFER_SIZE - (uint16_t)8);
+    (void)memcpy(&(p_dev->xtalk_data[VL53L5CX_XTALK_BUFFER_SIZE 
+                - (uint16_t)8]), footer, sizeof(footer));
 
-	/* Reset default buffer */
-	status |= WrMulti(&(p_dev->platform), 0x2c34,
-			p_dev->default_configuration,
-			VL53L5CX_CONFIGURATION_SIZE);
-	status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
+    /* Reset default buffer */
+    status |= WrMulti(&(p_dev->platform), 0x2c34,
+            p_dev->default_configuration,
+            VL53L5CX_CONFIGURATION_SIZE);
+    status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
 
-	/* Reset initial configuration */
-	status |= vl53l5cx_set_resolution(p_dev, resolution);
-	status |= vl53l5cx_set_ranging_frequency_hz(p_dev, frequency);
-	status |= vl53l5cx_set_integration_time_ms(p_dev, integration_time_ms);
-	status |= vl53l5cx_set_sharpener_percent(p_dev, sharp_prct);
-	status |= vl53l5cx_set_target_order(p_dev, target_order);
-	status |= vl53l5cx_set_xtalk_margin(p_dev, xtalk_margin);
-	status |= vl53l5cx_set_ranging_mode(p_dev, ranging_mode);
+    /* Reset initial configuration */
+    status |= vl53l5cx_set_resolution(p_dev, resolution);
+    status |= vl53l5cx_set_ranging_frequency_hz(p_dev, frequency);
+    status |= vl53l5cx_set_integration_time_ms(p_dev, integration_time_ms);
+    status |= vl53l5cx_set_sharpener_percent(p_dev, sharp_prct);
+    status |= vl53l5cx_set_target_order(p_dev, target_order);
+    status |= vl53l5cx_set_xtalk_margin(p_dev, xtalk_margin);
+    status |= vl53l5cx_set_ranging_mode(p_dev, ranging_mode);
 
-	return status;
+    return status;
 }
 
 uint8_t vl53l5cx_get_caldata_xtalk(
-		VL53L5CX_Configuration		*p_dev,
-		uint8_t				*p_xtalk_data)
+        VL53L5CX_Configuration		*p_dev,
+        uint8_t				*p_xtalk_data)
 {
-	uint8_t status = VL53L5CX_STATUS_OK, resolution;
-	uint8_t footer[] = {0x00, 0x00, 0x00, 0x0F, 0x00, 0x01, 0x03, 0x04};
+    uint8_t status = VL53L5CX_STATUS_OK, resolution;
+    uint8_t footer[] = {0x00, 0x00, 0x00, 0x0F, 0x00, 0x01, 0x03, 0x04};
 
-	status |= vl53l5cx_get_resolution(p_dev, &resolution);
-	status |= vl53l5cx_set_resolution(p_dev, VL53L5CX_RESOLUTION_8X8);
+    status |= vl53l5cx_get_resolution(p_dev, &resolution);
+    status |= vl53l5cx_set_resolution(p_dev, VL53L5CX_RESOLUTION_8X8);
 
-        (void)memcpy(p_dev->temp_buffer, VL53L5CX_GET_XTALK_CMD, 
-               sizeof(VL53L5CX_GET_XTALK_CMD));
-	status |= WrMulti(&(p_dev->platform), 0x2fb8,
-			p_dev->temp_buffer,  sizeof(VL53L5CX_GET_XTALK_CMD));
-	status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
-	status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
-			p_dev->temp_buffer, 
-                        VL53L5CX_XTALK_BUFFER_SIZE + (uint16_t)4);
+    (void)memcpy(p_dev->temp_buffer, VL53L5CX_GET_XTALK_CMD, 
+            sizeof(VL53L5CX_GET_XTALK_CMD));
+    status |= WrMulti(&(p_dev->platform), 0x2fb8,
+            p_dev->temp_buffer,  sizeof(VL53L5CX_GET_XTALK_CMD));
+    status |= _vl53l5cx_poll_for_answer(p_dev,VL53L5CX_UI_CMD_STATUS, 0x03);
+    status |= RdMulti(&(p_dev->platform), VL53L5CX_UI_CMD_START,
+            p_dev->temp_buffer, 
+            VL53L5CX_XTALK_BUFFER_SIZE + (uint16_t)4);
 
-	(void)memcpy(&(p_xtalk_data[0]), &(p_dev->temp_buffer[8]),
-			VL53L5CX_XTALK_BUFFER_SIZE-(uint16_t)8);
-	(void)memcpy(&(p_xtalk_data[VL53L5CX_XTALK_BUFFER_SIZE - (uint16_t)8]),
-			footer, sizeof(footer));
+    (void)memcpy(&(p_xtalk_data[0]), &(p_dev->temp_buffer[8]),
+            VL53L5CX_XTALK_BUFFER_SIZE-(uint16_t)8);
+    (void)memcpy(&(p_xtalk_data[VL53L5CX_XTALK_BUFFER_SIZE - (uint16_t)8]),
+            footer, sizeof(footer));
 
-	status |= vl53l5cx_set_resolution(p_dev, resolution);
+    status |= vl53l5cx_set_resolution(p_dev, resolution);
 
-	return status;
+    return status;
 }
 
 uint8_t vl53l5cx_set_caldata_xtalk(
-		VL53L5CX_Configuration		*p_dev,
-		uint8_t				*p_xtalk_data)
+        VL53L5CX_Configuration		*p_dev,
+        uint8_t				*p_xtalk_data)
 {
-	uint8_t resolution, status = VL53L5CX_STATUS_OK;
+    uint8_t resolution, status = VL53L5CX_STATUS_OK;
 
-	status |= vl53l5cx_get_resolution(p_dev, &resolution);
-	(void)memcpy(p_dev->xtalk_data, p_xtalk_data, VL53L5CX_XTALK_BUFFER_SIZE);
-	status |= vl53l5cx_set_resolution(p_dev, resolution);
+    status |= vl53l5cx_get_resolution(p_dev, &resolution);
+    (void)memcpy(p_dev->xtalk_data, p_xtalk_data, VL53L5CX_XTALK_BUFFER_SIZE);
+    status |= vl53l5cx_set_resolution(p_dev, resolution);
 
-	return status;
+    return status;
 }
 
 uint8_t vl53l5cx_get_xtalk_margin(
-		VL53L5CX_Configuration		*p_dev,
-		uint32_t			*p_xtalk_margin)
+        VL53L5CX_Configuration		*p_dev,
+        uint32_t			*p_xtalk_margin)
 {
-	uint8_t status = VL53L5CX_STATUS_OK;
+    uint8_t status = VL53L5CX_STATUS_OK;
 
-	status |= vl53l5cx_dci_read_data(p_dev, (uint8_t*)p_dev->temp_buffer,
-			VL53L5CX_DCI_XTALK_CFG, 16);
+    status |= vl53l5cx_dci_read_data(p_dev, (uint8_t*)p_dev->temp_buffer,
+            VL53L5CX_DCI_XTALK_CFG, 16);
 
-	(void)memcpy(p_xtalk_margin, p_dev->temp_buffer, 4);
+    (void)memcpy(p_xtalk_margin, p_dev->temp_buffer, 4);
 	*p_xtalk_margin = *p_xtalk_margin/(uint32_t)2048;
 
 	return status;

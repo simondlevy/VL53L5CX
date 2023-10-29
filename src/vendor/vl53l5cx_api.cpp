@@ -41,7 +41,7 @@ static uint8_t _vl53l5cx_poll_for_answer(
     do {
         status |= RdMulti(&(p_dev->platform), address,
                 p_dev->temp_buffer, size);
-        status |= WaitMs(&(p_dev->platform), 10);
+        delay(10);
 
         if(timeout >= (uint8_t)200)	/* 2s timeout */
         {
@@ -377,11 +377,11 @@ uint8_t vl53l5cx_init(
     status |= WrByte(&(p_dev->platform), 0x0103, 0x01);
     status |= WrByte(&(p_dev->platform), 0x000C, 0x00);
     status |= WrByte(&(p_dev->platform), 0x000F, 0x43);
-    status |= WaitMs(&(p_dev->platform), 1);
+    delay(1);
 
     status |= WrByte(&(p_dev->platform), 0x000F, 0x40);
     status |= WrByte(&(p_dev->platform), 0x000A, 0x01);
-    status |= WaitMs(&(p_dev->platform), 100);
+    delay(100);
 
     /* Wait for sensor booted (several ms required to get sensor ready ) */
     status |= WrByte(&(p_dev->platform), 0x7fff, 0x00);
@@ -725,7 +725,7 @@ uint8_t vl53l5cx_stop_ranging(
         while(((tmp & (uint8_t)0x80) >> 7) == (uint8_t)0x00)
         {
             status |= RdByte(&(p_dev->platform), 0x6, &tmp);
-            status |= WaitMs(&(p_dev->platform), 10);
+            delay(10);
             timeout++;
             /* Timeout reached after 5 seconds */
             if(timeout > (uint16_t)500)
