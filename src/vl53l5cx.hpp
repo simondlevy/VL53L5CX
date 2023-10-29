@@ -105,22 +105,22 @@ class VL53L5CX {
         } res8X8_t;
 
         VL53L5CX(
-                void * wire,
+                void * i2c_device,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res4X4_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5CX(wire, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
+            : VL53L5CX(i2c_device, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
         }
 
         VL53L5CX(
-                void * wire,
+                void * i2c_device,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5CX(wire, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
+            : VL53L5CX(i2c_device, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
         }
 
@@ -154,13 +154,15 @@ class VL53L5CX {
             checkStatus(error, "VL53L5CX could not write to device");
 
             if (!isAlive) {
-                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", m_config.platform.address);
+                Debugger::reportForever("VL53L5CX not detected at address 0x%0X", 
+                        m_config.platform.address);
             }
 
             // (Mandatory) Init VL53L5CX sensor
             checkStatus(vl53l5cx_init(&m_config), "VL53L5CX ULD Loading failed");
 
-            Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", VL53L5CX_API_REVISION);
+            Debugger::printf("VL53L5CX ULD ready ! (Version : %s)\n", 
+                    VL53L5CX_API_REVISION);
 
             // Set resolution. As others settings depend to this one, it must come first.
             checkStatus(vl53l5cx_set_resolution(&m_config, m_resolution),
@@ -169,8 +171,8 @@ class VL53L5CX {
             // Select operating mode
             if (m_integralTime > 0) {
 
-                checkStatus(
-                        vl53l5cx_set_ranging_mode(&m_config, VL53L5CX_RANGING_MODE_AUTONOMOUS),
+                checkStatus(vl53l5cx_set_ranging_mode(&m_config, 
+                            VL53L5CX_RANGING_MODE_AUTONOMOUS),
                             "vl53l5cx_set_ranging_mode failed, status %u\n");
 
                 // can set integration time in autonomous mode
@@ -180,7 +182,8 @@ class VL53L5CX {
             else { 
                 // set continuous ranging mode, integration time is fixed in
                 // continuous mode
-                checkStatus(vl53l5cx_set_ranging_mode(&m_config, VL53L5CX_RANGING_MODE_CONTINUOUS),
+                checkStatus(vl53l5cx_set_ranging_mode(&m_config, 
+                            VL53L5CX_RANGING_MODE_CONTINUOUS),
                         "vl53l5cx_set_ranging_mode failed, status %u\n");
             }
 
@@ -217,7 +220,8 @@ class VL53L5CX {
             uint8_t isReady = 0;
 
             // Clear the interrupt
-            checkStatus(vl53l5cx_check_data_ready(&m_config, &isReady), "check data ready: %u\n"); 
+            checkStatus(vl53l5cx_check_data_ready(&m_config, &isReady), 
+                    "check data ready: %u\n"); 
         }
 
         bool dataIsReady(void)
@@ -275,7 +279,7 @@ class VL53L5CX {
         uint8_t m_integralTime;
 
         VL53L5CX(
-                void * wire,
+                void * i2c_device,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const uint8_t res,
@@ -284,7 +288,7 @@ class VL53L5CX {
         {
             m_lpnPin = lpnPin;
             m_config.platform.address = address;
-            m_config.platform.device = wire;
+            m_config.platform.device = i2c_device;
             m_integralTime = integralTime;
             m_resolution = res;
             m_frequency = freq;
