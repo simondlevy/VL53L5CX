@@ -1,5 +1,5 @@
 /*
-   Cross-platform serial debugging support
+   Serial debugging support
 
    Copyright (c) 2021 Simon D. Levy
 
@@ -8,12 +8,11 @@
 
 #pragma once
 
+#include <Arduino.h>
+
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-
-#include "compat.h"
-
 
 class Debugger {
 
@@ -25,7 +24,7 @@ class Debugger {
             va_start(ap, fmt);
             char buf[200];
             vsnprintf(buf, 200, fmt, ap); 
-            outbuf(buf);
+            Serial.print(buf);
             va_end(ap);
         }
 
@@ -40,7 +39,7 @@ class Debugger {
             strcat(buf, "\n");
 
             while (true) {
-                outbuf(buf);
+                Serial.print(buf);
                 delay(500);
             }
         }
