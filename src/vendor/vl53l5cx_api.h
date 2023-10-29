@@ -1,7 +1,9 @@
-#ifndef VL53L5CX_API_H_
-#define VL53L5CX_API_H_
+#pragma once
 
 #include "vl53l5cx_i2.h"
+
+static const uint8_t VL53L5CX_NB_TARGET_PER_ZONE = 1; 
+
 
 /**
  * @brief Current driver version.
@@ -687,5 +689,3 @@ uint8_t vl53l5cx_dci_replace_data(
 		uint8_t				*new_data,
 		uint16_t			new_data_size,
 		uint16_t			new_data_pos);
-
-#endif //VL53L5CX_API_H_
