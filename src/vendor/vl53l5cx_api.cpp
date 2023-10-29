@@ -7,6 +7,21 @@
 
 #include "Debugger.h"
 
+static void SwapBuffer(uint8_t * buffer, uint16_t size) {
+
+    // Example of possible implementation using <string.h>
+    for(uint32_t i = 0; i < size; i = i + 4) {
+
+        uint32_t tmp = (
+                buffer[i]<<24)
+            |(buffer[i+1]<<16)
+            |(buffer[i+2]<<8)
+            |(buffer[i+3]);
+
+        memcpy(&(buffer[i]), &tmp, 4);
+    }
+} 
+
 /**
  * @brief Inner function, not available outside this file. This function is used
  * to wait for an answer from VL53L5CX sensor.

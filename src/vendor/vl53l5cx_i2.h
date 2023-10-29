@@ -21,6 +21,12 @@ uint8_t WrByte(
   uint16_t RegisterAdress,
   uint8_t value);
 
+uint8_t WaitMs(
+  VL53L5CX_Platform *p_platform,
+  uint32_t TimeMs);
+
+
+
 uint8_t RdMulti(
   VL53L5CX_Platform *p_platform,
   uint16_t RegisterAdress,
@@ -33,10 +39,4 @@ uint8_t WrMulti(
   uint8_t *p_values,
   uint32_t size);
 
-void SwapBuffer(
-  uint8_t   *buffer,
-  uint16_t     size);
 
-uint8_t WaitMs(
-  VL53L5CX_Platform *p_platform,
-  uint32_t TimeMs);
