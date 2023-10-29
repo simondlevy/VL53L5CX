@@ -8,7 +8,7 @@
 */
 
 #include <Wire.h>
-#include "vl53l5cx.hpp"
+#include "vl53l5cx_arduino.h"
 
 // Set to 0 for polling
 static const uint8_t INT_PIN = 4;

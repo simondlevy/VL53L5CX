@@ -166,18 +166,18 @@ class VL53L5CX {
 
             // Set resolution. As others settings depend to this one, it must come first.
             checkStatus(vl53l5cx_set_resolution(&m_config, m_resolution),
-                "vl53l5cx_set_resolution failed, status %u\n");
+                    "vl53l5cx_set_resolution failed, status %u\n");
 
             // Select operating mode
             if (m_integralTime > 0) {
 
                 checkStatus(vl53l5cx_set_ranging_mode(&m_config, 
                             VL53L5CX_RANGING_MODE_AUTONOMOUS),
-                            "vl53l5cx_set_ranging_mode failed, status %u\n");
+                        "vl53l5cx_set_ranging_mode failed, status %u\n");
 
                 // can set integration time in autonomous mode
                 checkStatus(vl53l5cx_set_integration_time_ms(&m_config, m_integralTime),
-                            "vl53l5cx_set_integration_time_ms failed, status %u\n");
+                        "vl53l5cx_set_integration_time_ms failed, status %u\n");
             }
             else { 
                 // set continuous ranging mode, integration time is fixed in
@@ -192,27 +192,28 @@ class VL53L5CX {
                     "vl53l5cx_set_ranging_frequency_hz failed, status %u\n");
 
             // Set target order to closest 
-            checkStatus(vl53l5cx_set_target_order(&m_config, VL53L5CX_TARGET_ORDER_CLOSEST),
-                "vl53l5cx_set_target_order failed, status %u\n");
+            checkStatus(vl53l5cx_set_target_order(&m_config, 
+                        VL53L5CX_TARGET_ORDER_CLOSEST),
+                    "vl53l5cx_set_target_order failed, status %u\n");
 
             // Get current integration time 
             uint32_t integration_time_ms = 0;
             checkStatus(vl53l5cx_get_integration_time_ms(&m_config, &integration_time_ms),
-                        "vl53l5cx_get_integration_time_ms failed, status %u\n");
+                    "vl53l5cx_get_integration_time_ms failed, status %u\n");
             Debugger::printf(
                     "Current integration time is : %d ms\n", (int)integration_time_ms);
 
             /*
             // Put the VL53L5CX to sleep
             checkStatus(vl53l5cx_set_power_mode(&m_config, VL53L5CX_POWER_MODE_SLEEP),
-                "vl53l5cx_set_power_mode failed, status %u\n");
+            "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now sleeping\n");
 
             // Restart
             checkStatus(vl53l5cx_set_power_mode(&m_config, VL53L5CX_POWER_MODE_WAKEUP),
-                "vl53l5cx_set_power_mode failed, status %u\n");
+            "vl53l5cx_set_power_mode failed, status %u\n");
             Debugger::printf("VL53L5CX is now waking up\n");
-            */
+             */
 
             // Start ranging 
             checkStatus(vl53l5cx_start_ranging(&m_config), "start error = 0x%02X\n"); 
@@ -246,7 +247,7 @@ class VL53L5CX {
         uint8_t getPixelCount(void)
         {
             return m_resolution;
-         }
+        }
 
         uint8_t getTargetStatus(const uint8_t pixel)
         {
@@ -268,15 +269,7 @@ class VL53L5CX {
             return m_results.ambient_per_spad[pixel];
         }
 
-    private:
-
-        VL53L5CX_Configuration m_config;
-        VL53L5CX_ResultsData m_results;
-
-        uint8_t m_lpnPin;
-        uint8_t m_resolution;
-        uint8_t m_frequency;
-        uint8_t m_integralTime;
+    protected:
 
         VL53L5CX(
                 void * i2c_device,
@@ -293,6 +286,17 @@ class VL53L5CX {
             m_resolution = res;
             m_frequency = freq;
         }
+
+
+    private:
+
+        VL53L5CX_Configuration m_config;
+        VL53L5CX_ResultsData m_results;
+
+        uint8_t m_lpnPin;
+        uint8_t m_resolution;
+        uint8_t m_frequency;
+        uint8_t m_integralTime;
 
         void enable(void)
         {

@@ -8,7 +8,7 @@
 
 #include <Wire.h>
 
-#include "vl53l5cx.hpp"
+#include "vl53l5cx_arduino.h"
 #include "debugger.hpp"
 #include "i2cscanner.hpp"
 
@@ -24,8 +24,8 @@ static const uint8_t INTEGRAL_TIME_MS = 10;
 
 static const VL53L5CX::res4X4_t RESOLUTION = VL53L5CX::RES_4X4_HZ_1;
 
-static VL53L5CX _sensor0(&Wire, LPN_PIN_0, INTEGRAL_TIME_MS, RESOLUTION);
-static VL53L5CX _sensor1(&Wire, LPN_PIN_1, INTEGRAL_TIME_MS, RESOLUTION);
+static VL53L5CX_Arduino _sensor0(LPN_PIN_0, INTEGRAL_TIME_MS, RESOLUTION);
+static VL53L5CX_Arduino _sensor1(LPN_PIN_1, INTEGRAL_TIME_MS, RESOLUTION);
 
 static volatile bool interruptFlag0 = false;
 static void interruptHandler0()
