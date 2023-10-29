@@ -11,16 +11,10 @@ typedef struct
 
 } VL53L5CX_Platform;
 
-uint8_t RdMulti(
-  VL53L5CX_Platform *p_platform,
-  uint16_t RegisterAdress,
-  uint8_t *p_values,
-  uint32_t size);
+uint8_t VL53L1CX_ReadMulti(VL53L5CX_Platform *p_platform, uint16_t rgstr,
+        uint8_t *data, uint32_t count);
 
-uint8_t WrMulti(
-  VL53L5CX_Platform *p_platform,
-  uint16_t RegisterAdress,
-  uint8_t *p_values,
-  uint32_t size);
+uint8_t VL53L1CX_WriteMulti(VL53L5CX_Platform *p_platform, uint16_t rgstr,
+        uint8_t *data, uint32_t count);
 
 

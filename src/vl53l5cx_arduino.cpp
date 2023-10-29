@@ -13,10 +13,10 @@
 #include <Wire.h>
 
 // Helper
-static void start_transfer(TwoWire * wire, uint16_t register_address)
+static void start_transfer(TwoWire * wire, uint16_t rgstr)
 {
-    uint8_t buffer[2] {(uint8_t)(register_address >> 8),
-                       (uint8_t)(register_address & 0xFF) }; 
+    uint8_t buffer[2] {(uint8_t)(rgstr >> 8),
+                       (uint8_t)(rgstr & 0xFF) }; 
     wire->write(buffer, 2);
 }
 
@@ -24,11 +24,11 @@ static void start_transfer(TwoWire * wire, uint16_t register_address)
 
 
 
-uint8_t RdMulti(
+uint8_t VL53L1CX_ReadMulti(
         VL53L5CX_Platform *p_platform,
-        uint16_t RegisterAddress,
-        uint8_t *p_values,
-        uint32_t size)
+        uint16_t rgstr,
+        uint8_t *data,
+        uint32_t count)
 {
     TwoWire * wire = (TwoWire *)p_platform->device;
 
@@ -38,7 +38,7 @@ uint8_t RdMulti(
     do {
         wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F));
 
-        start_transfer(wire, RegisterAddress);
+        start_transfer(wire, rgstr);
 
         status = wire->endTransmission(false);
 
@@ -55,35 +55,35 @@ uint8_t RdMulti(
     } while (status != 0);
 
     uint32_t i = 0;
-    if(size > 32) {
-        while(i < size) {
+    if(count > 32) {
+        while(i < count) {
             // If still more than 32 bytes to go, 32, else the remaining number
             // of bytes
-            byte current_read_size = (size - i > 32 ? 32 : size - i); 
+            byte current_read_count = (count - i > 32 ? 32 : count - i); 
             wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)),
-                    current_read_size);
+                    current_read_count);
             while (wire->available()) {
-                p_values[i] = wire->read();
+                data[i] = wire->read();
                 i++;
             }
         }
     }
     else {
-        wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)), size);
+        wire->requestFrom(((uint8_t)((p_platform->address) & 0x7F)), count);
         while (wire->available()) {
-            p_values[i] = wire->read();
+            data[i] = wire->read();
             i++;
         }
     }
     
-    return i != size;
+    return i != count;
 }
 
-uint8_t WrMulti(
+uint8_t VL53L1CX_WriteMulti(
         VL53L5CX_Platform *p_platform,
-        uint16_t RegisterAddress,
-        uint8_t *p_values,
-        uint32_t size)
+        uint16_t rgstr,
+        uint8_t *data,
+        uint32_t count)
 {
     TwoWire * wire = (TwoWire *)p_platform->device;
 
@@ -91,11 +91,11 @@ uint8_t WrMulti(
     wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
     // Target register address for transfer
-    start_transfer(wire, RegisterAddress);
-    for (uint32_t i = 0 ; i < size ; i++) 
+    start_transfer(wire, rgstr);
+    for (uint32_t i = 0 ; i < count ; i++) 
     {
-        wire->write(p_values[i]);
-        if (i > 0 && i < size - 1 && i % 16 == 0) {
+        wire->write(data[i]);
+        if (i > 0 && i < count - 1 && i % 16 == 0) {
             // Flush buffer and end transmission completely
             wire->endTransmission(true);
             i++; // prepare for next byte
@@ -103,12 +103,12 @@ uint8_t WrMulti(
             // Restart send
             wire->beginTransmission((uint8_t)((p_platform->address) & 0x7F)); 
 
-            start_transfer(wire, RegisterAddress+i);
+            start_transfer(wire, rgstr+i);
 
-            if (wire->write(p_values[i]) == 0) {
+            if (wire->write(data[i]) == 0) {
                 Debugger::reportForever(
-                        "WrMulti failed to send %d bytes to regsiter 0x%02X",
-                        size, RegisterAddress);
+                        "VL53L1CX_WriteMulti failed to send %d bytes to regsiter 0x%02X",
+                        count, rgstr);
             }
         }
     }
