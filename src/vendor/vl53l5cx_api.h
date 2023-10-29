@@ -1,7 +1,7 @@
 #ifndef VL53L5CX_API_H_
 #define VL53L5CX_API_H_
 
-#include "platform.h"
+#include "vl53l5cx_i2.h"
 
 /**
  * @brief Current driver version.
@@ -256,7 +256,7 @@
 
 typedef struct
 {
-	/* Platform, filled by customer into the 'platform.h' file */
+	/* Platform, filled by customer into the 'vl53l5cx_i2.h' file */
 	VL53L5CX_Platform	platform;
 	/* Results streamcount, value auto-incremented at each range */
 	uint8_t		        streamcount;
