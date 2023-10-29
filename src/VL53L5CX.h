@@ -1,5 +1,5 @@
 /*
-   VL53L5cx class library header
+   VL53L5CX class library header
 
    Copyright (c) 2021 Simon D. Levy
 
@@ -15,7 +15,7 @@
 
 #include <stdint.h>
 
-class VL53L5cx {
+class VL53L5CX {
 
     public:
 
@@ -104,23 +104,23 @@ class VL53L5cx {
 
         } res8X8_t;
 
-        VL53L5cx(
+        VL53L5CX(
                 void * wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res4X4_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(wire, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
+            : VL53L5CX(wire, lpnPin, integralTime, 16, (uint8_t)resFreq, address)
         {
         }
 
-        VL53L5cx(
+        VL53L5CX(
                 void * wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
                 const res8X8_t resFreq,
                 const uint8_t address=0x29)
-            : VL53L5cx(wire, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
+            : VL53L5CX(wire, lpnPin, integralTime, 64, (uint8_t)resFreq, address)
         {
         }
 
@@ -274,7 +274,7 @@ class VL53L5cx {
         uint8_t m_frequency;
         uint8_t m_integralTime;
 
-        VL53L5cx(
+        VL53L5CX(
                 void * wire,
                 const uint8_t lpnPin,
                 const uint8_t integralTime,
@@ -302,4 +302,4 @@ class VL53L5cx {
             Debugger::checkStatus(error, fmt);
         }
 
-}; // class VL53L5cx
+}; // class VL53L5CX

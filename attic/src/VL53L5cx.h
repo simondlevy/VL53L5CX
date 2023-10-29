@@ -1,5 +1,5 @@
 /*
-   VL53L5cx class library header
+   VL53L5CX class library header
 
    Copyright (c) 2021 Simon D. Levy
 
@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-class VL53L5cx {
+class VL53L5CX {
 
     public:
 
@@ -35,7 +35,7 @@ class VL53L5cx {
 
         class XtalkCalibrationData {
 
-            friend class VL53L5cx;
+            friend class VL53L5CX;
 
             protected:
 
@@ -49,7 +49,7 @@ class VL53L5cx {
             uint16_t distance_max;
         } detection_thresholds_t;
 
-        VL53L5cx(
+        VL53L5CX(
                 uint8_t lpnPin,
                 resolution_t resolution=RESOLUTION_4X4,
                 target_order_t targetOrder=TARGET_ORDER_CLOSEST,
@@ -106,9 +106,9 @@ class VL53L5cx {
          */
         void calibrateXtalk(uint8_t reflectancePercent, uint8_t samples, uint16_t distance);
 
-        void getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
+        void getXtalkCalibrationData(VL53L5CX::XtalkCalibrationData & data);
 
-        void setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data);
+        void setXtalkCalibrationData(VL53L5CX::XtalkCalibrationData & data);
 
         void stop(void);
 
@@ -149,9 +149,9 @@ class VL53L5cx {
                 VL53L5CX_DetectionThresholds * array,
                 resolution_t resolution);
 
-}; // class VL53L5cx 
+}; // class VL53L5CX 
 
-class VL53L5cxAutonomous : public VL53L5cx {
+class VL53L5CXAutonomous : public VL53L5CX {
 
     private:
 
@@ -159,7 +159,7 @@ class VL53L5cxAutonomous : public VL53L5cx {
 
     public:
 
-        VL53L5cxAutonomous(
+        VL53L5CXAutonomous(
                 uint8_t lpnPin,
                 uint32_t integrationTimeMsec=20,
                 resolution_t resolution=RESOLUTION_8X8,
@@ -167,6 +167,6 @@ class VL53L5cxAutonomous : public VL53L5cx {
 
         void begin(uint8_t address=0x29);
 
-}; // class VL53L5cxAutonomous
+}; // class VL53L5CXAutonomous
 
 

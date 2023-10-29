@@ -1,18 +1,18 @@
 /*
-   VL53L5cx class library implementation
+   VL53L5CX class library implementation
 
    Copyright (c) 2021 Simon D. Levy
 
    MIT License
  */
 
-#include "VL53L5cx.h"
+#include "VL53L5CX.h"
 #include "Debugger.h"
 
 #include "st/vl53l5cx_plugin_motion_indicator.h"
 #include "st/vl53l5cx_plugin_xtalk.h"
 
-VL53L5cx::VL53L5cx(
+VL53L5CX::VL53L5CX(
         uint8_t lpnPin,
         resolution_t resolution,
         target_order_t targetOrder,
@@ -29,14 +29,14 @@ VL53L5cx::VL53L5cx(
     _dev.platform.address = 0x29;
 }
         
-void VL53L5cx::begin(uint8_t address)
+void VL53L5CX::begin(uint8_t address)
 {
     init(address);
 
     start_ranging();
 }
 
-void VL53L5cx::begin(detection_thresholds_t & values, uint8_t address)
+void VL53L5CX::begin(detection_thresholds_t & values, uint8_t address)
 {
     init(address);
 
@@ -49,7 +49,7 @@ void VL53L5cx::begin(detection_thresholds_t & values, uint8_t address)
     start_ranging();
 }
 
-void VL53L5cx::make_detection_thresholds_array(
+void VL53L5CX::make_detection_thresholds_array(
         detection_thresholds_t & values, 
         VL53L5CX_DetectionThresholds * array,
         resolution_t resolution)
@@ -90,7 +90,7 @@ void VL53L5cx::make_detection_thresholds_array(
     array[last].zone_num = VL53L5CX_LAST_THRESHOLD | array[last].zone_num;
 }
 
-void VL53L5cx::init(uint8_t address)
+void VL53L5CX::init(uint8_t address)
 {
     // Bozo filter for ranging frequency
     check_ranging_frequency(RESOLUTION_4X4, 60, "4X4");
@@ -133,7 +133,7 @@ void VL53L5cx::init(uint8_t address)
 
 } // init
 
-void VL53L5cx::check_ranging_frequency(resolution_t resolution,
+void VL53L5CX::check_ranging_frequency(resolution_t resolution,
                                        uint8_t maxval,
                                        const char *label)
 {
@@ -144,69 +144,69 @@ void VL53L5cx::check_ranging_frequency(resolution_t resolution,
 }
 
 
-void VL53L5cx::start_ranging(void)
+void VL53L5CX::start_ranging(void)
 {
     checkStatus(vl53l5cx_start_ranging(&_dev), "start error = 0x%02X");
 }
 
-bool VL53L5cx::isReady(void)
+bool VL53L5CX::isReady(void)
 {
     uint8_t ready = false;
     vl53l5cx_check_data_ready(&_dev, &ready);
     return ready;
 }
 
-void VL53L5cx::collectData(void)
+void VL53L5CX::collectData(void)
 {
     vl53l5cx_get_ranging_data(&_dev, &_results);
 }
 
-uint8_t VL53L5cx::getStreamCount(void)
+uint8_t VL53L5CX::getStreamCount(void)
 {
     return _dev.streamcount;
 }
 
-uint8_t VL53L5cx::getTargetStatus(uint8_t zone, uint8_t target)
+uint8_t VL53L5CX::getTargetStatus(uint8_t zone, uint8_t target)
 {
     return _results.target_status[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-int16_t VL53L5cx::getDistance(uint8_t zone, uint8_t target)
+int16_t VL53L5CX::getDistance(uint8_t zone, uint8_t target)
 {
     return _results.distance_mm[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-uint8_t VL53L5cx::getSignalPerSpad(uint8_t zone, uint8_t target)
+uint8_t VL53L5CX::getSignalPerSpad(uint8_t zone, uint8_t target)
 {
     return _results.signal_per_spad[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-uint8_t VL53L5cx::getRangeSigma(uint8_t zone, uint8_t target)
+uint8_t VL53L5CX::getRangeSigma(uint8_t zone, uint8_t target)
 {
     return _results.range_sigma_mm[VL53L5CX_NB_TARGET_PER_ZONE * zone + target];
 }
 
-uint8_t VL53L5cx::getNbTargetDetected(uint8_t zone)
+uint8_t VL53L5CX::getNbTargetDetected(uint8_t zone)
 {
     return _results.nb_target_detected[zone];
 }
 
-uint8_t VL53L5cx::getAmbientPerSpad(uint8_t zone)
+uint8_t VL53L5CX::getAmbientPerSpad(uint8_t zone)
 {
     return _results.ambient_per_spad[zone];
 }
 
-uint8_t VL53L5cx::getNbSpadsEnabled(uint8_t zone)
+uint8_t VL53L5CX::getNbSpadsEnabled(uint8_t zone)
 {
     return _results.nb_spads_enabled[zone];
 }
 
-void VL53L5cx::stop(void)
+void VL53L5CX::stop(void)
 {
     vl53l5cx_stop_ranging(&_dev);
 }
 
-uint32_t VL53L5cx::getIntegrationTimeMsec(void)
+uint32_t VL53L5CX::getIntegrationTimeMsec(void)
 {
     uint32_t integration_time_ms = 0;
     checkStatus(
@@ -215,7 +215,7 @@ uint32_t VL53L5cx::getIntegrationTimeMsec(void)
     return integration_time_ms;
 }
 
-void VL53L5cx::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
+void VL53L5CX::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
 {
     // Create motion indicator
     VL53L5CX_Motion_Configuration motion_config = {};
@@ -242,7 +242,7 @@ void VL53L5cx::addMotionIndicator(uint16_t distanceMin, uint16_t distanceMax)
     }
 }
 
-void VL53L5cx::calibrateXtalk(
+void VL53L5CX::calibrateXtalk(
         uint8_t reflectancePercent,
         uint8_t samples,
         uint16_t distance)
@@ -255,21 +255,21 @@ void VL53L5cx::calibrateXtalk(
             "vl53l5cx_calibrate_xtalk failed, status %u");
 }
 
-void VL53L5cx::getXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
+void VL53L5CX::getXtalkCalibrationData(VL53L5CX::XtalkCalibrationData & data)
 {
     vl53l5cx_get_caldata_xtalk(&_dev, data.data);
 }
 
-void VL53L5cx::setXtalkCalibrationData(VL53L5cx::XtalkCalibrationData & data)
+void VL53L5CX::setXtalkCalibrationData(VL53L5CX::XtalkCalibrationData & data)
 {
 }
 
-VL53L5cxAutonomous::VL53L5cxAutonomous(
+VL53L5CXAutonomous::VL53L5CXAutonomous(
         uint8_t lpnPin,
         uint32_t integrationTimeMsec,
         resolution_t resolution,
         target_order_t targetOrder)
-    : VL53L5cxAutonomous::VL53L5cx(
+    : VL53L5CXAutonomous::VL53L5CX(
             lpnPin,
             resolution,
             targetOrder)
@@ -277,7 +277,7 @@ VL53L5cxAutonomous::VL53L5cxAutonomous(
     _integration_time_msec = integrationTimeMsec;
 }
 
-void VL53L5cxAutonomous::begin(uint8_t address)
+void VL53L5CXAutonomous::begin(uint8_t address)
 {
     init(address);
 
@@ -294,21 +294,21 @@ void VL53L5cxAutonomous::begin(uint8_t address)
     start_ranging();
 }
 
-void VL53L5cx::bozoFilter(bool cond, const char * msg)
+void VL53L5CX::bozoFilter(bool cond, const char * msg)
 {
     if (cond) {
         Debugger::reportForever(msg);
     }
 }
 
-void VL53L5cx::checkStatus(uint8_t error, const char * fmt)
+void VL53L5CX::checkStatus(uint8_t error, const char * fmt)
 {
     if (error) {
         Debugger::reportForever(fmt, error);
     }
 }
 
-void VL53L5cx::rangeFilter(
+void VL53L5CX::rangeFilter(
         uint16_t val,
         uint16_t minval,
         uint16_t maxval,

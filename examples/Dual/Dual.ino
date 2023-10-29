@@ -8,7 +8,7 @@
 
 #include <Wire.h>
 
-#include "VL53L5cx.h"
+#include "VL53L5CX.h"
 #include "Debugger.h"
 #include "I2CScanner.h"
 
@@ -22,10 +22,10 @@ static const uint8_t INT_PIN_1 = 16;
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static const VL53L5cx::res4X4_t RESOLUTION = VL53L5cx::RES_4X4_HZ_1;
+static const VL53L5CX::res4X4_t RESOLUTION = VL53L5CX::RES_4X4_HZ_1;
 
-static VL53L5cx _sensor0(Wire, LPN_PIN_0, INTEGRAL_TIME_MS, RESOLUTION);
-static VL53L5cx _sensor1(Wire, LPN_PIN_1, INTEGRAL_TIME_MS, RESOLUTION);
+static VL53L5CX _sensor0(&Wire, LPN_PIN_0, INTEGRAL_TIME_MS, RESOLUTION);
+static VL53L5CX _sensor1(&Wire, LPN_PIN_1, INTEGRAL_TIME_MS, RESOLUTION);
 
 static volatile bool interruptFlag0 = false;
 static void interruptHandler0()
@@ -45,7 +45,7 @@ static void setupInterrupt(const uint8_t pin, void (*handler)(void))
     attachInterrupt(pin, handler, FALLING);
 }
 
-static void checkInterrupt(VL53L5cx & sensor, const uint8_t pin, const uint8_t id, volatile bool & flag)
+static void checkInterrupt(VL53L5CX & sensor, const uint8_t pin, const uint8_t id, volatile bool & flag)
 {
     if (pin == 0 || flag) {
 
