@@ -22,16 +22,7 @@ static void start_transfer(TwoWire * wire, uint16_t register_address)
 
 // All these functions return 0 on success, nonzero on error
 
-uint8_t RdByte(
-        VL53L5CX_Platform *p_platform,
-        uint16_t RegisterAddress,
-        uint8_t *p_value)
-{
 
-    uint8_t res = RdMulti(p_platform, RegisterAddress, p_value, 1);
-
-    return res;
-}
 
 uint8_t RdMulti(
         VL53L5CX_Platform *p_platform,
@@ -86,16 +77,6 @@ uint8_t RdMulti(
     }
     
     return i != size;
-}
-
-uint8_t WrByte(
-        VL53L5CX_Platform *p_platform,
-        uint16_t RegisterAddress,
-        uint8_t value)
-{
-    // Just use WrMulti but 1 byte
-    uint8_t res = WrMulti(p_platform, RegisterAddress, &value, 1); 
-    return res;
 }
 
 uint8_t WrMulti(

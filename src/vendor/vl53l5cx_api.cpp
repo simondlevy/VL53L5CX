@@ -22,6 +22,27 @@ static void SwapBuffer(uint8_t * buffer, uint16_t size) {
     }
 } 
 
+static uint8_t RdByte(
+        VL53L5CX_Platform *p_platform,
+        uint16_t RegisterAddress,
+        uint8_t *p_value)
+{
+
+    uint8_t res = RdMulti(p_platform, RegisterAddress, p_value, 1);
+
+    return res;
+}
+
+uint8_t WrByte(
+        VL53L5CX_Platform *p_platform,
+        uint16_t RegisterAddress,
+        uint8_t value)
+{
+    // Just use WrMulti but 1 byte
+    uint8_t res = WrMulti(p_platform, RegisterAddress, &value, 1); 
+    return res;
+}
+
 /**
  * @brief Inner function, not available outside this file. This function is used
  * to wait for an answer from VL53L5CX sensor.
