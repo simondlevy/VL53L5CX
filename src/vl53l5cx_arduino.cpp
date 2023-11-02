@@ -6,7 +6,7 @@
 *  MIT License
 */
 
-#include "vendor/vl53l5cx_i2.h"
+#include "st/vl53l5cx_i2.h"
 #include "debugger.hpp"
 
 #include <Arduino.h>
