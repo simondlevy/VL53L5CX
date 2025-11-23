@@ -8,6 +8,7 @@ MIT License
 '''
 
 import argparse
+from argparse import ArgumentDefaultsHelpFormatter
 import serial
 import cv2
 import numpy as np
@@ -26,9 +27,9 @@ def debug(s):
 def new_image():
     return np.zeros((8,8), dtype='uint8'), 0
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
-parser.add_argument(dest='port', help='COM port')
+parser.add_argument('-p', '--port', default='/dev/ttyACM0', help='COM port')
 
 args = parser.parse_args()
 
