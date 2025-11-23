@@ -16,5 +16,5 @@ flash:
 edit:
 	vim $(SKETCH).ino
 
-display:
-	./display.py
+listen:
+	miniterm.py $(PORT) 115200 --exit-char 3
