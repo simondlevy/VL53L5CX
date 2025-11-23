@@ -11,14 +11,14 @@
 #include "vl53l5cx_arduino.h"
 
 // Set to 0 for polling
-static const uint8_t INT_PIN = 4;
+static const uint8_t INT_PIN = 0;//4;
 
 static const uint8_t LPN_PIN =  14;
 
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static VL53L5CX _sensor(&Wire, LPN_PIN, INTEGRAL_TIME_MS, VL53L5CX::RES_8X8_HZ_1);
+static VL53L5CX_Arduino _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5CX::RES_8X8_HZ_1);
 
 static volatile bool _gotInterrupt;
 
