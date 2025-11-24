@@ -19,7 +19,7 @@ static const uint8_t LPN_PIN =  14;
 // Set to 0 for continuous mode
 static const uint8_t INTEGRAL_TIME_MS = 10;
 
-static VL53L5CX_Arduino _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5CX::RES_4X4_HZ_1);
+static VL53L5CX_Arduino _sensor(LPN_PIN, INTEGRAL_TIME_MS, VL53L5CX::RES_4X4_HZ_10);
 
 static volatile bool _gotInterrupt;
 
