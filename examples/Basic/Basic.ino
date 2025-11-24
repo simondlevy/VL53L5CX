@@ -57,27 +57,26 @@ void loop(void)
 
         _gotInterrupt = false;
 
-        while (!_sensor.dataIsReady()) {
-            delay(10);
-        }
+        if (_sensor.dataIsReady()) {
 
-        _sensor.readData();
+            _sensor.readData();
 
-        for (auto i=0; i<_sensor.getPixelCount(); i++) {
+            for (auto i=0; i<_sensor.getPixelCount(); i++) {
 
-            // Print per zone results 
-            Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
-                    i, _sensor.getTargetDetectedCount(i), _sensor.getAmbientPerSpad(i));
+                // Print per zone results 
+                Debugger::printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
+                        i, _sensor.getTargetDetectedCount(i), _sensor.getAmbientPerSpad(i));
 
-            // Print per target results 
-            if (_sensor.getTargetDetectedCount(i) > 0) {
-                Debugger::printf("Target status : %3u, Distance : %4d mm\n",
-                        _sensor.getTargetStatus(i), _sensor.getDistanceMm(i));
+                // Print per target results 
+                if (_sensor.getTargetDetectedCount(i) > 0) {
+                    Debugger::printf("Target status : %3u, Distance : %4d mm\n",
+                            _sensor.getTargetStatus(i), _sensor.getDistanceMm(i));
+                }
+                else {
+                    Debugger::printf("Target status : 255, Distance : No target\n");
+                }
             }
-            else {
-                Debugger::printf("Target status : 255, Distance : No target\n");
-            }
-        }
-        Debugger::printf("\n");
-    } 
+            Debugger::printf("\n");
+        } 
+    }
 }
