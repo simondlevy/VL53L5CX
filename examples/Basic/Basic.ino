@@ -30,21 +30,12 @@ static void interruptHandler()
 
 void setup(void)
 {
-    Serial.begin(115200);
-    delay(4000);
-    Debugger::printf("Serial begun!\n");
-
-    pinMode(INT_PIN, INPUT);     
-
     Wire.begin();                
     Wire.setClock(400000);      
-    delay(1000);
-
-    Debugger::printf("starting\n\n");
-
-    delay(1000);
+    delay(100);
 
     if (INT_PIN > 0) {
+        pinMode(INT_PIN, INPUT);
         attachInterrupt(INT_PIN, interruptHandler, FALLING);
     }
 
